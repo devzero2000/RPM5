@@ -4,12 +4,13 @@
 # Göran Uddeborg <goeran@uddeborg.se>, 2004, 2007, 2008, 2009, 2010, 2015.
 #
 # $Revision$
+#: tools/rpmkey.c:1649 tools/rpmkey.c:1699
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2015-04-19 13:20-0400\n"
-"PO-Revision-Date: 2015-04-19 10:42+0200\n"
+"POT-Creation-Date: 2016-02-27 17:23-0500\n"
+"PO-Revision-Date: 2015-05-02 19:15+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -95,7 +96,7 @@ msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 
 #: rpmqv.c:216
 msgid "Install/Upgrade/Erase options:"
-msgstr "Installations-/Uppdaterings-/Raderingsflaggor"
+msgstr "Installations-/Uppdaterings-/Raderingsflaggor:"
 
 #: rpmqv.c:221 tools/rpmdeps.c:160
 msgid "Common options:"
@@ -329,52 +330,55 @@ msgstr ""
 "\n"
 "RPM-byggfel:\n"
 
-#: build/expression.c:230
+#: build/expression.c:231
 msgid "syntax error while parsing ==\n"
 msgstr "syntaxfel vid tolkning av ==\n"
 
-#: build/expression.c:260
+#: build/expression.c:261
 msgid "syntax error while parsing &&\n"
 msgstr "syntaxfel vid tolkning av &&\n"
 
-#: build/expression.c:269
+#: build/expression.c:270
 msgid "syntax error while parsing ||\n"
 msgstr "syntaxfel vid tolkning av ||\n"
 
-#: build/expression.c:312
+#: build/expression.c:313
 msgid "parse error in expression\n"
 msgstr "tolkningsfel i uttryck\n"
 
-#: build/expression.c:352
+#: build/expression.c:353
 msgid "unmatched (\n"
 msgstr "ensam (\n"
 
-#: build/expression.c:388
+#: build/expression.c:389
 msgid "- only on numbers\n"
 msgstr "- endast i tal\n"
 
-#: build/expression.c:404
+#: build/expression.c:405
 msgid "! only on numbers\n"
 msgstr "! endast på tal\n"
 
-#: build/expression.c:453 build/expression.c:510 build/expression.c:579
-#: build/expression.c:680
+#: build/expression.c:454 build/expression.c:511 build/expression.c:580
+#: build/expression.c:681
 msgid "types must match\n"
 msgstr "typer måste passa ihop\n"
 
-#: build/expression.c:466
-msgid "* / not suported for strings\n"
+#: build/expression.c:467
+#, fuzzy
+msgid "* / not supported for strings\n"
 msgstr "* / stöds inte för strängar\n"
 
-#: build/expression.c:526
-msgid "- not suported for strings\n"
+#: build/expression.c:527
+#, fuzzy
+msgid "- not supported for strings\n"
 msgstr "- stöds inte för strängar\n"
 
-#: build/expression.c:693
-msgid "&& and || not suported for strings\n"
+#: build/expression.c:694
+#, fuzzy
+msgid "&& and || not supported for strings\n"
 msgstr "&& och || stöds inte för strängar\n"
 
-#: build/expression.c:731 build/expression.c:778
+#: build/expression.c:732 build/expression.c:779
 msgid "syntax error in expression\n"
 msgstr "syntaxfel i uttryck\n"
 
@@ -463,12 +467,12 @@ msgstr "Kan inte blanda special %%doc med andra former: %s\n"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "otillåtet _docdir_fmt: %s\n"
 
-#: build/files.c:1389
+#: build/files.c:1410
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1584
+#: build/files.c:1616
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s\n"
@@ -929,7 +933,7 @@ msgstr "BuildRoot kan inte vara \"/\": %s\n"
 #: build/parsePreamble.c:753
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
-msgstr "rad %d: Prefix måste börja med med \"/\": %s\n"
+msgstr "rad %d: Prefix måste börja med \"/\": %s\n"
 
 #: build/parsePreamble.c:761
 #, c-format
@@ -1385,107 +1389,107 @@ msgstr "paket %s var redan tillagt, hoppar över %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
-#: lib/depends.c:947
+#: lib/depends.c:953
 msgid "(cached)"
 msgstr "(cachad)"
 
-#: lib/depends.c:963
+#: lib/depends.c:969
 msgid "(function probe)"
 msgstr "(funktionsavkänning)"
 
-#: lib/depends.c:982
+#: lib/depends.c:988
 msgid "(user lookup)"
 msgstr "(uppslagning av användare)"
 
-#: lib/depends.c:999
+#: lib/depends.c:1005
 msgid "(group lookup)"
 msgstr "(uppslagning av grupp)"
 
-#: lib/depends.c:1008
+#: lib/depends.c:1014
 msgid "(access probe)"
 msgstr "(åtkomstavsökning)"
 
-#: lib/depends.c:1030
+#: lib/depends.c:1036
 msgid "(mtab probe)"
 msgstr "(mtab-avsökning)"
 
-#: lib/depends.c:1087
+#: lib/depends.c:1093
 msgid "(diskspace probe)"
 msgstr "(diskutrymmesavkänning)"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1135
 msgid "(digest probe)"
 msgstr "(kontrollsummeavsökning)"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1159
 msgid "(signature probe)"
 msgstr "(signaturavsökning)"
 
-#: lib/depends.c:1184
+#: lib/depends.c:1190
 msgid "(verify probe)"
 msgstr "(verifieringsavsökning)"
 
-#: lib/depends.c:1206
+#: lib/depends.c:1212
 msgid "(gnupg probe)"
 msgstr "(gnupg-avsökning)"
 
-#: lib/depends.c:1219
+#: lib/depends.c:1225
 msgid "(macro probe)"
 msgstr "(makroavsökning)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1253
 msgid "(envvar probe)"
 msgstr "(miljövar-avsökning)"
 
-#: lib/depends.c:1274
+#: lib/depends.c:1280
 msgid "(running probe)"
 msgstr "(köravsökning)"
 
-#: lib/depends.c:1296
+#: lib/depends.c:1302
 msgid "(sanity probe)"
 msgstr "(rimlighetsavsökning)"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1323
 msgid "(vcheck probe)"
 msgstr "(vcheck-avsökning)"
 
-#: lib/depends.c:1338
+#: lib/depends.c:1344
 msgid "(sysinfo provides)"
 msgstr "(sysinfo tillhandahåller)"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:1372
+#: lib/depends.c:1378
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo tillhandahåller)"
 
-#: lib/depends.c:1387
+#: lib/depends.c:1393
 msgid "(getconf provides)"
 msgstr "(getconf tillhandahåller)"
 
-#: lib/depends.c:1402
+#: lib/depends.c:1408
 msgid "(uname provides)"
 msgstr "(uname tillhandahåller)"
 
-#: lib/depends.c:1435
+#: lib/depends.c:1441
 msgid "(soname provides)"
 msgstr "(soname tillhandahåller)"
 
-#: lib/depends.c:1458
+#: lib/depends.c:1464
 msgid "(root files)"
 msgstr "(rotfiler)"
 
-#: lib/depends.c:1466
+#: lib/depends.c:1472
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:1478
+#: lib/depends.c:1484
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
-#: lib/depends.c:1508
+#: lib/depends.c:1514
 msgid "(hint skipped)"
 msgstr "(tips hoppades över)"
 
@@ -1519,42 +1523,47 @@ msgstr "kunde inte öppna %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "filen %s är på en okänd enhet\n"
 
-#: lib/fsm.c:920 rpmio/iosm.c:974
+#: lib/fsm.c:500 rpmio/iosm.c:522
+#, c-format
+msgid "Corrupted hardlinks found (count %d does not match %d), exiting.\n"
+msgstr ""
+
+#: lib/fsm.c:925 rpmio/iosm.c:979
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "användare %s finns inte - använder root\n"
 
-#: lib/fsm.c:930 rpmio/iosm.c:984
+#: lib/fsm.c:935 rpmio/iosm.c:989
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupp %s finns inte - använder root\n"
 
-#: lib/fsm.c:1825
+#: lib/fsm.c:1830
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "arkivfil %s fanns inte i huvudets fillista\n"
 
-#: lib/fsm.c:1968 lib/fsm.c:2088 rpmio/iosm.c:2008 rpmio/iosm.c:2127
+#: lib/fsm.c:1978 lib/fsm.c:2098 rpmio/iosm.c:2018 rpmio/iosm.c:2137
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:2115
+#: lib/fsm.c:2125
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2136
+#: lib/fsm.c:2146
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2161 rpmio/iosm.c:2200
+#: lib/fsm.c:2171 rpmio/iosm.c:2210
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
@@ -1785,9 +1794,10 @@ msgstr "Felsök rpmwf inkapslingsformat"
 
 #: lib/poptALL.c:513 rpmio/poptIO.c:737
 msgid "Display operation statistics"
-msgstr "Visa arbetsstatisitk"
+msgstr "Visa arbetsstatistik"
 
 #: lib/poptALL.c:831 rpmio/poptIO.c:927 rpmio/rpmsql.c:5412 rpmio/rpmtpm.c:152
+#: tools/rpmkey.c:1831
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
@@ -2528,7 +2538,7 @@ msgstr "rpmTempFile misslyckades\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:135 rpmdb/package.c:333
+#: lib/rpmchecksig.c:135 rpmdb/package.c:334
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
@@ -2538,7 +2548,7 @@ msgstr "%s: Fread misslyckades: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:172
+#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:173
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
@@ -2564,7 +2574,7 @@ msgstr "headerGet misslyckades"
 
 #: lib/rpmchecksig.c:999
 msgid "failed to retrieve original header\n"
-msgstr "misslyckades att hämta orginalhuvud\n"
+msgstr "misslyckades att hämta originalhuvud\n"
 
 #: lib/rpmchecksig.c:1031 rpmdb/pkgio.c:601 rpmdb/pkgio.c:792
 #: rpmdb/pkgio.c:1465
@@ -2576,7 +2586,7 @@ msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
 msgid "Fread failed"
 msgstr "Fread misslyckades"
 
-#: lib/rpmchecksig.c:1208 rpmdb/package.c:295
+#: lib/rpmchecksig.c:1208 rpmdb/package.c:296
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
@@ -2605,11 +2615,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "YES"
 msgstr "JA"
 
@@ -2670,9 +2680,8 @@ msgid "internal embedded JavaScript."
 msgstr "intern inbäddat JavaScript."
 
 #: lib/rpmds.c:1517
-#, fuzzy
 msgid "internal embedded Mruby scripts."
-msgstr "interna inbäddade ruby-skript."
+msgstr "interna inbäddade Mruby-skript."
 
 #: lib/rpmds.c:1522
 msgid "internal embedded perl scripts."
@@ -2683,9 +2692,8 @@ msgid "internal embedded python scripts."
 msgstr "interna inbäddade python-skript."
 
 #: lib/rpmds.c:1532
-#, fuzzy
 msgid "internal embedded Cruby scripts."
-msgstr "interna inbäddade ruby-skript."
+msgstr "interna inbäddade Cruby-skript."
 
 #: lib/rpmds.c:1537
 msgid "internal embedded Spook scripts."
@@ -2705,7 +2713,7 @@ msgstr "interna inbäddade tcl-skript."
 
 #: lib/rpmds.c:1556
 msgid "header tag data can be of type uint64_t."
-msgstr "huvudtagdata kan ha typ uint64_t."
+msgstr "huvudtaggdata kan ha typ uint64_t."
 
 #: lib/rpmds.c:1559
 msgid "package payload can be in ustar tar archive format."
@@ -2731,27 +2739,27 @@ msgstr "paketlast kan komprimeras med xz."
 msgid "dependencies support set/subset versions."
 msgstr "beroenden stödjer mängd-/delmängdsversioner."
 
-#: lib/rpmds.c:1675 lib/rpmds.c:3935
+#: lib/rpmds.c:1675 lib/rpmds.c:3936
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ogiltigt namn.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1698 lib/rpmds.c:3952
+#: lib/rpmds.c:1698 lib/rpmds.c:3953
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1709 lib/rpmds.c:3967
+#: lib/rpmds.c:1709 lib/rpmds.c:3968
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen EVR-sträng. Hoppar över ...\n"
 
-#: lib/rpmds.c:3934 lib/rpmds.c:3951 lib/rpmds.c:3963
+#: lib/rpmds.c:3935 lib/rpmds.c:3952 lib/rpmds.c:3964
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3965
+#: lib/rpmds.c:3966
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2760,7 +2768,7 @@ msgstr ""
 "\trad %d: Inget EVR-jämförelsevärde hittat.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:4114
+#: lib/rpmds.c:4115
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2769,10 +2777,10 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:4144 lib/rpmds.c:4146 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
-#, fuzzy, c-format
+#: lib/rpmds.c:4145 lib/rpmds.c:4147 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
+#, c-format
 msgid "failed to decode %s\n"
-msgstr "kunde inte öppna %s: %s\n"
+msgstr "kunde inte avkoda %s\n"
 
 #: lib/rpmfc.c:96
 #, c-format
@@ -2826,16 +2834,16 @@ msgstr "Letar efter %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Hittade inte %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:507
+#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:519
 #: tools/rpmdigest.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
 
 #: lib/rpmgi.c:244
-#, fuzzy, c-format
+#, c-format
 msgid "not signed: %s\n"
-msgstr " inte modifierad: %s)\n"
+msgstr "inte signerad: %s\n"
 
 #: lib/rpmgi.c:468
 #, c-format
@@ -3005,27 +3013,27 @@ msgstr "installation av paket %s på %s endast läsbart filsystem"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
-#: lib/rpmrc.c:1222
+#: lib/rpmrc.c:1298
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Konfigurerade systemtillhandahållanden (från %s):\n"
 
-#: lib/rpmrc.c:1237
+#: lib/rpmrc.c:1313
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Funktioner från rpmlib-installeraren:\n"
 
-#: lib/rpmrc.c:1258
+#: lib/rpmrc.c:1334
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Funktioner från aktuell cpuinfo (från %s):\n"
 
-#: lib/rpmrc.c:1278
+#: lib/rpmrc.c:1354
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Funktioner från aktuell getconf:\n"
 
-#: lib/rpmrc.c:1293
+#: lib/rpmrc.c:1369
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Funktioner från aktuellt uname:\n"
@@ -3063,7 +3071,7 @@ msgstr "kan inte öppna paketdatabas i %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
-#: lib/rpmts.c:497
+#: lib/rpmts.c:509
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "fel format på lösningsväg: %s\n"
@@ -3098,9 +3106,9 @@ msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
 
 #: rpmdb/db3.c:1979
-#, fuzzy, c-format
+#, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
-msgstr "rpmdb: huvud nr. %u kan inte läsas in -- hoppar över.\n"
+msgstr "db3: huvud nr. %u kan inte läsas in -- hoppar över.\n"
 
 #: rpmdb/db3.c:2492
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
@@ -3143,7 +3151,7 @@ msgstr "okänd db-flagga: \"%s\" ignorerad\n"
 #: rpmdb/dbconfig.c:599
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s har ogiltigt ogiltigt numeriskt värde, hoppar över\n"
+msgstr "%s har ogiltigt numeriskt värde, hoppar över\n"
 
 #: rpmdb/dbconfig.c:608
 #, c-format
@@ -3155,216 +3163,216 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/hdrfmt.c:105 rpmdb/hdrfmt.c:211 rpmdb/hdrfmt.c:1591
-#: rpmdb/hdrfmt.c:1641
+#: rpmdb/hdrfmt.c:107 rpmdb/hdrfmt.c:213 rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1659
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: rpmdb/hdrfmt.c:239
+#: rpmdb/hdrfmt.c:241
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:251
+#: rpmdb/hdrfmt.c:253
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: rpmdb/hdrfmt.c:305
+#: rpmdb/hdrfmt.c:307
 msgid "invalid type"
 msgstr "felaktig typ"
 
-#: rpmdb/hdrfmt.c:669 rpmdb/hdrfmt.c:700 rpmdb/hdrfmt.c:723 rpmdb/hdrfmt.c:798
-#: rpmdb/hdrfmt.c:1475 rpmdb/hdrfmt.c:1527
+#: rpmdb/hdrfmt.c:671 rpmdb/hdrfmt.c:702 rpmdb/hdrfmt.c:725 rpmdb/hdrfmt.c:804
+#: rpmdb/hdrfmt.c:1481 rpmdb/hdrfmt.c:1533
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:786
+#: rpmdb/hdrfmt.c:788
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: rpmdb/hdrfmt.c:829
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid type :base64)"
 msgstr "(felaktig typ :base64)"
 
-#: rpmdb/hdrfmt.c:988 rpmdb/hdrfmt.c:1019 rpmdb/hdrfmt.c:3686
-#: rpmdb/hdrfmt.c:4534
+#: rpmdb/hdrfmt.c:994 rpmdb/hdrfmt.c:1025 rpmdb/hdrfmt.c:3708
+#: rpmdb/hdrfmt.c:4556
 msgid "(not a string)"
 msgstr "(inte en sträng)"
 
-#: rpmdb/hdrfmt.c:1078
+#: rpmdb/hdrfmt.c:1084
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: rpmdb/hdrfmt.c:1229
+#: rpmdb/hdrfmt.c:1235
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: rpmdb/hdrfmt.c:1335
-#, fuzzy
+#: rpmdb/hdrfmt.c:1341
 msgid "(invalid json type)"
-msgstr "(felaktig typ)"
+msgstr "(felaktig json-typ)"
 
-#: rpmdb/hdrfmt.c:1390
+#: rpmdb/hdrfmt.c:1396
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: rpmdb/hdrfmt.c:1413
+#: rpmdb/hdrfmt.c:1419
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
-#: rpmdb/hdrfmt.c:1597
+#: rpmdb/hdrfmt.c:1609
 #, fuzzy
 msgid "normal"
 msgstr "normal        "
 
-#: rpmdb/hdrfmt.c:1600
+#: rpmdb/hdrfmt.c:1612
 #, fuzzy
 msgid "replaced"
 msgstr "ersatt        "
 
-#: rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1615
 #, fuzzy
 msgid "not installed"
 msgstr "oinstallerat  "
 
-#: rpmdb/hdrfmt.c:1606
+#: rpmdb/hdrfmt.c:1618
 #, fuzzy
 msgid "net shared"
 msgstr "nätdelad      "
 
-#: rpmdb/hdrfmt.c:1609
+#: rpmdb/hdrfmt.c:1621
 #, fuzzy
 msgid "wrong color"
 msgstr "fel färg      "
 
-#: rpmdb/hdrfmt.c:1614
+#: rpmdb/hdrfmt.c:1626
 #, fuzzy
 msgid "missing"
 msgstr "saknas: %s"
 
-#: rpmdb/hdrfmt.c:1618
+#: rpmdb/hdrfmt.c:1630
 #, fuzzy
 msgid "(unknown)"
 msgstr "(okänd %3d)   "
 
-#: rpmdb/hdrfmt.c:4747
+#: rpmdb/hdrfmt.c:4769
 msgid "(invalid type :digest)"
 msgstr "(felaktig typ :digest)"
 
-#: rpmdb/hdrfmt.c:4806
+#: rpmdb/hdrfmt.c:4828
 msgid "(invalid type :stat)"
 msgstr "(felaktig typ :stat)"
 
-#: rpmdb/hdrfmt.c:4980
+#: rpmdb/hdrfmt.c:5002
 msgid "(invalid type :uuid)"
 msgstr "(felaktig typ :uuid)"
 
-#: rpmdb/hdrfmt.c:4988 rpmdb/hdrfmt.c:5021
-#, fuzzy
+#: rpmdb/hdrfmt.c:5010 rpmdb/hdrfmt.c:5043
 msgid "(invalid tag :uuid)"
-msgstr "(felaktig typ :uuid)"
+msgstr "(felaktig tagg :uuid)"
 
-#: rpmdb/hdrfmt.c:5087
+#: rpmdb/hdrfmt.c:5113
 msgid "(invalid type :rpn)"
 msgstr "(felaktig typ :rpn)"
 
-#: rpmdb/hdrfmt.c:5099
+#: rpmdb/hdrfmt.c:5127
 msgid "(invalid string :rpn)"
 msgstr "(felaktig sträng :rpn)"
 
-#: rpmdb/hdrfmt.c:5115
-msgid "(expected number :rpn)"
-msgstr "(tal förväntades :rpn)"
-
-#: rpmdb/hdrfmt.c:5119
+#: rpmdb/hdrfmt.c:5143
 msgid "(stack overflow :rpn)"
 msgstr "(stackspill :rpn)"
 
-#: rpmdb/hdrfmt.c:5125
+#: rpmdb/hdrfmt.c:5155
 msgid "(invalid number :rpn)"
 msgstr "(felaktigt tal :rpn)"
 
-#: rpmdb/hdrfmt.c:5130
+#: rpmdb/hdrfmt.c:5161 rpmdb/hdrfmt.c:5202 rpmdb/hdrfmt.c:5237
+#: rpmdb/hdrfmt.c:5254
 msgid "(stack underflow :rpn)"
 msgstr "(stackunderspill :rpn)"
 
-#: rpmdb/hdrfmt.c:5143
+#: rpmdb/hdrfmt.c:5223 rpmdb/hdrfmt.c:5233 rpmdb/hdrfmt.c:5259
 msgid "(divide by zero :rpn)"
 msgstr "(division med noll :rpn)"
 
-#: rpmdb/hdrfmt.c:5186
+#: rpmdb/hdrfmt.c:5263
+#, fuzzy
+msgid "(negative exponent :rpn)"
+msgstr "(felaktig typ :rpn)"
+
+#: rpmdb/hdrfmt.c:5330
 msgid "(invalid type :strsub)"
 msgstr "(felaktig typ :strsub)"
 
-#: rpmdb/hdrfmt.c:5191
+#: rpmdb/hdrfmt.c:5335
 msgid "(invalid args :strsub)"
 msgstr "(felaktiga argument :strsub)"
 
-#: rpmdb/hdrfmt.c:6067
+#: rpmdb/hdrfmt.c:6211
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/hdrfmt.c:6101
+#: rpmdb/hdrfmt.c:6245
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/hdrfmt.c:6117
+#: rpmdb/hdrfmt.c:6261
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/hdrfmt.c:6138
+#: rpmdb/hdrfmt.c:6282
 msgid "malformed parameter list"
 msgstr "felformaterat parameterlista"
 
-#: rpmdb/hdrfmt.c:6159
+#: rpmdb/hdrfmt.c:6303
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/hdrfmt.c:6168
+#: rpmdb/hdrfmt.c:6312
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/hdrfmt.c:6198
+#: rpmdb/hdrfmt.c:6342
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/hdrfmt.c:6215
+#: rpmdb/hdrfmt.c:6359
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/hdrfmt.c:6230
+#: rpmdb/hdrfmt.c:6374
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/hdrfmt.c:6309
+#: rpmdb/hdrfmt.c:6453
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:6316
+#: rpmdb/hdrfmt.c:6460
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/hdrfmt.c:6328 rpmdb/hdrfmt.c:6368
+#: rpmdb/hdrfmt.c:6472 rpmdb/hdrfmt.c:6512
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:6336
+#: rpmdb/hdrfmt.c:6480
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/hdrfmt.c:6354
+#: rpmdb/hdrfmt.c:6498
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/hdrfmt.c:6376
+#: rpmdb/hdrfmt.c:6520
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/hdrfmt.c:6720
+#: rpmdb/hdrfmt.c:6864
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
-#: rpmdb/package.c:166
+#: rpmdb/package.c:167
 msgid "read failed\n"
 msgstr "läsning misslyckades\n"
 
@@ -3427,7 +3435,7 @@ msgstr "signh-taggar: FEL, antal taggar(%u) utanför intervall"
 #: rpmdb/pkgio.c:826
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
-msgstr "signh-data: FEL, antal byte(%u) itanför intevall"
+msgstr "signh-data: FEL, antal byte(%u) utanför intervall"
 
 #: rpmdb/pkgio.c:854
 #, c-format
@@ -3440,9 +3448,9 @@ msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%d]: FEL, tagg %u typ %u position %d antal %u"
 
 #: rpmdb/pkgio.c:890 rpmdb/pkgio.c:1139
-#, fuzzy, c-format
+#, c-format
 msgid "region tag: BAD, tag %u type %u offset %d count %u"
-msgstr "regionavslutning: FEL, tagg %u typ %u position %d antal %u"
+msgstr "regionstagg: FEL, tagg %u typ %u position %d antal %u"
 
 #: rpmdb/pkgio.c:904 rpmdb/pkgio.c:1149
 #, c-format
@@ -3505,9 +3513,9 @@ msgid "hdr DSA: BAD, not binary"
 msgstr "hvd DSA: FEL, ej binärt"
 
 #: rpmdb/pkgio.c:1240
-#, fuzzy, c-format
+#, c-format
 msgid "hdr ECDSA: BAD, not binary"
-msgstr "hvd DSA: FEL, ej binärt"
+msgstr "hvd ECDSA: FEL, ej binärt"
 
 #: rpmdb/pkgio.c:1306 rpmdb/pkgio.c:1325 rpmdb/pkgio.c:1344
 #, c-format
@@ -3561,28 +3569,26 @@ msgid "Debug rpmlio database Log I/O"
 msgstr "Felsök rpmlio-databaslogg-I/O"
 
 #: rpmdb/poptDB.c:49
-#, fuzzy
 msgid "Debug rpmmdb Mongo DB"
-msgstr "Felsök rpmdb databas"
+msgstr "Felsök rpmdb Mongo DB"
 
 #: rpmdb/poptDB.c:51
 msgid "Debug rpmrepo repository wrappers "
-msgstr "Felsök rpmrepo förrådsomslag "
+msgstr "Felsök rpmrepo förrådsinkapslingar "
 
 #: rpmdb/poptDB.c:53
 msgid "Debug rpmtxn database Transaction"
 msgstr "Felsök rpmtxn databastransaktion"
 
 #: rpmdb/poptDB.c:56
-#, fuzzy
 msgid "Debug SQLDB cursors"
-msgstr "Felsök inbäddad SQL virtuell markör"
+msgstr "Felsök SQLDB-markörer"
 
 #: rpmdb/poptDB.c:58
 msgid "Debug SQLDB"
 msgstr "Felsök SQLDB"
 
-#: rpmdb/rpmdb.c:268
+#: rpmdb/rpmdb.c:269
 #, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
@@ -3591,36 +3597,36 @@ msgstr ""
 "kan inte öppna %s(%u)-indexet: %s(%d)\n"
 "\tDB: %s\n"
 
-#: rpmdb/rpmdb.c:593
+#: rpmdb/rpmdb.c:594
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "fel format: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:1037
+#: rpmdb/rpmdb.c:1038
 msgid "no dbpath has been set\n"
 msgstr "ingen dbpath har satts\n"
 
-#: rpmdb/rpmdb.c:1244 rpmdb/rpmdb.c:1606
+#: rpmdb/rpmdb.c:1245 rpmdb/rpmdb.c:1607
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "fel(%d) när poster hämtades från %s-indexet\n"
 
-#: rpmdb/rpmdb.c:1477
+#: rpmdb/rpmdb.c:1478
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "fel(%d) när nycklar hämtades från %s-indexet\n"
 
-#: rpmdb/rpmdb.c:1675
+#: rpmdb/rpmdb.c:1676
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "fel(%d) när post nr. %u sparades i %s\n"
 
-#: rpmdb/rpmdb.c:2406
+#: rpmdb/rpmdb.c:2407
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: huvud nr. %u kan inte läsas in -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2826
+#: rpmdb/rpmdb.c:2827
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"
@@ -3653,12 +3659,12 @@ msgstr "Gammal datakatalog finns, ta bort den: %s"
 #: rpmdb/rpmrepo.c:604
 #, c-format
 msgid "Path must be writable: %s"
-msgstr "Sökvägen moste vara skrivbar: %s"
+msgstr "Sökvägen måste vara skrivbar: %s"
 
 #: rpmdb/rpmrepo.c:624
 #, c-format
 msgid "groupfile %s cannot be found."
-msgstr "gruppfilen %s fins inte."
+msgstr "gruppfilen %s finns inte."
 
 #: rpmdb/rpmrepo.c:655
 #, c-format
@@ -3701,7 +3707,7 @@ msgstr "Sqlite-DB komplett"
 #: rpmdb/rpmrepo.c:1279
 #, c-format
 msgid "Error saving temp file for %s%s%s: %s"
-msgstr "Fel när tämporärfil sparades för %s%s%s: %s"
+msgstr "Fel när temporärfil sparades för %s%s%s: %s"
 
 #: rpmdb/rpmrepo.c:1284
 #, c-format
@@ -3718,7 +3724,7 @@ msgid "Error moving final metadata into place"
 msgstr "Fel när slutlig metadata flyttades på plats"
 
 #: rpmdb/rpmrepo.c:1336
-#, fuzzy, c-format
+#, c-format
 msgid "Could not remove old metadata directory: %s: %s"
 msgstr "Kunde inte ta bort gammal metadatakatalog: %s: %s"
 
@@ -3733,9 +3739,9 @@ msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Kunde inte återställa gammal icke-metadatafil: %s -> %s: %s"
 
 #: rpmdb/rpmrepo.c:1365
-#, fuzzy, c-format
+#, c-format
 msgid "Could not remove old metadata symlink: %s: %s"
-msgstr "Kunde inte ta bort gammal metadatakatalog: %s: %s"
+msgstr "Kunde inte ta bort gammal metadatasymlänk: %s: %s"
 
 #: rpmdb/rpmrepo.c:1413
 #, c-format
@@ -3796,7 +3802,7 @@ msgid "top level directory"
 msgstr "toppnivåkatalog"
 
 #: rpmdb/rpmrepo.c:1713 rpmdb/rpmrepo.c:1739 rpmio/rpmaug.c:121
-#: tools/roto.c:4093 tools/roto.c:4097 tools/roto.c:4104 tools/rpmwget.c:1316
+#: tools/roto.c:4094 tools/roto.c:4098 tools/roto.c:4105 tools/rpmwget.c:1316
 msgid "DIR"
 msgstr "KAT"
 
@@ -3830,7 +3836,7 @@ msgstr "se till att all genererad xml är formaterad"
 #: rpmdb/rpmrepo.c:1723
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
-"kontrollera tisstämplar på filer mot metadata för att se om vi behöver "
+"kontrollera tidsstämplar på filer mot metadata för att se om vi behöver "
 "uppdatera"
 
 #: rpmdb/rpmrepo.c:1726
@@ -3843,7 +3849,7 @@ msgstr "generera delade medier"
 
 #: rpmdb/rpmrepo.c:1736
 msgid "use only the files listed in this file from the directory specified"
-msgstr "använd endast filerna listade i denna fil från den antivna katalogen"
+msgstr "använd endast filerna listade i denna fil från den angivna katalogen"
 
 #: rpmdb/rpmrepo.c:1739
 msgid "<dir> = optional directory to output to"
@@ -3858,9 +3864,8 @@ msgid "include the file's checksum in the filename, helps with proxies"
 msgstr "inkludera filens kontrollsumma i filnamnet, hjälper med proxy:er"
 
 #: rpmdb/rpmrepo.c:1768
-#, fuzzy
 msgid "Repository options:"
-msgstr "Andra flaggor:"
+msgstr "Förrådsflaggor:"
 
 #: rpmdb/rpmrepo.c:1771 tools/rpmmtree.c:3598
 msgid "Fts(3) traversal options:"
@@ -3874,10 +3879,10 @@ msgstr "Tillgängliga komprimeringar:"
 msgid "Available digests:"
 msgstr "Tillgängliga kontrollsummor:"
 
-#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2665 rpmio/rpmsql.c:5272
+#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2663 rpmio/rpmsql.c:5272
 #: rpmio/rpmz.c:1833 rpmio/set.c:1516 tools/augtool.c:337 tools/cudftool.c:29
-#: tools/roto.c:4131 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
-#: tools/rpmkey.c:1549 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
+#: tools/roto.c:4132 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
+#: tools/rpmkey.c:1724 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:335
 msgid "Common options for all rpmio executables:"
 msgstr "Gemensamma flaggor för alla rpmio-program:"
@@ -3895,7 +3900,7 @@ msgstr "Realpath(%s): %s"
 #: rpmdb/signature.c:111
 #, c-format
 msgid "error creating temporary file %s\n"
-msgstr "fel när tämporärfil %s skapades\n"
+msgstr "fel när temporärfil %s skapades\n"
 
 #: rpmdb/signature.c:177
 #, c-format
@@ -3957,64 +3962,64 @@ msgstr "Signatur: OKÄND (%u)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Kan inte få ett lås på db %s, försöker igen ... (%d)\n"
 
-#: rpmio/iosm.c:1864
+#: rpmio/iosm.c:1869
 #, c-format
 msgid "archive file %s was not found in header\n"
 msgstr "arkivfil %s fanns inte i huvudet\n"
 
-#: rpmio/iosm.c:2153
+#: rpmio/iosm.c:2163
 #, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2169
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "rmdir av %s misslyckades: %s\n"
 
-#: rpmio/iosm.c:2174
+#: rpmio/iosm.c:2184
 #, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "unlink av %s misslyckades: %s\n"
 
-#: rpmio/iosm.c:2779
+#: rpmio/iosm.c:2789
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: rpmio/iosm.c:2782
+#: rpmio/iosm.c:2792
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: rpmio/iosm.c:2783
+#: rpmio/iosm.c:2793
 msgid "Bad/unreadable header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2815
 msgid "Header size too big"
 msgstr "Huvudstorleken för stor"
 
-#: rpmio/iosm.c:2806
+#: rpmio/iosm.c:2816
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: rpmio/iosm.c:2807
+#: rpmio/iosm.c:2817
 msgid "Missing hard link(s)"
-msgstr "Sakndade hårda länkar"
+msgstr "Saknade hårda länkar"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2818
 msgid "File digest mismatch"
 msgstr "Filkontrollsumma stämmer inte"
 
-#: rpmio/iosm.c:2809
+#: rpmio/iosm.c:2819
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2820
 msgid "Archive file not in header"
 msgstr "Arkivfilen inte huvudet"
 
-#: rpmio/iosm.c:2821
+#: rpmio/iosm.c:2831
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -4073,56 +4078,56 @@ msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Okänd flagga i makro %s(%s): %s: %s\n"
 
-#: rpmio/macro.c:1704
+#: rpmio/macro.c:1701
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1778 rpmio/macro.c:1795
+#: rpmio/macro.c:1775 rpmio/macro.c:1792
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1840
+#: rpmio/macro.c:1837
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1858
+#: rpmio/macro.c:1855
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: inläsning av makron misslyckades\n"
 
-#: rpmio/macro.c:2618
+#: rpmio/macro.c:2615
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:2863
+#: rpmio/macro.c:2860
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Makroexpansionen är för stor för målbufferten\n"
 
-#: rpmio/macro.c:2897
+#: rpmio/macro.c:2894
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makrot \"%s\" är endast läsbart och kan inte ändras.\n"
 
-#: rpmio/macro.c:3026
+#: rpmio/macro.c:3023
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s:%u \"}\" saknas i \"%s\", hoppar över.\n"
 
-#: rpmio/macro.c:3035
+#: rpmio/macro.c:3032
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
-msgstr "%s:%u inläsningsdjup överskridet, \"%s\" ignoras.\n"
+msgstr "%s:%u inläsningsdjup överskridet, \"%s\" ignoreras.\n"
 
-#: rpmio/macro.c:3225 rpmio/macro.c:3231
+#: rpmio/macro.c:3222 rpmio/macro.c:3228
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:3234
+#: rpmio/macro.c:3231
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
@@ -4252,24 +4257,20 @@ msgid "Blake-512 digest"
 msgstr "Blake-512-summa"
 
 #: rpmio/poptIO.c:200
-#, fuzzy
 msgid "Blake2b digest"
-msgstr "Blake-224-summa"
+msgstr "Blake2b-summa"
 
 #: rpmio/poptIO.c:202
-#, fuzzy
 msgid "Blake2bp digest"
-msgstr "Blake-224-summa"
+msgstr "Blake2bp-summa"
 
 #: rpmio/poptIO.c:204
-#, fuzzy
 msgid "Blake2s digest"
-msgstr "Blake-224-summa"
+msgstr "Blake2s-summa"
 
 #: rpmio/poptIO.c:206
-#, fuzzy
 msgid "Blake2sp digest"
-msgstr "Blake-224-summa"
+msgstr "Blake2sp-summa"
 
 #: rpmio/poptIO.c:208
 msgid "BlueMidnightWish-224 digest"
@@ -4480,14 +4481,12 @@ msgid "MD6-512digest"
 msgstr "MD6-512-summa"
 
 #: rpmio/poptIO.c:312
-#, fuzzy
 msgid "RadioGatun32-256 digest"
-msgstr "EdonR-256-summa"
+msgstr "RadioGatun32-256-summa"
 
 #: rpmio/poptIO.c:314
-#, fuzzy
 msgid "RadioGatun64-256 digest"
-msgstr "EdonR-256-summa"
+msgstr "RadioGatun64-256-summa"
 
 #: rpmio/poptIO.c:316
 msgid "Shabal-224 digest"
@@ -4742,23 +4741,20 @@ msgid "Debug rpmio I/O buffers"
 msgstr "Felsök rpmio I/O-buffertar"
 
 #: rpmio/poptIO.c:660
-#, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
-msgstr "Felsök inbäddad Nixinterpretator"
+msgstr "Felsök inbäddad ASN.1-interpretator"
 
 #: rpmio/poptIO.c:662
 msgid "Debug depsolver wrappers "
 msgstr "Felsök beroendelösaromslag "
 
 #: rpmio/poptIO.c:664
-#, fuzzy
 msgid "Debug CVS wrappers "
-msgstr "Felsök rpmwf inkapslingsformat"
+msgstr "Felsök CVS-inkapslingar"
 
 #: rpmio/poptIO.c:666
-#, fuzzy
 msgid "Debug GIT wrappers "
-msgstr "Felsök rpmwf inkapslingsformat"
+msgstr "Felsök GIT-inkapslingar"
 
 #: rpmio/poptIO.c:668
 msgid "Debug SET-VERSION wrappers "
@@ -4769,9 +4765,8 @@ msgid "Debug Subversion wrappers "
 msgstr "Felsök Subversion-omslag "
 
 #: rpmio/poptIO.c:672
-#, fuzzy
 msgid "Debug TPM emulator"
-msgstr "Felsök HTML-tolkning"
+msgstr "Felsök TPM-emulator"
 
 #: rpmio/poptIO.c:675
 msgid "Debug embedded Augeas interpreter"
@@ -4816,23 +4811,21 @@ msgid "Debug rpmmg magic"
 msgstr "Felsök rpmmg-magi"
 
 #: rpmio/poptIO.c:697
-#, fuzzy
 msgid "Debug embedded MRuby interpreter"
-msgstr "Felsök inbäddad Rubyinterpretator"
+msgstr "Felsök inbäddad MRuby-interpretator"
 
 #: rpmio/poptIO.c:699
 #, fuzzy
 msgid "Debug Mongo DB gridfs connection"
-msgstr "Felsök argv-samlingar"
+msgstr "Felsök Mongo DB-anslutning"
 
 #: rpmio/poptIO.c:701
 msgid "Debug embedded Nix interpreter"
 msgstr "Felsök inbäddad Nixinterpretator"
 
 #: rpmio/poptIO.c:703
-#, fuzzy
 msgid "Debug embedded ODBC interface"
-msgstr "Felsök inbäddad TCL-interpretator"
+msgstr "Felsök inbäddat ODBC-gränssnitt"
 
 #: rpmio/poptIO.c:705
 msgid "Debug embedded Perl interpreter"
@@ -4994,7 +4987,7 @@ msgid ""
 "        will appear last amongst their siblings"
 msgstr ""
 "Sätt värdet på SÖKVÄG till TOMT.  Om SÖKVÄG inte finns i trädet ännu\n"
-"        kommer den och alla dess anväder att skapas.  Dessa nya\n"
+"        kommer den och alla dess anfäder att skapas.  Dessa nya\n"
 "        trädposter kommer att dyka upp bland sina syskon"
 
 #: rpmio/rpmaug.c:716
@@ -5034,12 +5027,14 @@ msgstr ""
 "        filer över.  Istället skapas nya filer med ändelsen .augnew"
 
 #: rpmio/rpmaug.c:734
-msgid "Load files accordig to the transforms in /augeas/load."
+#, fuzzy
+msgid "Load files according to the transforms in /augeas/load."
 msgstr "Läs in filer enligt transformerna i /augeas/load."
 
 #: rpmio/rpmaug.c:737
+#, fuzzy
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR. The\n"
+"Define the variable NAME to the result of evaluating EXPR. The\n"
 "        variable can be used in path expressions as $NAME. Note that EXPR\n"
 "        is evaluated when the variable is defined, not when it is used."
 msgstr ""
@@ -5052,8 +5047,9 @@ msgid "<NAME> <EXPR>"
 msgstr "<NAMN> <UTTR>"
 
 #: rpmio/rpmaug.c:743
+#, fuzzy
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR, which\n"
+"Define the variable NAME to the result of evaluating EXPR, which\n"
 "        must be a nodeset. If no node matching EXPR exists yet, one\n"
 "        is created and NAME will refer to it. If VALUE is given, this\n"
 "        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
@@ -5062,10 +5058,10 @@ msgid ""
 msgstr ""
 "Definiera variabeln NAMN till resultatet av beräkning av UTTR, som\n"
 "        måste vara en nodmängd.  Om ingen nod som matchar UTTR finns\n"
-"        ännu skapas en och NAMN kommer refera till den.  Om VÄRDE\n"
+"        ännu skapas en och NAMN kommer referera till den.  Om VÄRDE\n"
 "        anges är detta samma som  \"set UTTR VÄRDE\", om VÄRDE inte\n"
 "        anges skapas noden som skulle gjorts med \"clear UTTR\" och NAMN\n"
-"        referar till den noden."
+"        refererar till den noden."
 
 #: rpmio/rpmaug.c:749
 msgid "<NAME> <EXPR> [<VALUE>]"
@@ -5079,19 +5075,19 @@ msgstr "Avsluta programmet"
 msgid "Print this help text"
 msgstr "Skriv denna hjälptext"
 
-#: rpmio/rpmdav.c:1059
+#: rpmio/rpmdav.c:1066
 msgid "Authorization Required"
 msgstr "Auktorisering krävs"
 
-#: rpmio/rpmdav.c:1061
+#: rpmio/rpmdav.c:1068
 msgid "Redirect"
 msgstr "Omdirigering"
 
-#: rpmio/rpmdav.c:1063
+#: rpmio/rpmdav.c:1070
 msgid "Server Error"
 msgstr "Serverfel"
 
-#: rpmio/rpmdav.c:1065
+#: rpmio/rpmdav.c:1072
 msgid "Unknown Error"
 msgstr "Okänt fel"
 
@@ -5100,14 +5096,12 @@ msgid "Create a bare repository."
 msgstr "Skapa ett naket förråd."
 
 #: rpmio/rpmgit.c:1087
-#, fuzzy
 msgid "Specify the <template> directory."
-msgstr "Ange målplattform"
+msgstr "Ange <mall>-katalogen."
 
 #: rpmio/rpmgit.c:1087
-#, fuzzy
 msgid "<template>"
-msgstr "<datum>"
+msgstr "<mall>"
 
 #: rpmio/rpmgit.c:1090
 msgid "Specify how the git repository is to be shared."
@@ -5123,14 +5117,12 @@ msgid "Specify a separate <gitdir> directory."
 msgstr "Ange en separat <gitkat>-katalog."
 
 #: rpmio/rpmgit.c:1093
-#, fuzzy
 msgid "<gitdir>"
-msgstr "<kat>"
+msgstr "<gitkat>"
 
 #: rpmio/rpmgit.c:1095 rpmio/rpmgit.c:1493
-#, fuzzy
 msgid "Quiet mode."
-msgstr "Tyst läge"
+msgstr "Tyst läge."
 
 #: rpmio/rpmgit.c:1097
 msgid "Initial commit.."
@@ -5141,13 +5133,12 @@ msgid "Verbose mode."
 msgstr "Utförligt läge."
 
 #: rpmio/rpmgit.c:1698
-#, fuzzy
 msgid "Generate patch."
-msgstr "generera signatur"
+msgstr "Generera en patch."
 
 #: rpmio/rpmgit.c:1715
 msgid "Show only names of changed files."
-msgstr "Vesa endast namn på ändrade filer."
+msgstr "Visa endast namn på ändrade filer."
 
 #: rpmio/rpmgit.c:1718
 msgid "Show only names and status of changed files."
@@ -5166,9 +5157,8 @@ msgid "Swap two inputs."
 msgstr "Byt två indata."
 
 #: rpmio/rpmgit.c:1740
-#, fuzzy
 msgid "Treat all files as text."
-msgstr "hantera indatafiler som HTML."
+msgstr "Hantera indatafiler som text."
 
 #: rpmio/rpmgit.c:1742
 msgid "Ignore changes in whitespace at EOL."
@@ -5179,9 +5169,8 @@ msgid "Ignore changes in amount of whitespace."
 msgstr "Ignorera ändringar i mängden mellanslag."
 
 #: rpmio/rpmgit.c:1746
-#, fuzzy
 msgid "Ignore whitespace when comparing lines."
-msgstr "bortse från skiftläge vid matchning av filer/kataloger."
+msgstr "Bortse från mellanslag vid jämförelse av rader."
 
 #: rpmio/rpmgit.c:1752
 msgid "Generate a diff using the \"patience diff\" algorithm."
@@ -5204,9 +5193,8 @@ msgid "Show the context between diff hunks."
 msgstr "Visa sammanhanget mellan skillnads-bitar."
 
 #: rpmio/rpmgit.c:1780
-#, fuzzy
 msgid "<lines>"
-msgstr "rad: %s\n"
+msgstr "<rader>"
 
 #: rpmio/rpmgit.c:1783
 msgid "<XXX>"
@@ -5228,349 +5216,348 @@ msgstr "<prefix>"
 msgid "Show the given destination prefix instead of \"b/\"."
 msgstr "Visa det angivna destinationsprefixet istället för ”b/”."
 
-#: rpmio/rpmgit.c:2273
+#: rpmio/rpmgit.c:2271
 msgid "Give the output in the short-format."
 msgstr "Ge utdata i det korta formatet."
 
-#: rpmio/rpmgit.c:2275
+#: rpmio/rpmgit.c:2273
 msgid "Give the output in the long-format."
 msgstr "Ge utdata i det långa formatet."
 
-#: rpmio/rpmgit.c:2277
+#: rpmio/rpmgit.c:2275
 msgid "Give the output in a stable, easy-to-parse format for scripts."
 msgstr "Ge utdata i ett stabilt, lättparsat format för skript."
 
-#: rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281 rpmio/rpmgit.c:2283
-#: rpmio/rpmgit.c:2575
+#: rpmio/rpmgit.c:2277 rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281
+#: rpmio/rpmgit.c:2573
 msgid "."
 msgstr "."
 
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "Show untracked files."
 msgstr "Visa ej spårade filer."
 
 # Det är nyckelord, de kan inte översättas.
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "{no|normal|all}"
 msgstr "{no|normal|all}"
 
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "Ignore sub-modules."
 msgstr "Ignorera undermoduler."
 
 # Det är ett nyckelord, det kan inte översättas.
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "{all}"
 msgstr "{all}"
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "Repeat every <sec> seconds."
 msgstr "Upprepa var <sek> sekund."
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "<sec>"
 msgstr "<sek>"
 
-#: rpmio/rpmgit.c:2291
+#: rpmio/rpmgit.c:2289
 #, fuzzy
 msgid "List submodules."
 msgstr "Ignorera undermoduler."
 
-#: rpmio/rpmgit.c:2437
+#: rpmio/rpmgit.c:2435
 msgid "Add file contents to the index."
 msgstr "Lägg till filinnehåll till indexet."
 
-#: rpmio/rpmgit.c:2440
+#: rpmio/rpmgit.c:2438
 msgid "Find by binary search the change that introduced a bug."
 msgstr "Leta genom binärsökning reda på ändringen som introducerade ett fel."
 
-#: rpmio/rpmgit.c:2442
+#: rpmio/rpmgit.c:2440
 msgid "List, create, or delete branches."
 msgstr "Lista, skapa eller ta bort grenar."
 
-#: rpmio/rpmgit.c:2444
+#: rpmio/rpmgit.c:2442
 msgid "Checkout a branch or paths to the working tree."
 msgstr "Checka ut en gren eller sökväg till arbetsträdet."
 
-#: rpmio/rpmgit.c:2446
+#: rpmio/rpmgit.c:2444
 msgid "Clone a repository into a new directory."
 msgstr "Klona ett förråd till en ny katalog."
 
-#: rpmio/rpmgit.c:2449
+#: rpmio/rpmgit.c:2447
 msgid "Record changes to the repository."
 msgstr "Spara ändringar i förrådet."
 
-#: rpmio/rpmgit.c:2451
+#: rpmio/rpmgit.c:2449
 msgid "Show changes between commits, commit and working tree, etc."
 msgstr ""
 "Visa ändringar mellan incheckningar, en incheckning och arbetsträdet, etc."
 
-#: rpmio/rpmgit.c:2454
+#: rpmio/rpmgit.c:2452
 msgid "Download objects and refs from another repository."
 msgstr "Hämta objekt och referenser från ett annat förråd."
 
-#: rpmio/rpmgit.c:2456
+#: rpmio/rpmgit.c:2454
 msgid "Print lines matching a pattern."
 msgstr "Skriv rader som matchar ett mönster."
 
-#: rpmio/rpmgit.c:2460
+#: rpmio/rpmgit.c:2458
 msgid "Create an empty git repository or reinitialize an existing one."
 msgstr "Skapa ett tomt git-förråd eller initiera om ett befintligt."
 
-#: rpmio/rpmgit.c:2463
+#: rpmio/rpmgit.c:2461
 msgid "Show commit logs."
 msgstr "Visa incheckningsloggar."
 
-#: rpmio/rpmgit.c:2465
+#: rpmio/rpmgit.c:2463
 msgid "Join two or more development histories together."
 msgstr "Slå samman två eller flera utvecklingshistorier med varandra."
 
-#: rpmio/rpmgit.c:2467
+#: rpmio/rpmgit.c:2465
 msgid "Move or rename a file, a directory, or a symlink."
 msgstr "Flytta eller byt namn på en fil, en katalog eller en symlänk."
 
-#: rpmio/rpmgit.c:2469
+#: rpmio/rpmgit.c:2467
 msgid "Fetch from and merge with another repository or a local branch."
 msgstr "Hämta från och slå samman med ett annat förråd eller en lokal gren."
 
-#: rpmio/rpmgit.c:2471
+#: rpmio/rpmgit.c:2469
 msgid "Update remote refs along with associated objects."
 msgstr "Uppdatera fjärreferenser tillsammans med associerade objekt."
 
-#: rpmio/rpmgit.c:2473
+#: rpmio/rpmgit.c:2471
 msgid "Forward-port local commits to the updated upstream head."
 msgstr "Framåtportera lokala incheckningar till uppströmshuvudet."
 
-#: rpmio/rpmgit.c:2475
+#: rpmio/rpmgit.c:2473
 msgid "Reset current HEAD to the specified state."
 msgstr "Återställ det aktuella HUVUDET till det angivna tillståndet."
 
-#: rpmio/rpmgit.c:2477
+#: rpmio/rpmgit.c:2475
 msgid "Remove files from the working tree and from the index."
 msgstr "Ta bort filer från arbetsträdet och från indexet."
 
-#: rpmio/rpmgit.c:2479
+#: rpmio/rpmgit.c:2477
 msgid "Show various types of objects."
 msgstr "Visa olika typer av objekt."
 
-#: rpmio/rpmgit.c:2482
+#: rpmio/rpmgit.c:2480
 msgid "Show the working tree status."
 msgstr "Visa arbetsträdets status."
 
-#: rpmio/rpmgit.c:2485
+#: rpmio/rpmgit.c:2483
 msgid "Create, list, delete or verify a tag object signed with GPG."
-msgstr "Skapa, lista, ta bort eller verifera ett taggobjekt signerat med GPG."
+msgstr "Skapa, lista, ta bort eller verifiera ett taggobjekt signerat med GPG."
 
-#: rpmio/rpmgit.c:2491
+#: rpmio/rpmgit.c:2489
 msgid "Apply a patch to files and/or to the index."
 msgstr "Lägg på en patch på filer och/eller på indexet."
 
-#: rpmio/rpmgit.c:2493
+#: rpmio/rpmgit.c:2491
 msgid "Copy files from the index to the working tree."
 msgstr "Kopiera filer från indexet till arbetsträdet."
 
-#: rpmio/rpmgit.c:2495
+#: rpmio/rpmgit.c:2493
 msgid "Create a new commit object."
 msgstr "Skapa ett nytt incheckningsobjekt."
 
-#: rpmio/rpmgit.c:2497
+#: rpmio/rpmgit.c:2495
 msgid "Compute object ID and optionally creates a blob from a file."
 msgstr "Beräkna objekt-ID och eventuellt skapa en klick från en fil."
 
-#: rpmio/rpmgit.c:2499
+#: rpmio/rpmgit.c:2497
 msgid "Build pack index file for an existing packed archive."
 msgstr "Bygg paketeringsindexfil för ett befintligt paketerat arkiv."
 
-#: rpmio/rpmgit.c:2501
+#: rpmio/rpmgit.c:2499
 msgid "Run a three-way file merge."
 msgstr "Kör en trevägs filsammanslagning."
 
-#: rpmio/rpmgit.c:2503
+#: rpmio/rpmgit.c:2501
 msgid "Run a merge for files needing merging."
 msgstr "Kör en sammanslagning för filer som behöver slås samman."
 
-#: rpmio/rpmgit.c:2505
+#: rpmio/rpmgit.c:2503
 msgid "Creates a tag object."
 msgstr "Skapar ett taggobjekt."
 
-#: rpmio/rpmgit.c:2507
+#: rpmio/rpmgit.c:2505
 msgid "Build a tree-object from ls-tree formatted text."
 msgstr "Bygg ett trädobjekt från ls-tree-formaterad text."
 
-#: rpmio/rpmgit.c:2509
+#: rpmio/rpmgit.c:2507
 msgid "Create a packed archive of objects."
 msgstr "Skapa ett packat arkiv av objekt."
 
-#: rpmio/rpmgit.c:2511
+#: rpmio/rpmgit.c:2509
 msgid "Remove extra objects that are already in pack files."
 msgstr "Ta bort extra objekt som redan finns i packfiler."
 
-#: rpmio/rpmgit.c:2513
+#: rpmio/rpmgit.c:2511
 msgid "iReads tree information into the index."
 msgstr "iLäser trädinformation in i indexet."
 
-#: rpmio/rpmgit.c:2515
+#: rpmio/rpmgit.c:2513
 msgid "iRead and modify symbolic refs."
 msgstr "iLäs och ändra symboliska referenser."
 
-#: rpmio/rpmgit.c:2517
+#: rpmio/rpmgit.c:2515
 msgid "Unpack objects from a packed archive."
 msgstr "Packa upp obojekt från ett packat arkiv."
 
-#: rpmio/rpmgit.c:2519
+#: rpmio/rpmgit.c:2517
 msgid "Register file contents in the working tree to the index."
 msgstr "Registrera filinnehåll i arbetsträdet till indexet."
 
-#: rpmio/rpmgit.c:2521
+#: rpmio/rpmgit.c:2519
 msgid "Update the object name stored in a ref safely."
 msgstr "Uppdatera objektnamnet som säkert lagrats i en referens."
 
-#: rpmio/rpmgit.c:2523
+#: rpmio/rpmgit.c:2521
 msgid "Create a tree object from the current index."
 msgstr "Skapa ett trädobjekt från det aktuella indexet."
 
-#: rpmio/rpmgit.c:2529
+#: rpmio/rpmgit.c:2527
 msgid "Create a tar/zip archive of the files in the named tree object."
-msgstr "Skapa ett tar-/zip-arkiv av filerna i dett namngivna trädobjektet."
+msgstr "Skapa ett tar-/zip-arkiv av filerna i det namngivna trädobjektet."
 
-#: rpmio/rpmgit.c:2531
+#: rpmio/rpmgit.c:2529
 msgid "Provide content or type and size information for repository objects."
 msgstr ""
 "Tillhandahåll innehåll eller typ- och storleksinformation för förrådsobjekt."
 
-#: rpmio/rpmgit.c:2533
+#: rpmio/rpmgit.c:2531
 msgid "Compares files in the working tree and the index."
 msgstr "Jämför filer i arbetsträdet och indexet."
 
-#: rpmio/rpmgit.c:2535
+#: rpmio/rpmgit.c:2533
 msgid "Compares content and mode of blobs between the index and repository."
 msgstr ""
 "Jämför innehåll och rättigheter på klickar mellan indexet och förrådet."
 
-#: rpmio/rpmgit.c:2537
+#: rpmio/rpmgit.c:2535
 msgid "Compares the content and mode of blobs found via two tree objects."
 msgstr ""
 "Jämför innehållet och rättigheter på klickar hittade via två trädobjekt."
 
-#: rpmio/rpmgit.c:2539
+#: rpmio/rpmgit.c:2537
 msgid "Output information on each ref."
 msgstr "Mata ut information för varje referens."
 
-#: rpmio/rpmgit.c:2541
+#: rpmio/rpmgit.c:2539
 msgid "Show information about files in the index and the working tree."
 msgstr "Visa information om filer i indexet och arbetsträdet."
 
-#: rpmio/rpmgit.c:2543
+#: rpmio/rpmgit.c:2541
 msgid "List references in a remote repository."
-msgstr "Lista refernser i ett fjärrförråd."
+msgstr "Lista referenser i ett fjärrförråd."
 
-#: rpmio/rpmgit.c:2545
+#: rpmio/rpmgit.c:2543
 msgid "List the contents of a tree object."
 msgstr "Lista innehållet i ett trädobjekt."
 
-#: rpmio/rpmgit.c:2547
+#: rpmio/rpmgit.c:2545
 msgid "Find as good common ancestors as possible for a merge."
 msgstr "Hitta så bra gemensam anfader som möjligt för en sammanslagning."
 
-#: rpmio/rpmgit.c:2549
+#: rpmio/rpmgit.c:2547
 msgid "Find symbolic names for given revs."
 msgstr "Hitta symboliska namn för givna revisioner."
 
-#: rpmio/rpmgit.c:2551
+#: rpmio/rpmgit.c:2549
 msgid "Find redundant pack files."
 msgstr "Hitta överflödiga packningsfiler."
 
-#: rpmio/rpmgit.c:2553
+#: rpmio/rpmgit.c:2551
 msgid "Lists commit objects in reverse chronological order."
 msgstr "Lista incheckningsobjekt i omvänd kronologisk ordning."
 
-#: rpmio/rpmgit.c:2555
+#: rpmio/rpmgit.c:2553
 msgid "Show packed archive index."
 msgstr "Visa packade arkivindex."
 
-#: rpmio/rpmgit.c:2557
+#: rpmio/rpmgit.c:2555
 msgid "List references in a local repository."
-msgstr "Lista refernser i ett lokalt förråd."
+msgstr "Lista referenser i ett lokalt förråd."
 
-#: rpmio/rpmgit.c:2559
+#: rpmio/rpmgit.c:2557
 msgid "Creates a temporary file with blob contents."
 msgstr "Skapar en temporärfil med klickinnehåll."
 
-#: rpmio/rpmgit.c:2561
+#: rpmio/rpmgit.c:2559
 msgid "Show a git logical variable."
 msgstr "Visa en logisk git-variabel."
 
-#: rpmio/rpmgit.c:2563
+#: rpmio/rpmgit.c:2561
 msgid "Validate packed git archive files."
 msgstr "Validera packade git-arkivfiler."
 
-#: rpmio/rpmgit.c:2569
+#: rpmio/rpmgit.c:2567
 msgid "Show git configuration."
 msgstr "Visa git-konfigurationen."
 
-#: rpmio/rpmgit.c:2571
+#: rpmio/rpmgit.c:2569
 msgid "Show git index."
 msgstr "Visa git-index."
 
-#: rpmio/rpmgit.c:2573
+#: rpmio/rpmgit.c:2571
 msgid "Show git references."
 msgstr "Visa git-referenser."
 
-#: rpmio/rpmgit.c:2578
+#: rpmio/rpmgit.c:2576
 msgid "Index a <PACKFILE>."
-msgstr "Inexera en <PACKFIL>."
+msgstr "Indexera en <PACKFIL>."
 
-#: rpmio/rpmgit.c:2578
-#, fuzzy
+#: rpmio/rpmgit.c:2576
 msgid "<PACKFILE>"
-msgstr "<FIL:...>"
+msgstr "<PACKFIL>"
 
-#: rpmio/rpmgit.c:2637
+#: rpmio/rpmgit.c:2635
 msgid "Set exec path to <DIR>. env(GIT_EXEC_PATH)"
 msgstr "Sätt exec-sökvägen till <KAT>. env(GIT_EXEC_PATH)"
 
-#: rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639 rpmio/rpmgit.c:2641
-#: rpmio/rpmgit.c:2643 rpmio/rpmgit.c:2655 rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2635 rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2641 rpmio/rpmgit.c:2653 rpmio/rpmgit.c:2655
 msgid "<DIR>"
 msgstr "<KAT>"
 
-#: rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2637
 msgid "Set html path to <DIR>. env(GIT_HTML_PATH)"
 msgstr "Sätt html-sökväg till <KAT>.  env(GIT_HTML_PATH)"
 
-#: rpmio/rpmgit.c:2641
+#: rpmio/rpmgit.c:2639
 msgid "Set man path to <DIR>."
 msgstr "Sätt manualsökväg till <KAT>."
 
-#: rpmio/rpmgit.c:2643
+#: rpmio/rpmgit.c:2641
 msgid "Set info path to <DIR>."
 msgstr "Sätt info-sökväg till <KAT>."
 
-#: rpmio/rpmgit.c:2646 rpmio/rpmgit.c:2648
+#: rpmio/rpmgit.c:2644 rpmio/rpmgit.c:2646
 msgid "Set paginate. env(PAGER)"
 msgstr "Sätt bläddrare. env(PAGER)"
 
-#: rpmio/rpmgit.c:2650
+#: rpmio/rpmgit.c:2648
 msgid "Do not use replacement refs for objects."
-msgstr "Använd inte ersättningsrefernser för objekt."
+msgstr "Använd inte ersättningsreferenser för objekt."
 
-#: rpmio/rpmgit.c:2652
+#: rpmio/rpmgit.c:2650
 msgid "Treat as a bare repository."
 msgstr "Behandla som ett naket förråd."
 
-#: rpmio/rpmgit.c:2655
+#: rpmio/rpmgit.c:2653
 msgid "Set git repository dir to <DIR>. env(GIT_DIR)"
 msgstr "Sätt git-förrådskatalogen till <KAT>. env(GIT_DIR)"
 
-#: rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2655
 msgid "Set git work tree to <DIR>. env(GIT_WORK_TREE)"
 msgstr "Sätt git-arbetsträdet till <KAT>. env(GIT_WORK_TREE)"
 
-#: rpmio/rpmgit.c:2660
+#: rpmio/rpmgit.c:2658
 msgid "The most commonly used git commands are::"
 msgstr "De mest använda git-kommandona är:"
 
-#: rpmio/rpmgit.c:2673
+#: rpmio/rpmgit.c:2671
 msgid ""
 "usage: git [--version] [--exec-path[=GIT_EXEC_PATH]] [--html-path]\n"
 "           [-p|--paginate|--no-pager] [--no-replace-objects]\n"
@@ -5688,7 +5675,8 @@ msgid "Malformed URL"
 msgstr "Felformaterad URL"
 
 #: rpmio/rpmjs.cpp:565
-msgid "Allow (read-only) access to caller's environmen"
+#, fuzzy
+msgid "Allow (read-only) access to caller's environment"
 msgstr "Tillåt (läs)åtkomst till anroparens miljö"
 
 #: rpmio/rpmjs.cpp:567
@@ -5823,24 +5811,24 @@ msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr "%s(%d,%d,0x%x,0x%x) misslyckades: %m\n"
 
 #: rpmio/rpmsql.c:2936
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open database \"%s\": %s"
-msgstr "Kan inte läsa signaturen %s: %s\n"
+msgstr "kan inte öppna databasen ”%s”: %s"
 
 #: rpmio/rpmsql.c:4120 rpmio/rpmsql.c:4198 rpmio/rpmsql.c:4440
 #: rpmio/rpmsql.c:4661 rpmio/rpmsql.c:4689
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open \"%s\""
-msgstr "kan inte öppna %s: %s\n"
+msgstr "kan inte öppna ”%s”"
 
 #: rpmio/rpmsql.c:4389
 msgid "non-null separator required for import"
 msgstr "separator skild från null krävs för import"
 
 #: rpmio/rpmsql.c:4479
-#, fuzzy, c-format
+#, c-format
 msgid "%s line %d: expected %d columns of data but found %d"
-msgstr "%sförväntad %s %lu funnen %lu"
+msgstr "%s rad %d: %d kolumner data förväntades men %d fanns"
 
 #: rpmio/rpmsql.c:4549 rpmio/rpmsql.c:4866
 msgid "querying sqlite_master and sqlite_temp_master"
@@ -5861,9 +5849,8 @@ msgid "source database is busy"
 msgstr "källdatabasen är upptagen"
 
 #: rpmio/rpmsql.c:4799
-#, fuzzy
 msgid "querying schema information"
-msgstr "visa filinformation"
+msgstr "fråga om schemainformation"
 
 #: rpmio/rpmsql.c:4911
 #, c-format
@@ -5882,9 +5869,8 @@ msgid "%s: Unknown callback(0x%x)\n"
 msgstr "%s: Okänt återanrop(0x%x)\n"
 
 #: rpmio/rpmsql.c:5232
-#, fuzzy
 msgid "create database if not exists"
-msgstr "skapa sqlite3-databasfiler"
+msgstr "skapa databasen om den inte finns"
 
 #: rpmio/rpmsql.c:5235
 msgid "read/process named FILE"
@@ -5908,7 +5894,7 @@ msgstr "sluta efter att ett fel stöts på"
 
 #: rpmio/rpmsql.c:5248
 msgid "force interactive I/O"
-msgstr "framtving interaktiv I/O"
+msgstr "framtvinga interaktiv I/O"
 
 #: rpmio/rpmsql.c:5250
 msgid "force batch I/O"
@@ -5916,7 +5902,7 @@ msgstr "framtvinga satsvis I/O"
 
 #: rpmio/rpmsql.c:5253
 msgid "set output mode to 'column'"
-msgstr "set utmatningsläget till ”column”"
+msgstr "sätt utmatningsläget till ”column”"
 
 #: rpmio/rpmsql.c:5255
 msgid "set output mode to 'csv'"
@@ -5928,32 +5914,31 @@ msgstr "sätt utmatningsläget till HTML"
 
 #: rpmio/rpmsql.c:5259
 msgid "set output mode to 'line'"
-msgstr ""
+msgstr "sätt utmatningsläge till ”line”"
 
 #: rpmio/rpmsql.c:5261
 msgid "set output mode to 'list'"
-msgstr ""
+msgstr "sätt utmatningläge till ”list”"
 
 #: rpmio/rpmsql.c:5263
 msgid "set output field separator (|)"
-msgstr ""
+msgstr "sätt fältseparator för utmatning (|)"
 
 #: rpmio/rpmsql.c:5263
 msgid "CHAR"
-msgstr ""
+msgstr "TECKEN"
 
 #: rpmio/rpmsql.c:5265
 msgid "set text string for NULL values"
-msgstr ""
+msgstr "sätt textsträng för NULL-värden"
 
 #: rpmio/rpmsql.c:5265
 msgid "TEXT"
-msgstr ""
+msgstr "TEXT"
 
 #: rpmio/rpmsql.c:5268
-#, fuzzy
 msgid "show SQLite version"
-msgstr "Skriv ut versionen"
+msgstr "visa SQLite-versionen"
 
 #: rpmio/rpmsql.c:5277
 msgid ""
@@ -5978,11 +5963,31 @@ msgid ""
 "   -nullvalue 'text'    set text string for NULL values\n"
 "   -version             show SQLite version\n"
 msgstr ""
+"Användning: dbsql [FLAGGOR] FILNAMN [SQL]\n"
+"FILNAMN är namnet på en SQLite-databas.  En ny databas skapas om filen\n"
+"inte redan finns.\n"
+"\n"
+"FLAGGORNA inkluderar:\n"
+"   -help                visa detta meddelande\n"
+"   -init filnamn        läs/bearbeta namngiven fil\n"
+"   -echo                skriv kommandon före de körs\n"
+"   -[no]header          slå på eller av huvuden\n"
+"   -bail                sluta efter att ett fel stöts på\n"
+"   -interactive         framtvinga interaktiv I/O\n"
+"   -batch               framtvinga satsvis I/O\n"
+"   -column              sätt utmatningsläget till ”column”\n"
+"   -csv                 sätt utmatningsläget till ”csv”\n"
+"   -html                sätt utmatningsläget till HTML\n"
+"   -line                sätt utmatningsläget till ”line”\n"
+"   -list                sätt utmatningsläget till ”list”\n"
+"   -separator 'x'       sätt fältseparator för utmatning (|)\n"
+"   -nullvalue 'text'    sätt textsträng för NULL-värden\n"
+"   -version             visa SQLite-version\n"
 
 #: rpmio/rpmsql.c:5679
-#, fuzzy, c-format
+#, c-format
 msgid "unable to process SQL \"%s\""
-msgstr "Kan inte öppna %s: %s\n"
+msgstr "kan inte bearbeta SQL ”%s”"
 
 #: rpmio/rpmuuid.c:38
 msgid "invalid UUID version number"
@@ -6033,62 +6038,62 @@ msgstr "UUID-generator finns inte tillgänglig!\n"
 #: rpmio/rpmz.c:149
 #, c-format
 msgid "%s: File seems to be moved, not removing\n"
-msgstr ""
+msgstr "%s: Filen verkar ha flyttats, tar inte bort\n"
 
 #: rpmio/rpmz.c:154 rpmio/rpmz.c:157
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot remove: %s\n"
-msgstr ", inte borttagen: %s"
+msgstr "%s: Kan inte ta bort: %s\n"
 
 #: rpmio/rpmz.c:182
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file owner: %s\n"
-msgstr "kan inte komma åt filen: %s"
+msgstr "%s: Kan inte sätta filägare: %s\n"
 
 #: rpmio/rpmz.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file group: %s\n"
-msgstr "kan inte komma åt filen: %s"
+msgstr "%s: Kan inte sätta filgruppen: %s\n"
 
 #: rpmio/rpmz.c:207
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file permissions: %s\n"
-msgstr "kan inte komma åt filen: %s"
+msgstr "%s: Kan inte sätta filrättigheter: %s\n"
 
 #: rpmio/rpmz.c:554
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Closing output file failed: %s\n"
-msgstr "%s: open misslyckades: %s\n"
+msgstr "%s: Misslyckades stänga utfilen: %s\n"
 
 #: rpmio/rpmz.c:562
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Closing input file failed: %s\n"
-msgstr "%s: open misslyckades: %s\n"
+msgstr "%s: Misslyckades stänga infilen: %s\n"
 
 #: rpmio/rpmz.c:970
 #, c-format
 msgid "%s: %s: Options must be `name=value' pairs separated with commas\n"
-msgstr ""
+msgstr "%s: %s: Flaggor måste vara ”namn=värde”-par separerade med komman\n"
 
 #: rpmio/rpmz.c:1000
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid option value\n"
-msgstr "%s: Ogiltigt värde \"%s\" för -d\n"
+msgstr "%s: %s: Ogiltigt flaggvärde\n"
 
 #: rpmio/rpmz.c:1013
 #, c-format
 msgid "%s: %s: Invalid option name\n"
-msgstr ""
+msgstr "%s: %s: Felaktigt flaggnamn\n"
 
 #: rpmio/rpmz.c:1129
 #, c-format
 msgid "LZMA1/LZMA2 preset %u is not supported\n"
-msgstr ""
+msgstr "LZMA1/LZMA2 förinställning %u stödjs inte\n"
 
 #: rpmio/rpmz.c:1204
 #, c-format
 msgid "%s: Maximum number of filters is %d\n"
-msgstr ""
+msgstr "%s: Maximalt antal filter är %d\n"
 
 #: rpmio/rpmz.c:1322
 #, c-format
@@ -6096,18 +6101,22 @@ msgid ""
 "Memory usage limit (%llu MiB) is too small for the given filter setup (%llu "
 "MiB)\n"
 msgstr ""
+"Minnesanvändningsgränsen (%llu MiB) är för liten för den givna "
+"filteruppsättningen (%llu MiB)\n"
 
 #: rpmio/rpmz.c:1363
 msgid "Using a preset in raw mode is discouraged.\n"
-msgstr ""
+msgstr "Användning av en förinställning i rått läge avrådes ifrån.\n"
 
 #: rpmio/rpmz.c:1364
 msgid "The exact options of the presets may vary between software versions.\n"
 msgstr ""
+"De exakta flaggorna för förinställningarna kan variera mellan "
+"programvaruversioner.\n"
 
 #: rpmio/rpmz.c:1395
 msgid "With --format=lzma only the LZMA1 filter is supported\n"
-msgstr ""
+msgstr "Med --format=lzma stödjs endast filtret LZMA1\n"
 
 #: rpmio/rpmz.c:1415
 #, c-format
@@ -6115,6 +6124,7 @@ msgid ""
 "%'llu MiB (%'llu B) of memory is required per thread, limit is %'llu MiB "
 "(%'llu B)\n"
 msgstr ""
+"%'llu MiB (%'llu B) minne krävs per tråd, gränsen är %'llu MiB (%'llu B)\n"
 
 #: rpmio/rpmz.c:1525 tools/rpmdigest.c:314 tools/rpmwget.c:936
 #, c-format
@@ -6122,19 +6132,19 @@ msgid "%s: Failed to open %s\n"
 msgstr "%s: Kunde inte öppna %s\n"
 
 #: rpmio/rpmz.c:1616
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid memory scaling suffix \"%s\"\n"
-msgstr "%s: Ogiltig nyradsspecifikation \"%s\"\n"
+msgstr "%s: Ogiltig minnesskalningsuffix ”%s”\n"
 
 #: rpmio/rpmz.c:1632
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown integrity check method \"%s\"\n"
-msgstr "%s: %s: Okänt kontrollsummealgoritmnamn \"%s\"\n"
+msgstr "%s: Okänd metod för integritetskontroll ”%s”\n"
 
 #: rpmio/rpmz.c:1656
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown file format type \"%s\"\n"
-msgstr "%s: Okänd färginställning: \"%s\"\n"
+msgstr "%s: Okänd sorts filformat: ”%s”\n"
 
 #: rpmio/rpmz.c:1684 tools/rpmdigest.c:836 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3535 tools/rpmwget.c:1098 tools/semodule.c:83
@@ -6145,78 +6155,75 @@ msgstr "%s: Okänd flagga -%c\n"
 
 #: rpmio/rpmz.c:1713
 msgid "LZMA1 filter"
-msgstr ""
+msgstr "LZMA1-filter"
 
 #: rpmio/rpmz.c:1713 rpmio/rpmz.c:1715 rpmio/rpmz.c:1742 rpmio/rpmz.c:1751
 msgid "OPTS"
-msgstr ""
+msgstr "FLAGGOR"
 
 #: rpmio/rpmz.c:1715
 msgid "LZMA2 filter"
-msgstr ""
+msgstr "LZMA2-filter"
 
 #: rpmio/rpmz.c:1718
 msgid "ix86 filter (sometimes called BCJ filter)"
-msgstr ""
+msgstr "ix86-filter (ibland kallade BCJ-filter)"
 
 #: rpmio/rpmz.c:1720
 msgid "x86 filter (also called BCJ filter)"
-msgstr ""
+msgstr "x86-filter (även kallade BCJ-filter)"
 
 #: rpmio/rpmz.c:1722 rpmio/rpmz.c:1724
 msgid "PowerPC (big endian) filter"
-msgstr ""
+msgstr "PowerPC-filter (rak byteordning)"
 
 #: rpmio/rpmz.c:1726 rpmio/rpmz.c:1728
 msgid "IA64 (Itanium) filter"
-msgstr ""
+msgstr "IA64-filter (Itanium)"
 
 #: rpmio/rpmz.c:1730
 msgid "ARM filter"
-msgstr ""
+msgstr "ARM-filter"
 
 #: rpmio/rpmz.c:1732
 msgid "ARM-Thumb filter"
-msgstr ""
+msgstr "ARM-Thumb-filter"
 
 #: rpmio/rpmz.c:1734
 msgid "SPARC filter"
-msgstr ""
+msgstr "SPARC-filter"
 
 #: rpmio/rpmz.c:1742
-#, fuzzy
 msgid "Delta filter"
-msgstr "Felsök Bloom-filter"
+msgstr "Deltafilter"
 
 #: rpmio/rpmz.c:1751
 msgid "Subblock filter"
-msgstr ""
+msgstr "Subblock-filter"
 
 #: rpmio/rpmz.c:1766
-#, fuzzy
 msgid "debug spewage"
-msgstr "Felsök semanage"
+msgstr "felsök pladder"
 
 #: rpmio/rpmz.c:1769
 msgid "file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"
-msgstr ""
+msgstr "filFORMAT {auto|xz|lzma|alone|raw|gz|bz2}"
 
 #: rpmio/rpmz.c:1769
-#, fuzzy
 msgid "FORMAT"
-msgstr "FRÅGEFORMAT"
+msgstr "FORMAT"
 
 #: rpmio/rpmz.c:1771
 msgid "integrity check METHOD {none|crc32|crc64|sha256}"
-msgstr ""
+msgstr "METOD för integritetskontroll {none|crc32|crc64|sha256}"
 
 #: rpmio/rpmz.c:1771
 msgid "METHOD"
-msgstr ""
+msgstr "METOD"
 
 #: rpmio/rpmz.c:1773
 msgid "use roughly NUM Mbytes of memory at maximum"
-msgstr ""
+msgstr "använd ungefär ANTAL Mbyte minne som mest"
 
 #: rpmio/rpmz.c:1773 tools/rpmwget.c:1264
 msgid "NUM"
@@ -6224,7 +6231,7 @@ msgstr "ANTAL"
 
 #: rpmio/rpmz.c:1777
 msgid "Read file names from MANIFEST"
-msgstr ""
+msgstr "Läs filnamn från PAKETFÖRTECKNING"
 
 #: rpmio/rpmz.c:1777 tools/rpmdigest.c:863 tools/rpmdigest.c:867
 msgid "MANIFEST"
@@ -6232,25 +6239,24 @@ msgstr "PAKETFÖRTECKNING"
 
 #: rpmio/rpmz.c:1780
 msgid "suppress warnings; specify twice to suppress errors too"
-msgstr ""
+msgstr "undertryck varningar; ange två gånger för att undertrycka fel också"
 
 #: rpmio/rpmz.c:1782
 msgid "be verbose; specify twice for even more verbose"
-msgstr ""
+msgstr "var utförlig; ange två gånger för ännu utförligare"
 
 #: rpmio/rpmz.c:1784 rpmio/rpmz.c:1786
-#, fuzzy
 msgid "display this help and exit"
-msgstr "visa versionen av Wget och avsluta."
+msgstr "visa denna hjälp och avsluta"
 
 #: rpmio/rpmz.c:1789
 msgid "Display software version"
-msgstr ""
+msgstr "Visa programversion"
 
 #: rpmio/rpmz.c:1791
 #, fuzzy
-msgid "Display softwre license"
-msgstr "Visa en lista på installerade policymoduler"
+msgid "Display software license"
+msgstr "Visa programlicens"
 
 #: rpmio/rpmz.c:1803
 msgid ""
@@ -6258,170 +6264,170 @@ msgid ""
 "\n"
 "Options:"
 msgstr ""
+"  Komprimera eller dekomprimera FILer.\n"
+"\n"
+"Flaggor:"
 
 #: rpmio/rpmz.c:1811
-#, fuzzy
 msgid "Compression options: "
-msgstr "Gemensamma flaggor:"
+msgstr "Komprimeringsflaggor: "
 
 #: rpmio/rpmz.c:1817 rpmio/rpmzq.c:189
-#, fuzzy
 msgid "extreme compression"
-msgstr "använd xz-komprimering"
+msgstr "extrem komprimering"
 
 #: rpmio/rpmz.c:1822
 msgid "Filters:"
-msgstr ""
+msgstr "Filter:"
 
 #: rpmio/rpmz.c:1827
 msgid ""
 "sign the data with GnuPG when compressing, or verify the signature when "
 "decompressing"
 msgstr ""
+"signera datat med GnuPG vid komprimering, eller verifiera signaturen vid "
+"dekomprimering"
 
 #: rpmio/rpmz.c:1827
 msgid "PUBKEY"
-msgstr ""
+msgstr "PUBNYCKEL"
 
 #: rpmio/rpmz.c:1840
 msgid ""
 "Usage: rpmz [OPTION]... [FILE]...\n"
 "  Compress or decompress FILEs."
 msgstr ""
+"Användning: rpmz [FLAGGA]… [FIL]…\n"
+"  Komprimera eller dekomprimera FILer."
 
 #: rpmio/rpmzq.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown option -%c\n"
-msgstr "%s: Okänd flagga -%c\n"
+msgstr "Okänd flagga -%c\n"
 
 #: rpmio/rpmzq.c:184
-#, fuzzy
 msgid "fast compression"
-msgstr "använd xz-komprimering"
+msgstr "snabb komprimering"
 
 #: rpmio/rpmzq.c:186
-#, fuzzy
 msgid "best compression"
-msgstr "använd xz-komprimering"
+msgstr "bästa komprimering"
 
 #: rpmio/rpmzq.c:213 rpmio/rpmzq.c:220
 msgid "Set compression block size to mmmK"
-msgstr ""
+msgstr "Sätt kompressionsblocksstorlek till mmm k"
 
 #: rpmio/rpmzq.c:213 rpmio/rpmzq.c:220
 msgid "mmm"
-msgstr ""
+msgstr "mmm"
 
 #: rpmio/rpmzq.c:216 rpmio/rpmzq.c:223 rpmio/rpmzq.c:234
 msgid "Allow up to n compression threads"
-msgstr ""
+msgstr "Tillåt upp till n kompressionstrådar"
 
 #: rpmio/rpmzq.c:216 rpmio/rpmzq.c:223 rpmio/rpmzq.c:234
 msgid "n"
-msgstr ""
+msgstr "n"
 
 #: rpmio/rpmzq.c:227
 msgid "Compress blocks independently for damage recovery"
-msgstr ""
+msgstr "Komprimera block oberoende för felåterhämtning"
 
 #: rpmio/rpmzq.c:230
 msgid "Input-determined block locations for rsync"
-msgstr ""
+msgstr "Indatabestämda blockplatser för rsync"
 
 #: rpmio/rpmzq.c:239
-#, fuzzy
 msgid "force compression"
-msgstr "använd xz-komprimering"
+msgstr "framtvinga komprimering"
 
 #: rpmio/rpmzq.c:241
-#, fuzzy
 msgid "force decompression"
-msgstr "använd xz-komprimering"
+msgstr "framtvinga dekomprimering"
 
 #: rpmio/rpmzq.c:243
 msgid "Decompress the compressed input"
-msgstr ""
+msgstr "Dekomprimera den komprimerade indatan"
 
 #: rpmio/rpmzq.c:245
 msgid "Test the integrity of the compressed input"
-msgstr ""
+msgstr "Testa integriteten hos den komprimerade indatan"
 
 #: rpmio/rpmzq.c:247
 msgid "List the contents of the compressed input"
-msgstr ""
+msgstr "Lista innehållet i den komprimerade indatan"
 
 #: rpmio/rpmzq.c:249
 msgid "list block sizes, total sizes, and possible metadata"
-msgstr ""
+msgstr "lista blockstorlekar, totala storlekar och eventuella metadata"
 
 #: rpmio/rpmzq.c:251
 msgid "Force: --overwrite --recompress --symlinks --tty"
-msgstr ""
+msgstr "Force: --overwrite --recompress --symlinks --tty"
 
 #: rpmio/rpmzq.c:254
 msgid "  Permit overwrite of output files"
-msgstr ""
+msgstr "  Tillåt att utdatafiler skrivs över"
 
 #: rpmio/rpmzq.c:257
 msgid "  Permit compress of already compressed files"
-msgstr ""
+msgstr "  Tillåt komprimering av redan komprimerade filer"
 
 #: rpmio/rpmzq.c:260
 msgid "  Permit symlink input file to be compressed"
-msgstr ""
+msgstr "  Tillåt symlänkade indatafiler att komprimeras"
 
 #: rpmio/rpmzq.c:263
 msgid "  Permit compressed output to terminal"
-msgstr ""
+msgstr "  Tillåt komprimerad utdata till terminalen"
 
 #: rpmio/rpmzq.c:268
-#, fuzzy
 msgid "Process the contents of all subdirectories"
-msgstr "framtivinga att kataloger skapas."
+msgstr "Bearbeta innehållet i alla underkataloger"
 
 #: rpmio/rpmzq.c:270
 msgid "Use suffix .sss instead of .gz (for compression)"
-msgstr ""
+msgstr "Använd suffixet .sss istället för .gz (för komprimering)"
 
 #: rpmio/rpmzq.c:270
 msgid ".sss"
-msgstr ""
+msgstr ".sss"
 
 #: rpmio/rpmzq.c:272 rpmio/rpmzq.c:274
 msgid "Compress to LZW (.Z) instead of gzip format"
-msgstr ""
+msgstr "Komprimera till LZW (.Z) istället för gzip-format"
 
 #: rpmio/rpmzq.c:276
 msgid "Compress to zlib (.zz) instead of gzip format"
-msgstr ""
+msgstr "Komprimera till zlib (.zz) istället för gzip-format"
 
 #: rpmio/rpmzq.c:278
 msgid "Compress to PKWare zip (.zip) single entry format"
-msgstr ""
+msgstr "Komprimera till PKWare zip (.zip) ensam post-format"
 
 #: rpmio/rpmzq.c:280
 msgid "Do not delete original file after processing"
-msgstr ""
+msgstr "Ta inte bort originalfiler efter bearbetning"
 
 #: rpmio/rpmzq.c:282
 msgid "Write all processed output to stdout (won't delete)"
-msgstr ""
+msgstr "Skriv all bearbetad utdata till standard ut (kommer inte ta bort)"
 
 #: rpmio/rpmzq.c:284
 msgid "write to standard output and don't delete input files"
-msgstr ""
+msgstr "skriv till standard ut och ta inte bort indatafiler"
 
 #: rpmio/rpmzq.c:289
 msgid "Store/restore file name and mod time in/from header"
-msgstr ""
+msgstr "Lagra/återställ filnamn och ändringstid i/från huvuden"
 
 #: rpmio/rpmzq.c:291
 msgid "Do not store or restore file name in/from header"
-msgstr ""
+msgstr "Lagra eller återställ inte filnamn i/från huvuden"
 
 #: rpmio/rpmzq.c:294
 msgid "Do not store or restore mod time in/from header"
-msgstr ""
+msgstr "Lagra eller återställ inte modifieringstid i/från huvuden"
 
 #: rpmio/url.c:107
 #, c-format
@@ -6481,200 +6487,204 @@ msgstr "Sätt primära GRUPPER"
 msgid "GROUPS"
 msgstr "GRUPPER"
 
-#: tools/roto.c:4039
+#: tools/roto.c:4040
 msgid "initialize the chroot, do not build anything"
-msgstr ""
+msgstr "initiera chroot:en, bygg ingenting"
 
-#: tools/roto.c:4041
+#: tools/roto.c:4042
 msgid "completely remove the specified chroot"
-msgstr ""
+msgstr "ta helt bort den angivna chroot:en"
 
-#: tools/roto.c:4044
+#: tools/roto.c:4045
 msgid ""
 "completely remove the specified chroot or cache dir or all of the chroot and "
 "cache"
 msgstr ""
+"ta helt bort den angivna chroot:en eller cache-katalogen eller alla chroot:"
+"erna och cacherna"
 
-#: tools/roto.c:4047
+#: tools/roto.c:4048
 msgid "rebuild the specified SRPM(s)"
-msgstr ""
+msgstr "bygg om den angivna SRPM:en"
 
-#: tools/roto.c:4050
+#: tools/roto.c:4051
 msgid ""
 "Build a SRPM from spec (--spec ...) and sources (--sources ...) or from SCM"
 msgstr ""
+"Bygg en SRPM från spec (--spec …) och källkod (--sources …) eller från SCM"
 
-#: tools/roto.c:4053
+#: tools/roto.c:4054
 msgid ""
 "run the specified command interactively within the chroot. Default command: /"
 "bin/sh"
 msgstr ""
+"kör det angivna kommandot interaktivt inuti chroot:en.  Standardkommando: /"
+"bin/sh"
 
-#: tools/roto.c:4055
+#: tools/roto.c:4056
 msgid "run the specified command noninteractively within the chroot."
-msgstr ""
+msgstr "kör det angivna kommandot icke-interaktivt inuti chroot:en."
 
-#: tools/roto.c:4058
-#, fuzzy
+#: tools/roto.c:4059
 msgid "install build dependencies for a specified SRPM"
-msgstr "Ouppfyllda beroenden för %s:\n"
+msgstr "installera byggberoenden för en angiven SRPM"
 
-#: tools/roto.c:4061
-#, fuzzy
+#: tools/roto.c:4062
 msgid "install packages using yum"
-msgstr "installera paket"
+msgstr "installera paket med yum"
 
-#: tools/roto.c:4063
-#, fuzzy
+#: tools/roto.c:4064
 msgid "update installed packages using yum"
-msgstr "installera paket"
+msgstr "uppdatera installerade paket med yum"
 
-#: tools/roto.c:4065
+#: tools/roto.c:4066
 msgid "Kill all processes using specified buildroot."
-msgstr ""
+msgstr "Döda alla processer som använder den angivna byggroten."
 
-#: tools/roto.c:4068
+#: tools/roto.c:4069
 msgid "Copy file(s) into the specified chroot"
-msgstr ""
+msgstr "Kopiera filer in i den angivna chroot:en"
 
-#: tools/roto.c:4071
+#: tools/roto.c:4072
 msgid "Copy file(s) from the specified chroot"
-msgstr ""
+msgstr "Kopiera filer från den angivna chroot:en"
 
-#: tools/roto.c:4074
+#: tools/roto.c:4075
 msgid "activate 'offline' mode."
-msgstr ""
+msgstr "aktivera ”frånkopplat” läge."
 
-#: tools/roto.c:4076
-#, fuzzy
+#: tools/roto.c:4077
 msgid "do not clean chroot before building"
-msgstr "utför inga steg i byggnationen"
+msgstr "rensa inte chroot:en före bygget"
 
-#: tools/roto.c:4078
+#: tools/roto.c:4079
 msgid ""
 "Clean chroot after building. Use with --resultdir. Only active for 'rebuild'."
 msgstr ""
+"Rensa chroot:en efter att ha byggt.  Använd med --resultdir.  Endast aktivt "
+"för ”rebuild”."
 
-#: tools/roto.c:4081
+#: tools/roto.c:4082
 msgid "Sets kernel personality()."
-msgstr ""
+msgstr "Sätter kärn-personality()."
 
-#: tools/roto.c:4081 tools/roto.c:4083
+#: tools/roto.c:4082 tools/roto.c:4084
 msgid "ARCH"
-msgstr ""
+msgstr "ARK"
 
-#: tools/roto.c:4083
+#: tools/roto.c:4084
 msgid "passed to rpmbuild as --target"
-msgstr ""
+msgstr "skickas till rpmbuild som --target"
 
-#: tools/roto.c:4085
-#, fuzzy
+#: tools/roto.c:4086
 msgid "define an rpm macro (may be used more than once)"
-msgstr "ange mönster (kan användas mer än en gång)"
+msgstr "definiera ett rpm-makro (kan användas mer än en gång)"
 
-#: tools/roto.c:4085
-#, fuzzy
+#: tools/roto.c:4086
 msgid "MACRO EXPR"
-msgstr "'MAKRO UTTR'"
+msgstr "MAKRO UTTR"
 
-#: tools/roto.c:4088
-#, fuzzy
+#: tools/roto.c:4089
 msgid "enable configure option for build (may be used more than once)"
-msgstr "läs mönster från fil (kan användas mer än en gång)"
+msgstr "aktivera konfigureringsflagga för bygge (kan användas mer än en gång)"
 
-#: tools/roto.c:4088 tools/roto.c:4090 tools/roto.c:4125
+#: tools/roto.c:4089 tools/roto.c:4091 tools/roto.c:4126
 msgid "OPTION"
-msgstr ""
+msgstr "FLAGGA"
 
-#: tools/roto.c:4090
-#, fuzzy
+#: tools/roto.c:4091
 msgid "disable configure option for build (may be used more than once)"
-msgstr "läs mönster från fil (kan användas mer än en gång)"
+msgstr ""
+"avaktivera konfigureringsflagga för bygge (kan användas mer än en gång)"
 
-#: tools/roto.c:4093
+#: tools/roto.c:4094
 msgid "path for resulting files to be put"
-msgstr ""
+msgstr "sökväg där resultatfiler skall läggas"
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "Arbitrary, unique extension to append to buildroot directory name"
-msgstr ""
+msgstr "Godtycklig, unik ändelse att lägga till till byggrotens katalognamn"
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "EXT"
-msgstr ""
+msgstr "ÄND"
 
-#: tools/roto.c:4097
+#: tools/roto.c:4098
 msgid "Change where config files are found"
-msgstr ""
+msgstr "Ändra var konfigurationsfiler söks upp"
 
-#: tools/roto.c:4099
+#: tools/roto.c:4100
 msgid "Fail build if rpmbuild takes longer than 'timeout' seconds"
-msgstr ""
+msgstr "Misslyckas med bygget om rpmbuild tar mer än ”tidsgräns” sekunder"
 
-#: tools/roto.c:4099 tools/rpmwget.c:1181 tools/rpmwget.c:1183
+#: tools/roto.c:4100 tools/rpmwget.c:1181 tools/rpmwget.c:1183
 #: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
 #: tools/rpmwget.c:1192
 msgid "SECONDS"
 msgstr "SEKUNDER"
 
-#: tools/roto.c:4102
+#: tools/roto.c:4103
 msgid "Drop privileges before running command when using --chroot"
-msgstr ""
+msgstr "Släpp rättigheter före kommando körs när --chroot används"
 
-#: tools/roto.c:4104
+#: tools/roto.c:4105
 msgid ""
 "Change to the specified directory (relative to the chroot) before running "
 "command when using --chroot"
 msgstr ""
+"Byt till den angivna katalogen (relativt chroot:en) före kommandot körs när "
+"--chroot används"
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid ""
 "Specifies spec file to use to build an SRPM (used only with --buildsrpm)"
 msgstr ""
+"Anger spec-filen att använda för att bygga en SRPM (används endast med --"
+"buildsrpm)"
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid "SPEC"
-msgstr ""
+msgstr "SPEC"
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid ""
 "Specifies sources (either a single file or a directory of files) to use to "
 "build an SRPM (used only with --buildsrpm)"
 msgstr ""
+"Anger källor (antingen en ensam fil eller en katalog med filer) att använda "
+"för att bygga en SRPM (används endast med --buildsrpm)"
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid "SOURCES"
-msgstr ""
+msgstr "KÄLLOR"
 
-#: tools/roto.c:4112
+#: tools/roto.c:4113
 msgid "Enable internal mock tracing output."
-msgstr ""
+msgstr "Aktivera intern mock-spårningsutdata."
 
-#: tools/roto.c:4115
+#: tools/roto.c:4116
 msgid "Enable plugin."
-msgstr ""
+msgstr "Aktivera insticksmodul."
 
-#: tools/roto.c:4117
-#, fuzzy
+#: tools/roto.c:4118
 msgid "Disable plugin."
-msgstr "Avaktivera nanojit"
+msgstr "Avaktivera insticksmodulen."
 
-#: tools/roto.c:4120
+#: tools/roto.c:4121
 msgid "print path to chroot root"
-msgstr ""
+msgstr "Skriv sökvägen till chroot-roten"
 
-#: tools/roto.c:4123
+#: tools/roto.c:4124
 msgid "build from SCM repository"
-msgstr ""
+msgstr "byg från SCM-förråd"
 
-#: tools/roto.c:4125
-#, fuzzy
+#: tools/roto.c:4126
 msgid "define an SCM option (may be used more than once)"
-msgstr "ange mönster (kan användas mer än en gång)"
+msgstr "definiera en SCM-flagga (kan användas mer än en gång)"
 
-#: tools/roto.c:4128
+#: tools/roto.c:4129
 msgid "disable unshare(2)"
-msgstr ""
+msgstr "avaktivera unshare(2)"
 
 #: tools/rpm2cpio.c:104
 #, c-format
@@ -6691,32 +6701,32 @@ msgstr "fel när huvudet lästes från paketet\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "kan inte återöppna lasten: %s\n"
 
-#: tools/rpmcache.c:552
+#: tools/rpmcache.c:553
 msgid "don't verify header+payload signature"
 msgstr "verifiera inte huvud+lastsignatur"
 
-#: tools/rpmcache.c:555
+#: tools/rpmcache.c:556
 msgid "update cache database"
 msgstr "uppdatera cache-databas"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:558
 msgid "don't update cache database, only print package paths"
 msgstr "uppdatera inte cache-databasen, skriv endast paketsökvägar"
 
-#: tools/rpmcache.c:560
+#: tools/rpmcache.c:561
 msgid "File tree walk options:"
 msgstr "Filträdstraverseringsflaggor:"
 
-#: tools/rpmcache.c:564
+#: tools/rpmcache.c:565
 msgid "Common options for all rpm modes and executables:"
 msgstr "Gemensamma flaggor för alla rpm-lägen och -program:"
 
-#: tools/rpmcache.c:596
+#: tools/rpmcache.c:597
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: %%{_cache_dbpath}-makrot är felkonfigurerat.\n"
 
-#: tools/rpmcache.c:652
+#: tools/rpmcache.c:653
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: cache-operation misslyckades: ec %d.\n"
@@ -7040,7 +7050,7 @@ msgstr "sätt antalet sammanhangsrader, före och efter"
 
 #: tools/rpmgrep.c:1306
 msgid "print only a count of matching lines per FILE"
-msgstr "skriv bara ut antalet matachander rader per FIL"
+msgstr "skriv bara ut antalet matchande rader per FIL"
 
 #: tools/rpmgrep.c:1308
 msgid "matched text color option (auto|always|never)"
@@ -7161,7 +7171,7 @@ msgstr "sök rekursivt igenom underkataloger"
 
 #: tools/rpmgrep.c:1356
 msgid "exclude matching files when recursing (may be used more than once)"
-msgstr "uteslut matchande filern vid rekursion (kan anges mer än en gång)"
+msgstr "uteslut matchande filer vid rekursion (kan anges mer än en gång)"
 
 #: tools/rpmgrep.c:1357 tools/rpmgrep.c:1360
 msgid "=pattern"
@@ -7252,172 +7262,303 @@ msgstr "%s: Fel i \"exclude\"-reguttr på position %d: %s\n"
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: Fel i \"include\"-reguttr på position %d: %s\n"
 
-#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
-msgid "Add a key to a keyring"
+#: tools/rpmkey.c:1627 tools/rpmkey.c:1653
+#, fuzzy
+msgid "Add key to <kr>"
 msgstr "Lägg till en nyckel till en nyckelring"
 
-#: tools/rpmkey.c:1481
-msgid "<type> <desc> <data> <keyring>"
+#: tools/rpmkey.c:1627
+#, fuzzy
+msgid "<type> <desc> <data> <kr>"
 msgstr "<typ> <beskr> <data> <nyckelring>"
 
-#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
-msgid "Change the access controls on a key"
-msgstr "Ändra åtkomsträttigheterna på en nyckel"
+#: tools/rpmkey.c:1629
+msgid "Change <gid> on <key>"
+msgstr ""
 
-#: tools/rpmkey.c:1483
+#: tools/rpmkey.c:1629
 msgid "<key> <gid>"
 msgstr "<nyckel> <gid>"
 
-#: tools/rpmkey.c:1485
+#: tools/rpmkey.c:1631
+msgid "Change <uid> on <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1631
 msgid "<key> <uid>"
 msgstr "<nyckel> <uid>"
 
-#: tools/rpmkey.c:1487
-msgid "Clear a keyring"
+#: tools/rpmkey.c:1633
+#, fuzzy
+msgid "Clear <kr>"
 msgstr "Töm en nyckelring"
 
-#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
-#: tools/rpmkey.c:1528
-msgid "<keyring>"
-msgstr "<nyckelring>"
+#: tools/rpmkey.c:1633 tools/rpmkey.c:1635 tools/rpmkey.c:1645
+#: tools/rpmkey.c:1692
+msgid "<kr>"
+msgstr ""
 
-#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
-msgid "Describe a key"
+#: tools/rpmkey.c:1635 tools/rpmkey.c:1676
+#, fuzzy
+msgid "Describe <kr>"
 msgstr "Beskriv en nyckel"
 
-#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
-msgid "Instantiate a key"
+#: tools/rpmkey.c:1637 tools/rpmkey.c:1655
+#, fuzzy
+msgid "Instantiate <key> in <kr>"
 msgstr "Instantiera en nyckel"
 
-#: tools/rpmkey.c:1491
-msgid "<key> <data> <keyring>"
+#: tools/rpmkey.c:1637
+#, fuzzy
+msgid "<key> <data> <kr>"
 msgstr "<nyckel> <data> <nyckelring>"
 
-#: tools/rpmkey.c:1493
-msgid "Link a key to a keyring"
-msgstr "Länka en nyckel till en nyckelring"
-
-#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
-msgid "<key> <keyring>"
-msgstr "<nyckel> <nyckelring>"
-
-#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
-msgid "List a keyring"
-msgstr "Lista en nyckelring"
-
-#: tools/rpmkey.c:1497
-msgid "<key> <timeout> <keyring>"
-msgstr "<nyckel> <tidsgräns> <nyckelring>"
-
-#: tools/rpmkey.c:1499
+#: tools/rpmkey.c:1639
 #, fuzzy
-msgid "Install a new session keyring"
-msgstr "Starta en ny session med ny nyckelringar"
+msgid "Invalidate <key>"
+msgstr "Instantiera en nyckel"
 
-#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
-#: tools/rpmkey.c:1533 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
+#: tools/rpmkey.c:1639 tools/rpmkey.c:1657 tools/rpmkey.c:1661
+#: tools/rpmkey.c:1663 tools/rpmkey.c:1678 tools/rpmkey.c:1690
+#: tools/rpmkey.c:1696 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
 msgid "<key>"
 msgstr "<nyckel>"
 
-#: tools/rpmkey.c:1501
-msgid "Create a keyring"
+#: tools/rpmkey.c:1641
+msgid "Get a persistent <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1641
+#, fuzzy
+msgid "<kr> [<uid>]"
+msgstr "<nyckel> <uid>"
+
+#: tools/rpmkey.c:1643
+#, fuzzy
+msgid "Link <key> into <kr>"
+msgstr "Länka en nyckel till en nyckelring"
+
+#: tools/rpmkey.c:1643 tools/rpmkey.c:1655
+#, fuzzy
+msgid "<key> <kr>"
+msgstr "<nyckel> <mask>"
+
+#: tools/rpmkey.c:1645 tools/rpmkey.c:1692
+#, fuzzy
+msgid "List <kr>"
+msgstr "Lista en nyckelring"
+
+#: tools/rpmkey.c:1647
+msgid "Negate <key> in <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1647
+#, fuzzy
+msgid "<key> <timeout> <kr>"
+msgstr "<nyckel> <tidsgräns> <nyckelring>"
+
+#: tools/rpmkey.c:1649
+#, fuzzy
+msgid "Install new session <kr>"
+msgstr "Installera en ny sessionnyckelring"
+
+#: tools/rpmkey.c:1651
+#, fuzzy
+msgid "Create <kr>"
 msgstr "Skapa en nyckelring"
 
-#: tools/rpmkey.c:1501
-msgid "<name> <keyring>"
+#: tools/rpmkey.c:1651
+#, fuzzy
+msgid "<name> <kr>"
 msgstr "<namn> <nyckelring>"
 
-#: tools/rpmkey.c:1503
-msgid "<type> <desc> <keyring>"
+#: tools/rpmkey.c:1653
+#, fuzzy
+msgid "<type> <desc> <kr>"
 msgstr "<typ> <beskr> <nyckelring>"
 
-#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
-msgid "Read a key"
+#: tools/rpmkey.c:1657 tools/rpmkey.c:1678
+#, fuzzy
+msgid "Read <key>"
 msgstr "Läs en nyckel"
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
-msgid "Request a key"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1688
+#, fuzzy
+msgid "Request <key>"
 msgstr "Begär en nyckel"
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
-msgid "<type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1686
+#, fuzzy
+msgid "<type> <desc> [<destkr>]"
 msgstr "<typ> <beskr> [<dest_nyckelring>]"
 
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
-msgid "Update a key"
+#: tools/rpmkey.c:1661
+#, fuzzy
+msgid "Print <key>"
+msgstr "Skriv PGP-nycklar"
+
+#: tools/rpmkey.c:1663
+#, fuzzy
+msgid "Update <key>"
 msgstr "Uppdatera en nyckel"
 
-#: tools/rpmkey.c:1516
-msgid "<keyring> [sep]"
+#: tools/rpmkey.c:1667
+msgid "Purge all keys of <type>"
+msgstr ""
+
+#: tools/rpmkey.c:1667
+#, fuzzy
+msgid "<type>"
+msgstr "=typ"
+
+#: tools/rpmkey.c:1670
+msgid " Purge <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1670
+msgid "[-p] [-i] <type> <desc>"
+msgstr ""
+
+#: tools/rpmkey.c:1673
+#, fuzzy
+msgid "Purge <key>"
+msgstr "<nyckel>"
+
+#: tools/rpmkey.c:1673
+#, fuzzy
+msgid "-s <type> <desc>"
+msgstr "<typ> <beskr> <nyckelring>"
+
+#: tools/rpmkey.c:1676
+#, fuzzy
+msgid "<kr> [sep]"
 msgstr "<nyckelring> [sep]"
 
-#: tools/rpmkey.c:1524
-msgid "<type> <desc> <info> [<dest_keyring>]"
+#: tools/rpmkey.c:1681
+msgid "Reap"
+msgstr ""
+
+#: tools/rpmkey.c:1681
+msgid "[-v]"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+msgid "Reject"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+#, fuzzy
+msgid "<key> <timeout> <error> <kr>"
+msgstr "<nyckel> <tidsgräns> <nyckelring>"
+
+#: tools/rpmkey.c:1686
+#, fuzzy
+msgid "Request key"
+msgstr "Begär en nyckel"
+
+#: tools/rpmkey.c:1688
+#, fuzzy
+msgid "<type> <desc> <info> [<destkr>]"
 msgstr "<typ> <beskr> <info> [<dest_nyckelring>]"
 
-#: tools/rpmkey.c:1526
-msgid "Revoke a key"
+#: tools/rpmkey.c:1690
+#, fuzzy
+msgid "Revoke <key>"
 msgstr "Återkalla en nyckel"
 
-#: tools/rpmkey.c:1530
-msgid "Search a keyring"
+#: tools/rpmkey.c:1694
+#, fuzzy
+msgid "Search <kr>"
 msgstr "Sök i en nyckelring"
 
-#: tools/rpmkey.c:1531
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1694
+#, fuzzy
+msgid "<kr> <type> <desc> [<destkr>]"
 msgstr "<nyckelring> <typ> <besk> [<dest_nyckelring>]"
 
-#: tools/rpmkey.c:1533
+#: tools/rpmkey.c:1696
 #, fuzzy
-msgid "Retrieve a key's security context"
-msgstr "verifiera inte säkerhetskontexter"
+msgid "Retrieve <key> security"
+msgstr "Hämta en nyckels säkerhetskontext"
 
-#: tools/rpmkey.c:1535
-msgid "Start a new session with fresh keyrings"
-msgstr "Starta en ny session med ny nyckelringar"
+#: tools/rpmkey.c:1699 tools/rpmkey.c:1703 tools/rpmkey.c:1707
+#, fuzzy
+msgid "Start new session"
+msgstr "Installera en ny sessionnyckelring"
 
-#: tools/rpmkey.c:1536
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+#: tools/rpmkey.c:1704
+#, fuzzy
+msgid "- [<prog> <arg1> <arg2> ...]"
 msgstr "[{-|<namn>} [<prog> <arg1> <arg2> ...]]"
 
-#: tools/rpmkey.c:1538
-msgid "Set the permissions mask on a key"
-msgstr "Sätt rättighetsmasken på en nyckel"
+#: tools/rpmkey.c:1708
+#, fuzzy
+msgid "<name> [<prog> <arg1> <arg2> ...]"
+msgstr "[{-|<namn>} [<prog> <arg1> <arg2> ...]]"
 
-#: tools/rpmkey.c:1538
+#: tools/rpmkey.c:1711
+msgid "Set <mask> on <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1711
 msgid "<key> <mask>"
 msgstr "<nyckel> <mask>"
 
-#: tools/rpmkey.c:1540
-msgid "Show process keyrings"
+#: tools/rpmkey.c:1713
+#, fuzzy
+msgid "Show process <kr>"
 msgstr "Visa processnyckelringar"
 
-#: tools/rpmkey.c:1542
-msgid "Set the expiry time on a key"
-msgstr "Ange när en nyckel går ut"
+#: tools/rpmkey.c:1713
+msgid "[-x] [<kr>]"
+msgstr ""
 
-#: tools/rpmkey.c:1542
+#: tools/rpmkey.c:1715
+#, fuzzy
+msgid "Set <timeout> on <key>"
+msgstr "<nyckel> <tidsgräns> <nyckelring>"
+
+#: tools/rpmkey.c:1715
 msgid "<key> <timeout>"
 msgstr "<nyckel> <timeout>"
 
-#: tools/rpmkey.c:1544
-msgid "Unlink a key from a keyring"
+#: tools/rpmkey.c:1717
+#, fuzzy
+msgid "Unlink <key> from <kr>"
 msgstr "Ta bort länken av en nyckel till en nyckelring"
 
-#: tools/rpmkey.c:1546
+#: tools/rpmkey.c:1717
+#, fuzzy
+msgid "<key> [<kr>]"
+msgstr "<nyckel> <mask>"
+
+#: tools/rpmkey.c:1719
+#, fuzzy
+msgid "Update <key> with <data>"
+msgstr "<nyckel> <data>"
+
+#: tools/rpmkey.c:1719
 msgid "<key> <data>"
 msgstr "<nyckel> <data>"
 
-#: tools/rpmkey.c:1556
+#: tools/rpmkey.c:1721
+#, fuzzy
+msgid "Display keyutils version"
+msgstr "Visa programversion"
+
+#: tools/rpmkey.c:1731
+#, fuzzy
 msgid ""
 "Format:\n"
+"  keyctl --version \n"
 "  keyctl add <type> <desc> <data> <keyring>\n"
 "  keyctl chgrp <key> <gid>\n"
 "  keyctl chown <key> <uid>\n"
 "  keyctl clear <keyring>\n"
 "  keyctl describe <keyring>\n"
 "  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl invalidate <key>\n"
+"  keyctl get_persistent <keyring> [<uid>]\n"
 "  keyctl link <key> <keyring>\n"
 "  keyctl list <keyring>\n"
 "  keyctl negate <key> <timeout> <keyring>\n"
@@ -7429,8 +7570,13 @@ msgid ""
 "  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
 "  keyctl print <key>\n"
 "  keyctl pupdate <key>\n"
+"  keyctl purge <type>\n"
+"  keyctl purge [-p] [-i] <type> <desc>\n"
+"  keyctl purge -s <type> <desc>\n"
 "  keyctl rdescribe <keyring> [sep]\n"
 "  keyctl read <key>\n"
+"  keyctl reap [-v]\n"
+"  keyctl reject <key> <timeout> <error> <keyring>\n"
 "  keyctl request <type> <desc> [<dest_keyring>]\n"
 "  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
 "  keyctl revoke <key>\n"
@@ -7441,9 +7587,9 @@ msgid ""
 "  keyctl session - [<prog> <arg1> <arg2> ...]\n"
 "  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
 "  keyctl setperm <key> <mask>\n"
-"  keyctl show \n"
+"  keyctl show [-x] [<keyring>]\n"
 "  keyctl timeout <key> <timeout>\n"
-"  keyctl unlink <key> <keyring>\n"
+"  keyctl unlink <key> [<keyring>]\n"
 "  keyctl update <key> <data>\n"
 "\n"
 "Key/keyring ID:\n"
@@ -7459,10 +7605,57 @@ msgid ""
 "<type> can be \"user\" for a user-defined keyring\n"
 "If you do this, prefix the description with \"<subtype>:\"\n"
 msgstr ""
+"Format:\n"
+"  keyctl add <typ> <besk> <data> <nyckelring>\n"
+"  keyctl chgrp <nyckel> <gid>\n"
+"  keyctl chown <nyckel> <uid>\n"
+"  keyctl clear <nyckelring>\n"
+"  keyctl describe <nyckelring>\n"
+"  keyctl instantiate <nyckel> <data> <nyckelring>\n"
+"  keyctl link <nyckel> <nyckelring>\n"
+"  keyctl list <nyckelring>\n"
+"  keyctl negate <nyckel> <tidsgräns> <nyckelring>\n"
+"  keyctl new_session \n"
+"  keyctl newring <namn> <nyckelring>\n"
+"  keyctl padd <typ> <besk> <nyckelring>\n"
+"  keyctl pinstantiate <nyckel> <nyckelring>\n"
+"  keyctl pipe <nyckel>\n"
+"  keyctl prequest2 <typ> <besk> [<destnyckelring>]\n"
+"  keyctl print <nyckel>\n"
+"  keyctl pupdate <nyckel>\n"
+"  keyctl rdescribe <nyckelring> [sep]\n"
+"  keyctl read <nyckel>\n"
+"  keyctl request <typ> <besk> [<destnyckelring>]\n"
+"  keyctl request2 <typ> <besk> <info> [<destnyckelring>]\n"
+"  keyctl revoke <nyckel>\n"
+"  keyctl rlist <nyckelring>\n"
+"  keyctl search <nyckelring> <typ> <besk> [<destnyckelring>]\n"
+"  keyctl security <nyckel>\n"
+"  keyctl session \n"
+"  keyctl session - [<prog> <arg1> <arg2> …]\n"
+"  keyctl session <namn> [<prog> <arg1> <arg2> …]\n"
+"  keyctl setperm <nyckel> <mask>\n"
+"  keyctl show \n"
+"  keyctl timeout <nyckel> <tidsgräns>\n"
+"  keyctl unlink <nyckel> <nyckelring>\n"
+"  keyctl update <nyckel> <data>\n"
+"\n"
+"Nyckel-/nyckelring-ID:\n"
+"  <nnn>   numerisk nyckelrings-ID\n"
+"  @t      trådnyckelring\n"
+"  @p      processnyckelring\n"
+"  @s      sessionsnyckelring\n"
+"  @u      användarnyckelring\n"
+"  @us     användares standardsessionsnyckelring\n"
+"  @g      gruppnyckelring\n"
+"  @a      antagen begäransnyckel auktoriseringsnyckel\n"
+"\n"
+"<typ> kan vara ”user” för en användardefinierad nyckelring\n"
+"Om du gör detta, ge beskrivningen ett prefix med ”<subtyp>:”\n"
 
 #: tools/rpmmtree.c:320
-#, c-format
-msgid "%s: failed at line %d of the specification\n"
+#, fuzzy, c-format
+msgid "%s: failed at line %u of the specification\n"
 msgstr "%s: misslyckades på rad %d av specifikationen\n"
 
 #: tools/rpmmtree.c:1481 tools/rpmmtree.c:1671
@@ -7529,7 +7722,7 @@ msgstr " ändrad\n"
 #: tools/rpmmtree.c:2282
 #, c-format
 msgid "%s%s expected %lu found %lu\n"
-msgstr "%sfärväntad %s %lu funnen %lu\n"
+msgstr "%sförväntad %s %lu funnen %lu\n"
 
 #: tools/rpmmtree.c:2300 tools/rpmmtree.c:2320
 #, c-format
@@ -7761,9 +7954,9 @@ msgid "Remote file does not exist -- broken link!!!\n"
 msgstr "Fjärrfiler finns inte -- trasiga länk!!!\n"
 
 #: tools/rpmwget.c:794
-#, c-format
-msgid "Ouptut file \"%s\" exists, skipping retrieve.\n"
-msgstr "Utdtafilen \"%s\" finns, hoppar över hämtning.\n"
+#, fuzzy, c-format
+msgid "Output file \"%s\" exists, skipping retrieve.\n"
+msgstr "Utdatafilen ”%s” finns, hoppar över hämtning.\n"
 
 #: tools/rpmwget.c:806
 #, c-format
@@ -7895,7 +8088,7 @@ msgstr "sätt tidsgräns för DNS-uppslagning till SEKUNDER."
 
 #: tools/rpmwget.c:1185
 msgid "set the connect timeout to SECS."
-msgstr "sät tidsgräns för anslutning till SEKUNDER."
+msgstr "sätt tidsgräns för anslutning till SEKUNDER."
 
 #: tools/rpmwget.c:1187
 msgid "set the read timeout to SECS."
@@ -7919,7 +8112,7 @@ msgstr "slå uttryckligen av proxy."
 
 #: tools/rpmwget.c:1199
 msgid "set retrieval quota to NUMBER."
-msgstr "sät hämtningskvota till ANTAL."
+msgstr "sätt hämtningskvota till ANTAL."
 
 #: tools/rpmwget.c:1203
 msgid "bind to ADDRESS (hostname or IP) on local host."
@@ -7991,7 +8184,7 @@ msgstr "skapa inte kataloger."
 
 #: tools/rpmwget.c:1234
 msgid "force creation of directories."
-msgstr "framtivinga att kataloger skapas."
+msgstr "framtvinga att kataloger skapas."
 
 #: tools/rpmwget.c:1236 tools/rpmwget.c:1238
 msgid "don't create host directories."
@@ -8253,7 +8446,7 @@ msgstr "kommaseparerad lista över HTML-taggar som ignoreras."
 
 #: tools/rpmwget.c:1382
 msgid "go to foreign hosts when recursive."
-msgstr "gå till andra värdar vid reursion."
+msgstr "gå till andra värdar vid rekursion."
 
 #: tools/rpmwget.c:1384
 msgid "follow relative links only."
@@ -8325,7 +8518,7 @@ msgstr ""
 
 #: tools/semodule.c:98 tools/spooktool.c:301
 msgid "Set the STORE to operate on (e.g. \"targeted\")"
-msgstr "Ange LAGER att operarea på (e.g. \"targeted\")"
+msgstr "Ange LAGER att operera på (e.g. \"targeted\")"
 
 #: tools/semodule.c:98 tools/spooktool.c:301
 msgid "STORE"
@@ -8337,7 +8530,7 @@ msgstr "Läs inte om policyn efter fastställande"
 
 #: tools/semodule.c:102 tools/spooktool.c:305
 msgid "Remove dontaudits from policy"
-msgstr "Ta bort dondaudits från policyn"
+msgstr "Ta bort dontaudits från policyn"
 
 #: tools/semodule.c:114 tools/spooktool.c:317
 msgid "Display list of installed policy modules"
@@ -8415,6 +8608,9 @@ msgstr "Bygg och läs om policyn."
 msgid "Exit the program."
 msgstr "Avsluta programmet."
 
+#~ msgid "(expected number :rpn)"
+#~ msgstr "(tal förväntades :rpn)"
+
 #~ msgid "Success"
 #~ msgstr "Lyckades"
 
@@ -8451,18 +8647,20 @@ msgstr "Avsluta programmet."
 #~ msgid "Stay on thgis file system"
 #~ msgstr "Stanna på detta filsystem"
 
-#~ msgid "Add suggested packages to transaction"
-#~ msgstr "Lägg till föreslagna paket till transaktion"
+#~ msgid "Change the access controls on a key"
+#~ msgstr "Ändra åtkomsträttigheterna på en nyckel"
 
-#~ msgid ""
-#~ "\n"
-#~ "Error %s: %s\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Fel %s: %s\n"
+#~ msgid "<keyring>"
+#~ msgstr "<nyckelring>"
 
-#~ msgid "debug repo handling"
-#~ msgstr "felsök förrådshanteringen"
+#~ msgid "<key> <keyring>"
+#~ msgstr "<nyckel> <nyckelring>"
 
-#~ msgid "print the version"
-#~ msgstr "skriv ut versionen"
+#~ msgid "Start a new session with fresh keyrings"
+#~ msgstr "Starta en ny session med ny nyckelringar"
+
+#~ msgid "Set the permissions mask on a key"
+#~ msgstr "Sätt rättighetsmasken på en nyckel"
+
+#~ msgid "Set the expiry time on a key"
+#~ msgstr "Ange när en nyckel går ut"

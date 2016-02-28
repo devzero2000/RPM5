@@ -2,11 +2,12 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Nilgün Belma Bugüner <nilgun@superonline.com>, 2001,...,2003
 #
+#: tools/rpmkey.c:1649 tools/rpmkey.c:1699
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2015-04-19 13:20-0400\n"
+"POT-Creation-Date: 2016-02-27 17:23-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -337,52 +338,55 @@ msgstr ""
 "\n"
 "RPM oluşturma hataları:\n"
 
-#: build/expression.c:230
+#: build/expression.c:231
 msgid "syntax error while parsing ==\n"
 msgstr "== çözümlenirken sözdizimi hatası\n"
 
-#: build/expression.c:260
+#: build/expression.c:261
 msgid "syntax error while parsing &&\n"
 msgstr "&& çözümlenirken sözdizimi hatası\n"
 
-#: build/expression.c:269
+#: build/expression.c:270
 msgid "syntax error while parsing ||\n"
 msgstr "|| çözümlenirken sözdizimi hatası\n"
 
-#: build/expression.c:312
+#: build/expression.c:313
 msgid "parse error in expression\n"
 msgstr "ifadede çözümleme hatası\n"
 
-#: build/expression.c:352
+#: build/expression.c:353
 msgid "unmatched (\n"
 msgstr "eşleşmeyen (\n"
 
-#: build/expression.c:388
+#: build/expression.c:389
 msgid "- only on numbers\n"
 msgstr "- sadece sayılarda\n"
 
-#: build/expression.c:404
+#: build/expression.c:405
 msgid "! only on numbers\n"
 msgstr "! sadece sayılarda\n"
 
-#: build/expression.c:453 build/expression.c:510 build/expression.c:579
-#: build/expression.c:680
+#: build/expression.c:454 build/expression.c:511 build/expression.c:580
+#: build/expression.c:681
 msgid "types must match\n"
 msgstr "türler eşleşmeli\n"
 
-#: build/expression.c:466
-msgid "* / not suported for strings\n"
+#: build/expression.c:467
+#, fuzzy
+msgid "* / not supported for strings\n"
 msgstr "* / dizgelerde desteklenmez\n"
 
-#: build/expression.c:526
-msgid "- not suported for strings\n"
+#: build/expression.c:527
+#, fuzzy
+msgid "- not supported for strings\n"
 msgstr "- dizgelerde desteklenmez\n"
 
-#: build/expression.c:693
-msgid "&& and || not suported for strings\n"
+#: build/expression.c:694
+#, fuzzy
+msgid "&& and || not supported for strings\n"
 msgstr "&& ve || dizgelerde desteklenmez\n"
 
-#: build/expression.c:731 build/expression.c:778
+#: build/expression.c:732 build/expression.c:779
 msgid "syntax error in expression\n"
 msgstr "ifadede sözdizimi hatası\n"
 
@@ -471,12 +475,12 @@ msgstr "Özel %%doc ile diğer biçimler karıştırılamaz: %s\n"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1389
+#: build/files.c:1410
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1584
+#: build/files.c:1616
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
@@ -1397,119 +1401,119 @@ msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 
-#: lib/depends.c:947
+#: lib/depends.c:953
 msgid "(cached)"
 msgstr "(arabellekli)"
 
-#: lib/depends.c:963
+#: lib/depends.c:969
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:988
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:999
+#: lib/depends.c:1005
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:1008
+#: lib/depends.c:1014
 #, fuzzy
 msgid "(access probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1030
+#: lib/depends.c:1036
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1087
+#: lib/depends.c:1093
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1129
+#: lib/depends.c:1135
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1159
 #, fuzzy
 msgid "(signature probe)"
 msgstr "İmza seçenekleri:"
 
-#: lib/depends.c:1184
+#: lib/depends.c:1190
 #, fuzzy
 msgid "(verify probe)"
 msgstr "rpm doğrulama kipi"
 
-#: lib/depends.c:1206
+#: lib/depends.c:1212
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1219
+#: lib/depends.c:1225
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc sağlar)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1253
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1274
+#: lib/depends.c:1280
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1296
+#: lib/depends.c:1302
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1317
+#: lib/depends.c:1323
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1338
+#: lib/depends.c:1344
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid "(rpmlib provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1372
+#: lib/depends.c:1378
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1387
+#: lib/depends.c:1393
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1402
+#: lib/depends.c:1408
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1435
+#: lib/depends.c:1441
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1458
+#: lib/depends.c:1464
 #, fuzzy
 msgid "(root files)"
 msgstr "(db dosyaları)"
 
-#: lib/depends.c:1466
+#: lib/depends.c:1472
 msgid "(db files)"
 msgstr "(db dosyaları)"
 
-#: lib/depends.c:1478
+#: lib/depends.c:1484
 msgid "(db provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1508
+#: lib/depends.c:1514
 msgid "(hint skipped)"
 msgstr ""
 
@@ -1543,42 +1547,47 @@ msgstr "%s açılamadı: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "%s dosyasının bulunduğu aygıt anlaşılamadı\n"
 
-#: lib/fsm.c:920 rpmio/iosm.c:974
+#: lib/fsm.c:500 rpmio/iosm.c:522
+#, c-format
+msgid "Corrupted hardlinks found (count %d does not match %d), exiting.\n"
+msgstr ""
+
+#: lib/fsm.c:925 rpmio/iosm.c:979
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "kullanıcı %s yok - root kullanılacak\n"
 
-#: lib/fsm.c:930 rpmio/iosm.c:984
+#: lib/fsm.c:935 rpmio/iosm.c:989
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grup %s yok - root kullanılacak\n"
 
-#: lib/fsm.c:1825
+#: lib/fsm.c:1830
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "%s arşiv dosyası başlık dosyası listesinde yoktu\n"
 
-#: lib/fsm.c:1968 lib/fsm.c:2088 rpmio/iosm.c:2008 rpmio/iosm.c:2127
+#: lib/fsm.c:1978 lib/fsm.c:2098 rpmio/iosm.c:2018 rpmio/iosm.c:2137
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:2115
+#: lib/fsm.c:2125
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boş değil\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: lib/fsm.c:2136
+#: lib/fsm.c:2146
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s / %s bağ kaldırılamadı: %s\n"
 
-#: lib/fsm.c:2161 rpmio/iosm.c:2200
+#: lib/fsm.c:2171 rpmio/iosm.c:2210
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluşturuldu\n"
@@ -1839,6 +1848,7 @@ msgid "Display operation statistics"
 msgstr ""
 
 #: lib/poptALL.c:831 rpmio/poptIO.c:927 rpmio/rpmsql.c:5412 rpmio/rpmtpm.c:152
+#: tools/rpmkey.c:1831
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: seçenek tablosu yanlış yapılandırılmış (%d)\n"
@@ -2598,7 +2608,7 @@ msgstr "makeTempFile başarısız\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite başarısız: %s\n"
 
-#: lib/rpmchecksig.c:135 rpmdb/package.c:333
+#: lib/rpmchecksig.c:135 rpmdb/package.c:334
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread başarısız: %s\n"
@@ -2608,7 +2618,7 @@ msgstr "%s: Fread başarısız: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fseek başarısız: %s\n"
 
-#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:172
+#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:173
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: İmza bulundurmuyor\n"
@@ -2649,7 +2659,7 @@ msgstr "Dosya sunucuda bulunamadı"
 msgid "Fread failed"
 msgstr "%s: Fread başarısız: %s\n"
 
-#: lib/rpmchecksig.c:1208 rpmdb/package.c:295
+#: lib/rpmchecksig.c:1208 rpmdb/package.c:296
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -2678,11 +2688,11 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "YES"
 msgstr "EVET"
 
@@ -2808,34 +2818,34 @@ msgstr "payload paketi bzip2 kullanılarak sıkıştırılmış."
 msgid "dependencies support set/subset versions."
 msgstr ""
 
-#: lib/rpmds.c:1675 lib/rpmds.c:3935
+#: lib/rpmds.c:1675 lib/rpmds.c:3936
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
 
-#: lib/rpmds.c:1698 lib/rpmds.c:3952
+#: lib/rpmds.c:1698 lib/rpmds.c:3953
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1709 lib/rpmds.c:3967
+#: lib/rpmds.c:1709 lib/rpmds.c:3968
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3934 lib/rpmds.c:3951 lib/rpmds.c:3963
+#: lib/rpmds.c:3935 lib/rpmds.c:3952 lib/rpmds.c:3964
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3965
+#: lib/rpmds.c:3966
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:4114
+#: lib/rpmds.c:4115
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2844,7 +2854,7 @@ msgstr ""
 "\"B\" bağımlılığı bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:4144 lib/rpmds.c:4146 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
+#: lib/rpmds.c:4145 lib/rpmds.c:4147 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
 #, fuzzy, c-format
 msgid "failed to decode %s\n"
 msgstr "%s açılamadı: %s\n"
@@ -2899,7 +2909,7 @@ msgstr "%s aranıyor: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadı:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:507
+#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:519
 #: tools/rpmdigest.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3080,27 +3090,27 @@ msgstr "%1$s kurulumu %4$s dosya sisteminde %2$ld%3$cB gerektiriyor"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaşılamayan %d hatası, %s paketi işlenirken saptandı"
 
-#: lib/rpmrc.c:1222
+#: lib/rpmrc.c:1298
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1237
+#: lib/rpmrc.c:1313
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1258
+#: lib/rpmrc.c:1334
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1278
+#: lib/rpmrc.c:1354
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1293
+#: lib/rpmrc.c:1369
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3139,7 +3149,7 @@ msgstr "%s de Paket veritabanı açılamadı\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "%s içindeki Solve veritabanı açılamıyor\n"
 
-#: lib/rpmts.c:497
+#: lib/rpmts.c:509
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "biçem yanlış: %s\n"
@@ -3227,229 +3237,229 @@ msgstr "%s ya çok büyük ya da çok küçük 'long' değer içeriyor, atlandı
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlandı\n"
 
-#: rpmdb/hdrfmt.c:105 rpmdb/hdrfmt.c:211 rpmdb/hdrfmt.c:1591
-#: rpmdb/hdrfmt.c:1641
+#: rpmdb/hdrfmt.c:107 rpmdb/hdrfmt.c:213 rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1659
 msgid "(not a number)"
 msgstr "(bir sayı değil)"
 
-#: rpmdb/hdrfmt.c:239
+#: rpmdb/hdrfmt.c:241
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:251
+#: rpmdb/hdrfmt.c:253
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:305
+#: rpmdb/hdrfmt.c:307
 #, fuzzy
 msgid "invalid type"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:669 rpmdb/hdrfmt.c:700 rpmdb/hdrfmt.c:723 rpmdb/hdrfmt.c:798
-#: rpmdb/hdrfmt.c:1475 rpmdb/hdrfmt.c:1527
+#: rpmdb/hdrfmt.c:671 rpmdb/hdrfmt.c:702 rpmdb/hdrfmt.c:725 rpmdb/hdrfmt.c:804
+#: rpmdb/hdrfmt.c:1481 rpmdb/hdrfmt.c:1533
 msgid "(invalid type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:786
+#: rpmdb/hdrfmt.c:788
 msgid "(not base64)"
 msgstr "(base64 değil)"
 
-#: rpmdb/hdrfmt.c:829
+#: rpmdb/hdrfmt.c:835
 #, fuzzy
 msgid "(invalid type :base64)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:988 rpmdb/hdrfmt.c:1019 rpmdb/hdrfmt.c:3686
-#: rpmdb/hdrfmt.c:4534
+#: rpmdb/hdrfmt.c:994 rpmdb/hdrfmt.c:1025 rpmdb/hdrfmt.c:3708
+#: rpmdb/hdrfmt.c:4556
 #, fuzzy
 msgid "(not a string)"
 msgstr "(bir sayı değil)"
 
-#: rpmdb/hdrfmt.c:1078
+#: rpmdb/hdrfmt.c:1084
 #, fuzzy
 msgid "(invalid xml type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:1229
+#: rpmdb/hdrfmt.c:1235
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1341
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:1390
+#: rpmdb/hdrfmt.c:1396
 msgid "(not a blob)"
 msgstr "(bir blob değil)"
 
-#: rpmdb/hdrfmt.c:1413
+#: rpmdb/hdrfmt.c:1419
 msgid "(not an OpenPGP signature)"
 msgstr "(bir PGP imzası değil)"
 
-#: rpmdb/hdrfmt.c:1597
+#: rpmdb/hdrfmt.c:1609
 #, fuzzy
 msgid "normal"
 msgstr "normal        "
 
-#: rpmdb/hdrfmt.c:1600
+#: rpmdb/hdrfmt.c:1612
 #, fuzzy
 msgid "replaced"
 msgstr "yerine        "
 
-#: rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1615
 #, fuzzy
 msgid "not installed"
 msgstr "yüklenmedi "
 
-#: rpmdb/hdrfmt.c:1606
+#: rpmdb/hdrfmt.c:1618
 #, fuzzy
 msgid "net shared"
 msgstr "ağ paylaşımlı "
 
-#: rpmdb/hdrfmt.c:1609
+#: rpmdb/hdrfmt.c:1621
 msgid "wrong color"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1614
+#: rpmdb/hdrfmt.c:1626
 #, fuzzy
 msgid "missing"
 msgstr "%c %s eksik"
 
-#: rpmdb/hdrfmt.c:1618
+#: rpmdb/hdrfmt.c:1630
 #, fuzzy
 msgid "(unknown)"
 msgstr "(bilinmeyen %3d)"
 
-#: rpmdb/hdrfmt.c:4747
+#: rpmdb/hdrfmt.c:4769
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:4806
+#: rpmdb/hdrfmt.c:4828
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:4980
+#: rpmdb/hdrfmt.c:5002
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:4988 rpmdb/hdrfmt.c:5021
+#: rpmdb/hdrfmt.c:5010 rpmdb/hdrfmt.c:5043
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:5087
+#: rpmdb/hdrfmt.c:5113
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:5099
+#: rpmdb/hdrfmt.c:5127
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:5115
-#, fuzzy
-msgid "(expected number :rpn)"
-msgstr "beklenmeyen sorgulama biçimi"
-
-#: rpmdb/hdrfmt.c:5119
+#: rpmdb/hdrfmt.c:5143
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5125
+#: rpmdb/hdrfmt.c:5155
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:5130
+#: rpmdb/hdrfmt.c:5161 rpmdb/hdrfmt.c:5202 rpmdb/hdrfmt.c:5237
+#: rpmdb/hdrfmt.c:5254
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5143
+#: rpmdb/hdrfmt.c:5223 rpmdb/hdrfmt.c:5233 rpmdb/hdrfmt.c:5259
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5186
+#: rpmdb/hdrfmt.c:5263
+msgid "(negative exponent :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:5330
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:5191
+#: rpmdb/hdrfmt.c:5335
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:6067
+#: rpmdb/hdrfmt.c:6211
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
-#: rpmdb/hdrfmt.c:6101
+#: rpmdb/hdrfmt.c:6245
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
-#: rpmdb/hdrfmt.c:6117
+#: rpmdb/hdrfmt.c:6261
 msgid "empty tag format"
 msgstr "etiket biçemi boş"
 
-#: rpmdb/hdrfmt.c:6138
+#: rpmdb/hdrfmt.c:6282
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:6159
+#: rpmdb/hdrfmt.c:6303
 msgid "empty tag name"
 msgstr "etiket ismi boş"
 
-#: rpmdb/hdrfmt.c:6168
+#: rpmdb/hdrfmt.c:6312
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
-#: rpmdb/hdrfmt.c:6198
+#: rpmdb/hdrfmt.c:6342
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
-#: rpmdb/hdrfmt.c:6215
+#: rpmdb/hdrfmt.c:6359
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: rpmdb/hdrfmt.c:6230
+#: rpmdb/hdrfmt.c:6374
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: rpmdb/hdrfmt.c:6309
+#: rpmdb/hdrfmt.c:6453
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
-#: rpmdb/hdrfmt.c:6316
+#: rpmdb/hdrfmt.c:6460
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
-#: rpmdb/hdrfmt.c:6328 rpmdb/hdrfmt.c:6368
+#: rpmdb/hdrfmt.c:6472 rpmdb/hdrfmt.c:6512
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
-#: rpmdb/hdrfmt.c:6336
+#: rpmdb/hdrfmt.c:6480
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
-#: rpmdb/hdrfmt.c:6354
+#: rpmdb/hdrfmt.c:6498
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
-#: rpmdb/hdrfmt.c:6376
+#: rpmdb/hdrfmt.c:6520
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
-#: rpmdb/hdrfmt.c:6720
+#: rpmdb/hdrfmt.c:6864
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/package.c:166
+#: rpmdb/package.c:167
 #, fuzzy
 msgid "read failed\n"
 msgstr "%s: readLead başarısız\n"
@@ -3669,43 +3679,43 @@ msgstr ""
 msgid "Debug SQLDB"
 msgstr ""
 
-#: rpmdb/rpmdb.c:268
+#: rpmdb/rpmdb.c:269
 #, fuzzy, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
 msgstr "%s dosyası açılamıyor (%s:%d): %s\n"
 
-#: rpmdb/rpmdb.c:593
+#: rpmdb/rpmdb.c:594
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "biçem yanlış: %s\n"
 
-#: rpmdb/rpmdb.c:1037
+#: rpmdb/rpmdb.c:1038
 msgid "no dbpath has been set\n"
 msgstr "belirtilmiş bir dbpath değeri yok\n"
 
-#: rpmdb/rpmdb.c:1244 rpmdb/rpmdb.c:1606
+#: rpmdb/rpmdb.c:1245 rpmdb/rpmdb.c:1607
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "hata(%d): \"%s\" kayıt %s indeksinden alınırken\n"
 
-#: rpmdb/rpmdb.c:1477
+#: rpmdb/rpmdb.c:1478
 #, fuzzy, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "hata(%d): \"%s\" kayıt %s indeksinden alınırken\n"
 
-#: rpmdb/rpmdb.c:1675
+#: rpmdb/rpmdb.c:1676
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "hata(%d) %d. kayıt %s içine yazılıyor\n"
 
-#: rpmdb/rpmdb.c:2406
+#: rpmdb/rpmdb.c:2407
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
 
-#: rpmdb/rpmdb.c:2826
+#: rpmdb/rpmdb.c:2827
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de başlık okunamadı\n"
@@ -3884,7 +3894,7 @@ msgid "top level directory"
 msgstr "Üst düzey dizin olarak KÖK kullanılır"
 
 #: rpmdb/rpmrepo.c:1713 rpmdb/rpmrepo.c:1739 rpmio/rpmaug.c:121
-#: tools/roto.c:4093 tools/roto.c:4097 tools/roto.c:4104 tools/rpmwget.c:1316
+#: tools/roto.c:4094 tools/roto.c:4098 tools/roto.c:4105 tools/rpmwget.c:1316
 msgid "DIR"
 msgstr ""
 
@@ -3963,10 +3973,10 @@ msgstr "Veritabanı seçenekleri:"
 msgid "Available digests:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2665 rpmio/rpmsql.c:5272
+#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2663 rpmio/rpmsql.c:5272
 #: rpmio/rpmz.c:1833 rpmio/set.c:1516 tools/augtool.c:337 tools/cudftool.c:29
-#: tools/roto.c:4131 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
-#: tools/rpmkey.c:1549 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
+#: tools/roto.c:4132 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
+#: tools/rpmkey.c:1724 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:335
 #, fuzzy
 msgid "Common options for all rpmio executables:"
@@ -4049,66 +4059,66 @@ msgstr "İmza: BİLİNMİYOR (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/iosm.c:1864
+#: rpmio/iosm.c:1869
 #, fuzzy, c-format
 msgid "archive file %s was not found in header\n"
 msgstr "%s arşiv dosyası başlık dosyası listesinde yoktu\n"
 
-#: rpmio/iosm.c:2153
+#: rpmio/iosm.c:2163
 #, fuzzy, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boş değil\n"
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2169
 #, fuzzy, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: rpmio/iosm.c:2174
+#: rpmio/iosm.c:2184
 #, fuzzy, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "%s / %s bağ kaldırılamadı: %s\n"
 
-#: rpmio/iosm.c:2779
+#: rpmio/iosm.c:2789
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(hata 0x%x)"
 
-#: rpmio/iosm.c:2782
+#: rpmio/iosm.c:2792
 msgid "Bad magic"
 msgstr "Magic hatalı"
 
-#: rpmio/iosm.c:2783
+#: rpmio/iosm.c:2793
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Hatalı/okunamayan başlık"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2815
 msgid "Header size too big"
 msgstr "Başlık çok uzun"
 
-#: rpmio/iosm.c:2806
+#: rpmio/iosm.c:2816
 msgid "Unknown file type"
 msgstr "Bilinmeyen dosya türü"
 
-#: rpmio/iosm.c:2807
+#: rpmio/iosm.c:2817
 msgid "Missing hard link(s)"
 msgstr "Sabit bağ(lar) eksik"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2818
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "MD5 toplamı çelişkili"
 
-#: rpmio/iosm.c:2809
+#: rpmio/iosm.c:2819
 msgid "Internal error"
 msgstr "İç hata"
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2820
 msgid "Archive file not in header"
 msgstr "Arşiv dosyası başlıkta değil"
 
-#: rpmio/iosm.c:2821
+#: rpmio/iosm.c:2831
 msgid " failed - "
 msgstr " başarısız - "
 
@@ -4167,56 +4177,56 @@ msgstr "%%%s (%s) makrosu %d seviyenin altında kullanılmadı\n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "%c seçeneği %s(%s) de anlaşılamadı\n"
 
-#: rpmio/macro.c:1704
+#: rpmio/macro.c:1701
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliği(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1778 rpmio/macro.c:1795
+#: rpmio/macro.c:1775 rpmio/macro.c:1792
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandırılmamış: %s\n"
 
-#: rpmio/macro.c:1840
+#: rpmio/macro.c:1837
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
 
-#: rpmio/macro.c:1858
+#: rpmio/macro.c:1855
 #, fuzzy, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: readLead başarısız\n"
 
-#: rpmio/macro.c:2618
+#: rpmio/macro.c:2615
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadı, atlanıyor\n"
 
-#: rpmio/macro.c:2863
+#: rpmio/macro.c:2860
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2897
+#: rpmio/macro.c:2894
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:3026
+#: rpmio/macro.c:3023
 #, fuzzy, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s %s içinde '(' yok\n"
 
-#: rpmio/macro.c:3035
+#: rpmio/macro.c:3032
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmio/macro.c:3225 rpmio/macro.c:3231
+#: rpmio/macro.c:3222 rpmio/macro.c:3228
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyası: %s\n"
 
-#: rpmio/macro.c:3234
+#: rpmio/macro.c:3231
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyası %u bayttan küçük\n"
@@ -5133,12 +5143,12 @@ msgid ""
 msgstr ""
 
 #: rpmio/rpmaug.c:734
-msgid "Load files accordig to the transforms in /augeas/load."
+msgid "Load files according to the transforms in /augeas/load."
 msgstr ""
 
 #: rpmio/rpmaug.c:737
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR. The\n"
+"Define the variable NAME to the result of evaluating EXPR. The\n"
 "        variable can be used in path expressions as $NAME. Note that EXPR\n"
 "        is evaluated when the variable is defined, not when it is used."
 msgstr ""
@@ -5149,7 +5159,7 @@ msgstr ""
 
 #: rpmio/rpmaug.c:743
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR, which\n"
+"Define the variable NAME to the result of evaluating EXPR, which\n"
 "        must be a nodeset. If no node matching EXPR exists yet, one\n"
 "        is created and NAME will refer to it. If VALUE is given, this\n"
 "        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
@@ -5170,20 +5180,20 @@ msgstr ""
 msgid "Print this help text"
 msgstr "Bu iletiyi gösterir"
 
-#: rpmio/rpmdav.c:1059
+#: rpmio/rpmdav.c:1066
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:1061
+#: rpmio/rpmdav.c:1068
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:1063
+#: rpmio/rpmdav.c:1070
 #, fuzzy
 msgid "Server Error"
 msgstr "Sunucu G/Ç hatası"
 
-#: rpmio/rpmdav.c:1065
+#: rpmio/rpmdav.c:1072
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(hata yok)"
@@ -5318,345 +5328,345 @@ msgstr ""
 msgid "Show the given destination prefix instead of \"b/\"."
 msgstr ""
 
-#: rpmio/rpmgit.c:2273
+#: rpmio/rpmgit.c:2271
 msgid "Give the output in the short-format."
 msgstr ""
 
-#: rpmio/rpmgit.c:2275
+#: rpmio/rpmgit.c:2273
 msgid "Give the output in the long-format."
 msgstr ""
 
-#: rpmio/rpmgit.c:2277
+#: rpmio/rpmgit.c:2275
 msgid "Give the output in a stable, easy-to-parse format for scripts."
 msgstr ""
 
-#: rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281 rpmio/rpmgit.c:2283
-#: rpmio/rpmgit.c:2575
+#: rpmio/rpmgit.c:2277 rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281
+#: rpmio/rpmgit.c:2573
 msgid "."
 msgstr ""
 
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "Show untracked files."
 msgstr ""
 
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "{no|normal|all}"
 msgstr ""
 
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "Ignore sub-modules."
 msgstr ""
 
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "{all}"
 msgstr ""
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "Repeat every <sec> seconds."
 msgstr ""
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "<sec>"
 msgstr ""
 
-#: rpmio/rpmgit.c:2291
+#: rpmio/rpmgit.c:2289
 msgid "List submodules."
 msgstr ""
 
-#: rpmio/rpmgit.c:2437
+#: rpmio/rpmgit.c:2435
 #, fuzzy
 msgid "Add file contents to the index."
 msgstr "%d girdi %s indeksine ekleniyor.\n"
 
-#: rpmio/rpmgit.c:2440
+#: rpmio/rpmgit.c:2438
 msgid "Find by binary search the change that introduced a bug."
 msgstr ""
 
-#: rpmio/rpmgit.c:2442
+#: rpmio/rpmgit.c:2440
 msgid "List, create, or delete branches."
 msgstr ""
 
-#: rpmio/rpmgit.c:2444
+#: rpmio/rpmgit.c:2442
 msgid "Checkout a branch or paths to the working tree."
 msgstr ""
 
-#: rpmio/rpmgit.c:2446
+#: rpmio/rpmgit.c:2444
 msgid "Clone a repository into a new directory."
 msgstr ""
 
-#: rpmio/rpmgit.c:2449
+#: rpmio/rpmgit.c:2447
 msgid "Record changes to the repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2451
+#: rpmio/rpmgit.c:2449
 msgid "Show changes between commits, commit and working tree, etc."
 msgstr ""
 
-#: rpmio/rpmgit.c:2454
+#: rpmio/rpmgit.c:2452
 msgid "Download objects and refs from another repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2456
+#: rpmio/rpmgit.c:2454
 msgid "Print lines matching a pattern."
 msgstr ""
 
-#: rpmio/rpmgit.c:2460
+#: rpmio/rpmgit.c:2458
 msgid "Create an empty git repository or reinitialize an existing one."
 msgstr ""
 
-#: rpmio/rpmgit.c:2463
+#: rpmio/rpmgit.c:2461
 msgid "Show commit logs."
 msgstr ""
 
-#: rpmio/rpmgit.c:2465
+#: rpmio/rpmgit.c:2463
 msgid "Join two or more development histories together."
 msgstr ""
 
-#: rpmio/rpmgit.c:2467
+#: rpmio/rpmgit.c:2465
 msgid "Move or rename a file, a directory, or a symlink."
 msgstr ""
 
-#: rpmio/rpmgit.c:2469
+#: rpmio/rpmgit.c:2467
 msgid "Fetch from and merge with another repository or a local branch."
 msgstr ""
 
-#: rpmio/rpmgit.c:2471
+#: rpmio/rpmgit.c:2469
 msgid "Update remote refs along with associated objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2473
+#: rpmio/rpmgit.c:2471
 msgid "Forward-port local commits to the updated upstream head."
 msgstr ""
 
-#: rpmio/rpmgit.c:2475
+#: rpmio/rpmgit.c:2473
 msgid "Reset current HEAD to the specified state."
 msgstr ""
 
-#: rpmio/rpmgit.c:2477
+#: rpmio/rpmgit.c:2475
 msgid "Remove files from the working tree and from the index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2479
+#: rpmio/rpmgit.c:2477
 msgid "Show various types of objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2482
+#: rpmio/rpmgit.c:2480
 msgid "Show the working tree status."
 msgstr ""
 
-#: rpmio/rpmgit.c:2485
+#: rpmio/rpmgit.c:2483
 msgid "Create, list, delete or verify a tag object signed with GPG."
 msgstr ""
 
-#: rpmio/rpmgit.c:2491
+#: rpmio/rpmgit.c:2489
 msgid "Apply a patch to files and/or to the index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2493
+#: rpmio/rpmgit.c:2491
 msgid "Copy files from the index to the working tree."
 msgstr ""
 
-#: rpmio/rpmgit.c:2495
+#: rpmio/rpmgit.c:2493
 msgid "Create a new commit object."
 msgstr ""
 
-#: rpmio/rpmgit.c:2497
+#: rpmio/rpmgit.c:2495
 msgid "Compute object ID and optionally creates a blob from a file."
 msgstr ""
 
-#: rpmio/rpmgit.c:2499
+#: rpmio/rpmgit.c:2497
 msgid "Build pack index file for an existing packed archive."
 msgstr ""
 
-#: rpmio/rpmgit.c:2501
+#: rpmio/rpmgit.c:2499
 msgid "Run a three-way file merge."
 msgstr ""
 
-#: rpmio/rpmgit.c:2503
+#: rpmio/rpmgit.c:2501
 msgid "Run a merge for files needing merging."
 msgstr ""
 
-#: rpmio/rpmgit.c:2505
+#: rpmio/rpmgit.c:2503
 msgid "Creates a tag object."
 msgstr ""
 
-#: rpmio/rpmgit.c:2507
+#: rpmio/rpmgit.c:2505
 msgid "Build a tree-object from ls-tree formatted text."
 msgstr ""
 
-#: rpmio/rpmgit.c:2509
+#: rpmio/rpmgit.c:2507
 msgid "Create a packed archive of objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2511
+#: rpmio/rpmgit.c:2509
 msgid "Remove extra objects that are already in pack files."
 msgstr ""
 
-#: rpmio/rpmgit.c:2513
+#: rpmio/rpmgit.c:2511
 msgid "iReads tree information into the index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2515
+#: rpmio/rpmgit.c:2513
 msgid "iRead and modify symbolic refs."
 msgstr ""
 
-#: rpmio/rpmgit.c:2517
+#: rpmio/rpmgit.c:2515
 msgid "Unpack objects from a packed archive."
 msgstr ""
 
-#: rpmio/rpmgit.c:2519
+#: rpmio/rpmgit.c:2517
 msgid "Register file contents in the working tree to the index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2521
+#: rpmio/rpmgit.c:2519
 msgid "Update the object name stored in a ref safely."
 msgstr ""
 
-#: rpmio/rpmgit.c:2523
+#: rpmio/rpmgit.c:2521
 msgid "Create a tree object from the current index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2529
+#: rpmio/rpmgit.c:2527
 msgid "Create a tar/zip archive of the files in the named tree object."
 msgstr ""
 
-#: rpmio/rpmgit.c:2531
+#: rpmio/rpmgit.c:2529
 msgid "Provide content or type and size information for repository objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2533
+#: rpmio/rpmgit.c:2531
 msgid "Compares files in the working tree and the index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2535
+#: rpmio/rpmgit.c:2533
 msgid "Compares content and mode of blobs between the index and repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2537
+#: rpmio/rpmgit.c:2535
 msgid "Compares the content and mode of blobs found via two tree objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2539
+#: rpmio/rpmgit.c:2537
 msgid "Output information on each ref."
 msgstr ""
 
-#: rpmio/rpmgit.c:2541
+#: rpmio/rpmgit.c:2539
 msgid "Show information about files in the index and the working tree."
 msgstr ""
 
-#: rpmio/rpmgit.c:2543
+#: rpmio/rpmgit.c:2541
 msgid "List references in a remote repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2545
+#: rpmio/rpmgit.c:2543
 msgid "List the contents of a tree object."
 msgstr ""
 
-#: rpmio/rpmgit.c:2547
+#: rpmio/rpmgit.c:2545
 msgid "Find as good common ancestors as possible for a merge."
 msgstr ""
 
-#: rpmio/rpmgit.c:2549
+#: rpmio/rpmgit.c:2547
 msgid "Find symbolic names for given revs."
 msgstr ""
 
-#: rpmio/rpmgit.c:2551
+#: rpmio/rpmgit.c:2549
 msgid "Find redundant pack files."
 msgstr ""
 
-#: rpmio/rpmgit.c:2553
+#: rpmio/rpmgit.c:2551
 #, fuzzy
 msgid "Lists commit objects in reverse chronological order."
 msgstr "%%changelog azalan kronolojik sırada değil\n"
 
-#: rpmio/rpmgit.c:2555
+#: rpmio/rpmgit.c:2553
 msgid "Show packed archive index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2557
+#: rpmio/rpmgit.c:2555
 msgid "List references in a local repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2559
+#: rpmio/rpmgit.c:2557
 msgid "Creates a temporary file with blob contents."
 msgstr ""
 
-#: rpmio/rpmgit.c:2561
+#: rpmio/rpmgit.c:2559
 msgid "Show a git logical variable."
 msgstr ""
 
-#: rpmio/rpmgit.c:2563
+#: rpmio/rpmgit.c:2561
 msgid "Validate packed git archive files."
 msgstr ""
 
-#: rpmio/rpmgit.c:2569
+#: rpmio/rpmgit.c:2567
 #, fuzzy
 msgid "Show git configuration."
 msgstr "tüm yapılandırma dosyalarını listeler"
 
-#: rpmio/rpmgit.c:2571
+#: rpmio/rpmgit.c:2569
 msgid "Show git index."
 msgstr ""
 
-#: rpmio/rpmgit.c:2573
+#: rpmio/rpmgit.c:2571
 msgid "Show git references."
 msgstr ""
 
-#: rpmio/rpmgit.c:2578
+#: rpmio/rpmgit.c:2576
 msgid "Index a <PACKFILE>."
 msgstr ""
 
-#: rpmio/rpmgit.c:2578
+#: rpmio/rpmgit.c:2576
 #, fuzzy
 msgid "<PACKFILE>"
 msgstr "<DOSYA:...>"
 
-#: rpmio/rpmgit.c:2637
+#: rpmio/rpmgit.c:2635
 msgid "Set exec path to <DIR>. env(GIT_EXEC_PATH)"
 msgstr ""
 
-#: rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639 rpmio/rpmgit.c:2641
-#: rpmio/rpmgit.c:2643 rpmio/rpmgit.c:2655 rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2635 rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2641 rpmio/rpmgit.c:2653 rpmio/rpmgit.c:2655
 msgid "<DIR>"
 msgstr ""
 
-#: rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2637
 msgid "Set html path to <DIR>. env(GIT_HTML_PATH)"
 msgstr ""
 
-#: rpmio/rpmgit.c:2641
+#: rpmio/rpmgit.c:2639
 msgid "Set man path to <DIR>."
 msgstr ""
 
-#: rpmio/rpmgit.c:2643
+#: rpmio/rpmgit.c:2641
 msgid "Set info path to <DIR>."
 msgstr ""
 
-#: rpmio/rpmgit.c:2646 rpmio/rpmgit.c:2648
+#: rpmio/rpmgit.c:2644 rpmio/rpmgit.c:2646
 msgid "Set paginate. env(PAGER)"
 msgstr ""
 
-#: rpmio/rpmgit.c:2650
+#: rpmio/rpmgit.c:2648
 msgid "Do not use replacement refs for objects."
 msgstr ""
 
-#: rpmio/rpmgit.c:2652
+#: rpmio/rpmgit.c:2650
 msgid "Treat as a bare repository."
 msgstr ""
 
-#: rpmio/rpmgit.c:2655
+#: rpmio/rpmgit.c:2653
 msgid "Set git repository dir to <DIR>. env(GIT_DIR)"
 msgstr ""
 
-#: rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2655
 msgid "Set git work tree to <DIR>. env(GIT_WORK_TREE)"
 msgstr ""
 
-#: rpmio/rpmgit.c:2660
+#: rpmio/rpmgit.c:2658
 msgid "The most commonly used git commands are::"
 msgstr ""
 
-#: rpmio/rpmgit.c:2673
+#: rpmio/rpmgit.c:2671
 msgid ""
 "usage: git [--version] [--exec-path[=GIT_EXEC_PATH]] [--html-path]\n"
 "           [-p|--paginate|--no-pager] [--no-replace-objects]\n"
@@ -5745,7 +5755,7 @@ msgid "Malformed URL"
 msgstr "%s bozulmuş: %s.\n"
 
 #: rpmio/rpmjs.cpp:565
-msgid "Allow (read-only) access to caller's environmen"
+msgid "Allow (read-only) access to caller's environment"
 msgstr ""
 
 #: rpmio/rpmjs.cpp:567
@@ -6301,7 +6311,7 @@ msgid "Display software version"
 msgstr ""
 
 #: rpmio/rpmz.c:1791
-msgid "Display softwre license"
+msgid "Display software license"
 msgstr ""
 
 #: rpmio/rpmz.c:1803
@@ -6528,195 +6538,195 @@ msgstr ""
 msgid "GROUPS"
 msgstr ""
 
-#: tools/roto.c:4039
+#: tools/roto.c:4040
 msgid "initialize the chroot, do not build anything"
 msgstr ""
 
-#: tools/roto.c:4041
+#: tools/roto.c:4042
 msgid "completely remove the specified chroot"
 msgstr ""
 
-#: tools/roto.c:4044
+#: tools/roto.c:4045
 msgid ""
 "completely remove the specified chroot or cache dir or all of the chroot and "
 "cache"
 msgstr ""
 
-#: tools/roto.c:4047
+#: tools/roto.c:4048
 msgid "rebuild the specified SRPM(s)"
 msgstr ""
 
-#: tools/roto.c:4050
+#: tools/roto.c:4051
 msgid ""
 "Build a SRPM from spec (--spec ...) and sources (--sources ...) or from SCM"
 msgstr ""
 
-#: tools/roto.c:4053
+#: tools/roto.c:4054
 msgid ""
 "run the specified command interactively within the chroot. Default command: /"
 "bin/sh"
 msgstr ""
 
-#: tools/roto.c:4055
+#: tools/roto.c:4056
 msgid "run the specified command noninteractively within the chroot."
 msgstr ""
 
-#: tools/roto.c:4058
+#: tools/roto.c:4059
 #, fuzzy
 msgid "install build dependencies for a specified SRPM"
 msgstr "%s için giderilmemiş bağımlılıklar: "
 
-#: tools/roto.c:4061
+#: tools/roto.c:4062
 #, fuzzy
 msgid "install packages using yum"
 msgstr "paket(ler)i kurar"
 
-#: tools/roto.c:4063
+#: tools/roto.c:4064
 #, fuzzy
 msgid "update installed packages using yum"
 msgstr "paket(ler)i kurar"
 
-#: tools/roto.c:4065
+#: tools/roto.c:4066
 msgid "Kill all processes using specified buildroot."
 msgstr ""
 
-#: tools/roto.c:4068
+#: tools/roto.c:4069
 msgid "Copy file(s) into the specified chroot"
 msgstr ""
 
-#: tools/roto.c:4071
+#: tools/roto.c:4072
 msgid "Copy file(s) from the specified chroot"
 msgstr ""
 
-#: tools/roto.c:4074
+#: tools/roto.c:4075
 msgid "activate 'offline' mode."
 msgstr ""
 
-#: tools/roto.c:4076
+#: tools/roto.c:4077
 #, fuzzy
 msgid "do not clean chroot before building"
 msgstr "oluşumun hiçbir adımı icra edilmez"
 
-#: tools/roto.c:4078
+#: tools/roto.c:4079
 msgid ""
 "Clean chroot after building. Use with --resultdir. Only active for 'rebuild'."
 msgstr ""
 
-#: tools/roto.c:4081
+#: tools/roto.c:4082
 msgid "Sets kernel personality()."
 msgstr ""
 
-#: tools/roto.c:4081 tools/roto.c:4083
+#: tools/roto.c:4082 tools/roto.c:4084
 msgid "ARCH"
 msgstr ""
 
-#: tools/roto.c:4083
+#: tools/roto.c:4084
 msgid "passed to rpmbuild as --target"
 msgstr ""
 
-#: tools/roto.c:4085
+#: tools/roto.c:4086
 msgid "define an rpm macro (may be used more than once)"
 msgstr ""
 
-#: tools/roto.c:4085
+#: tools/roto.c:4086
 #, fuzzy
 msgid "MACRO EXPR"
 msgstr "'MAKRO İFADE'"
 
-#: tools/roto.c:4088
+#: tools/roto.c:4089
 #, fuzzy
 msgid "enable configure option for build (may be used more than once)"
 msgstr "kurgulama için yapılandırma <seçenek>'i etkinleştirilir"
 
-#: tools/roto.c:4088 tools/roto.c:4090 tools/roto.c:4125
+#: tools/roto.c:4089 tools/roto.c:4091 tools/roto.c:4126
 msgid "OPTION"
 msgstr ""
 
-#: tools/roto.c:4090
+#: tools/roto.c:4091
 #, fuzzy
 msgid "disable configure option for build (may be used more than once)"
 msgstr "kurgulama için yapılandırma <seçenek>'i kapatılır"
 
-#: tools/roto.c:4093
+#: tools/roto.c:4094
 msgid "path for resulting files to be put"
 msgstr ""
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "Arbitrary, unique extension to append to buildroot directory name"
 msgstr ""
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "EXT"
 msgstr ""
 
-#: tools/roto.c:4097
+#: tools/roto.c:4098
 msgid "Change where config files are found"
 msgstr ""
 
-#: tools/roto.c:4099
+#: tools/roto.c:4100
 msgid "Fail build if rpmbuild takes longer than 'timeout' seconds"
 msgstr ""
 
-#: tools/roto.c:4099 tools/rpmwget.c:1181 tools/rpmwget.c:1183
+#: tools/roto.c:4100 tools/rpmwget.c:1181 tools/rpmwget.c:1183
 #: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
 #: tools/rpmwget.c:1192
 msgid "SECONDS"
 msgstr ""
 
-#: tools/roto.c:4102
+#: tools/roto.c:4103
 msgid "Drop privileges before running command when using --chroot"
 msgstr ""
 
-#: tools/roto.c:4104
+#: tools/roto.c:4105
 msgid ""
 "Change to the specified directory (relative to the chroot) before running "
 "command when using --chroot"
 msgstr ""
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid ""
 "Specifies spec file to use to build an SRPM (used only with --buildsrpm)"
 msgstr ""
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid "SPEC"
 msgstr ""
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid ""
 "Specifies sources (either a single file or a directory of files) to use to "
 "build an SRPM (used only with --buildsrpm)"
 msgstr ""
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid "SOURCES"
 msgstr ""
 
-#: tools/roto.c:4112
+#: tools/roto.c:4113
 msgid "Enable internal mock tracing output."
 msgstr ""
 
-#: tools/roto.c:4115
+#: tools/roto.c:4116
 msgid "Enable plugin."
 msgstr ""
 
-#: tools/roto.c:4117
+#: tools/roto.c:4118
 msgid "Disable plugin."
 msgstr ""
 
-#: tools/roto.c:4120
+#: tools/roto.c:4121
 msgid "print path to chroot root"
 msgstr ""
 
-#: tools/roto.c:4123
+#: tools/roto.c:4124
 msgid "build from SCM repository"
 msgstr ""
 
-#: tools/roto.c:4125
+#: tools/roto.c:4126
 msgid "define an SCM option (may be used more than once)"
 msgstr ""
 
-#: tools/roto.c:4128
+#: tools/roto.c:4129
 msgid "disable unshare(2)"
 msgstr ""
 
@@ -6735,34 +6745,34 @@ msgstr "paketten başlık okunması sırasında hata oluştu\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "payload tekrar açılamıyor: %s\n"
 
-#: tools/rpmcache.c:552
+#: tools/rpmcache.c:553
 msgid "don't verify header+payload signature"
 msgstr "header+payload imzası doğrulanmaz"
 
-#: tools/rpmcache.c:555
+#: tools/rpmcache.c:556
 #, fuzzy
 msgid "update cache database"
 msgstr "veritabanını başlangıç durumuna getirir"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:558
 msgid "don't update cache database, only print package paths"
 msgstr "önbellek veritabanı güncellenmez, sadece paket yolu basılır"
 
-#: tools/rpmcache.c:560
+#: tools/rpmcache.c:561
 #, fuzzy
 msgid "File tree walk options:"
 msgstr "İmza seçenekleri:"
 
-#: tools/rpmcache.c:564
+#: tools/rpmcache.c:565
 msgid "Common options for all rpm modes and executables:"
 msgstr "Tüm rpm kipleri ve çalıştırılabilirler için ortak seçenekler:"
 
-#: tools/rpmcache.c:596
+#: tools/rpmcache.c:597
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: %%{_cache_dbpath} makrosu yanlış yapılandırılmış.\n"
 
-#: tools/rpmcache.c:652
+#: tools/rpmcache.c:653
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: önbellek işlemi başarısız: ec %d\n"
@@ -7277,173 +7287,263 @@ msgstr ""
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr ""
 
-#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
-msgid "Add a key to a keyring"
+#: tools/rpmkey.c:1627 tools/rpmkey.c:1653
+msgid "Add key to <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1481
-msgid "<type> <desc> <data> <keyring>"
+#: tools/rpmkey.c:1627
+msgid "<type> <desc> <data> <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
-msgid "Change the access controls on a key"
+#: tools/rpmkey.c:1629
+msgid "Change <gid> on <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1483
+#: tools/rpmkey.c:1629
 msgid "<key> <gid>"
 msgstr ""
 
-#: tools/rpmkey.c:1485
+#: tools/rpmkey.c:1631
+msgid "Change <uid> on <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1631
 msgid "<key> <uid>"
 msgstr ""
 
-#: tools/rpmkey.c:1487
-msgid "Clear a keyring"
+#: tools/rpmkey.c:1633
+msgid "Clear <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
-#: tools/rpmkey.c:1528
-msgid "<keyring>"
+#: tools/rpmkey.c:1633 tools/rpmkey.c:1635 tools/rpmkey.c:1645
+#: tools/rpmkey.c:1692
+msgid "<kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
-msgid "Describe a key"
+#: tools/rpmkey.c:1635 tools/rpmkey.c:1676
+msgid "Describe <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
-msgid "Instantiate a key"
+#: tools/rpmkey.c:1637 tools/rpmkey.c:1655
+msgid "Instantiate <key> in <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1491
-msgid "<key> <data> <keyring>"
+#: tools/rpmkey.c:1637
+msgid "<key> <data> <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1493
-msgid "Link a key to a keyring"
+#: tools/rpmkey.c:1639
+msgid "Invalidate <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
-msgid "<key> <keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
-msgid "List a keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1497
-msgid "<key> <timeout> <keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1499
-msgid "Install a new session keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
-#: tools/rpmkey.c:1533 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
+#: tools/rpmkey.c:1639 tools/rpmkey.c:1657 tools/rpmkey.c:1661
+#: tools/rpmkey.c:1663 tools/rpmkey.c:1678 tools/rpmkey.c:1690
+#: tools/rpmkey.c:1696 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
 msgid "<key>"
 msgstr ""
 
-#: tools/rpmkey.c:1501
-msgid "Create a keyring"
+#: tools/rpmkey.c:1641
+msgid "Get a persistent <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1501
+#: tools/rpmkey.c:1641
+msgid "<kr> [<uid>]"
+msgstr ""
+
+#: tools/rpmkey.c:1643
+msgid "Link <key> into <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1643 tools/rpmkey.c:1655
+msgid "<key> <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1645 tools/rpmkey.c:1692
+msgid "List <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1647
+msgid "Negate <key> in <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1647
+msgid "<key> <timeout> <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1649
+msgid "Install new session <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1651
+msgid "Create <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1651
 #, fuzzy
-msgid "<name> <keyring>"
+msgid "<name> <kr>"
 msgstr "'<isim> <gövde>'"
 
-#: tools/rpmkey.c:1503
-msgid "<type> <desc> <keyring>"
+#: tools/rpmkey.c:1653
+msgid "<type> <desc> <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
-msgid "Read a key"
+#: tools/rpmkey.c:1657 tools/rpmkey.c:1678
+msgid "Read <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
-msgid "Request a key"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1688
+msgid "Request <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
-msgid "<type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1686
+msgid "<type> <desc> [<destkr>]"
 msgstr ""
 
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
-msgid "Update a key"
+#: tools/rpmkey.c:1661
+msgid "Print <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1516
-msgid "<keyring> [sep]"
+#: tools/rpmkey.c:1663
+msgid "Update <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1524
-msgid "<type> <desc> <info> [<dest_keyring>]"
+#: tools/rpmkey.c:1667
+msgid "Purge all keys of <type>"
 msgstr ""
 
-#: tools/rpmkey.c:1526
-msgid "Revoke a key"
+#: tools/rpmkey.c:1667
+msgid "<type>"
 msgstr ""
 
-#: tools/rpmkey.c:1530
-msgid "Search a keyring"
+#: tools/rpmkey.c:1670
+msgid " Purge <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1531
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1670
+msgid "[-p] [-i] <type> <desc>"
 msgstr ""
 
-#: tools/rpmkey.c:1533
-msgid "Retrieve a key's security context"
+#: tools/rpmkey.c:1673
+msgid "Purge <key>"
 msgstr ""
 
-#: tools/rpmkey.c:1535
-msgid "Start a new session with fresh keyrings"
+#: tools/rpmkey.c:1673
+msgid "-s <type> <desc>"
 msgstr ""
 
-#: tools/rpmkey.c:1536
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+#: tools/rpmkey.c:1676
+msgid "<kr> [sep]"
 msgstr ""
 
-#: tools/rpmkey.c:1538
-#, fuzzy
-msgid "Set the permissions mask on a key"
-msgstr "bir paketteki dosyaların izinlerini belirler"
+#: tools/rpmkey.c:1681
+msgid "Reap"
+msgstr ""
 
-#: tools/rpmkey.c:1538
+#: tools/rpmkey.c:1681
+msgid "[-v]"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+msgid "Reject"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+msgid "<key> <timeout> <error> <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1686
+msgid "Request key"
+msgstr ""
+
+#: tools/rpmkey.c:1688
+msgid "<type> <desc> <info> [<destkr>]"
+msgstr ""
+
+#: tools/rpmkey.c:1690
+msgid "Revoke <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1694
+msgid "Search <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1694
+msgid "<kr> <type> <desc> [<destkr>]"
+msgstr ""
+
+#: tools/rpmkey.c:1696
+msgid "Retrieve <key> security"
+msgstr ""
+
+#: tools/rpmkey.c:1699 tools/rpmkey.c:1703 tools/rpmkey.c:1707
+msgid "Start new session"
+msgstr ""
+
+#: tools/rpmkey.c:1704
+msgid "- [<prog> <arg1> <arg2> ...]"
+msgstr ""
+
+#: tools/rpmkey.c:1708
+msgid "<name> [<prog> <arg1> <arg2> ...]"
+msgstr ""
+
+#: tools/rpmkey.c:1711
+msgid "Set <mask> on <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1711
 msgid "<key> <mask>"
 msgstr ""
 
-#: tools/rpmkey.c:1540
-msgid "Show process keyrings"
+#: tools/rpmkey.c:1713
+msgid "Show process <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1542
-msgid "Set the expiry time on a key"
+#: tools/rpmkey.c:1713
+msgid "[-x] [<kr>]"
 msgstr ""
 
-#: tools/rpmkey.c:1542
+#: tools/rpmkey.c:1715
+msgid "Set <timeout> on <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1715
 #, fuzzy
 msgid "<key> <timeout>"
 msgstr "Sunucu zaman aşımı"
 
-#: tools/rpmkey.c:1544
-msgid "Unlink a key from a keyring"
+#: tools/rpmkey.c:1717
+msgid "Unlink <key> from <kr>"
 msgstr ""
 
-#: tools/rpmkey.c:1546
+#: tools/rpmkey.c:1717
+msgid "<key> [<kr>]"
+msgstr ""
+
+#: tools/rpmkey.c:1719
+msgid "Update <key> with <data>"
+msgstr ""
+
+#: tools/rpmkey.c:1719
 msgid "<key> <data>"
 msgstr ""
 
-#: tools/rpmkey.c:1556
+#: tools/rpmkey.c:1721
+msgid "Display keyutils version"
+msgstr ""
+
+#: tools/rpmkey.c:1731
 msgid ""
 "Format:\n"
+"  keyctl --version \n"
 "  keyctl add <type> <desc> <data> <keyring>\n"
 "  keyctl chgrp <key> <gid>\n"
 "  keyctl chown <key> <uid>\n"
 "  keyctl clear <keyring>\n"
 "  keyctl describe <keyring>\n"
 "  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl invalidate <key>\n"
+"  keyctl get_persistent <keyring> [<uid>]\n"
 "  keyctl link <key> <keyring>\n"
 "  keyctl list <keyring>\n"
 "  keyctl negate <key> <timeout> <keyring>\n"
@@ -7455,8 +7555,13 @@ msgid ""
 "  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
 "  keyctl print <key>\n"
 "  keyctl pupdate <key>\n"
+"  keyctl purge <type>\n"
+"  keyctl purge [-p] [-i] <type> <desc>\n"
+"  keyctl purge -s <type> <desc>\n"
 "  keyctl rdescribe <keyring> [sep]\n"
 "  keyctl read <key>\n"
+"  keyctl reap [-v]\n"
+"  keyctl reject <key> <timeout> <error> <keyring>\n"
 "  keyctl request <type> <desc> [<dest_keyring>]\n"
 "  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
 "  keyctl revoke <key>\n"
@@ -7467,9 +7572,9 @@ msgid ""
 "  keyctl session - [<prog> <arg1> <arg2> ...]\n"
 "  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
 "  keyctl setperm <key> <mask>\n"
-"  keyctl show \n"
+"  keyctl show [-x] [<keyring>]\n"
 "  keyctl timeout <key> <timeout>\n"
-"  keyctl unlink <key> <keyring>\n"
+"  keyctl unlink <key> [<keyring>]\n"
 "  keyctl update <key> <data>\n"
 "\n"
 "Key/keyring ID:\n"
@@ -7488,7 +7593,7 @@ msgstr ""
 
 #: tools/rpmmtree.c:320
 #, c-format
-msgid "%s: failed at line %d of the specification\n"
+msgid "%s: failed at line %u of the specification\n"
 msgstr ""
 
 #: tools/rpmmtree.c:1481 tools/rpmmtree.c:1671
@@ -7797,7 +7902,7 @@ msgstr ""
 
 #: tools/rpmwget.c:794
 #, c-format
-msgid "Ouptut file \"%s\" exists, skipping retrieve.\n"
+msgid "Output file \"%s\" exists, skipping retrieve.\n"
 msgstr ""
 
 #: tools/rpmwget.c:806

@@ -4,11 +4,12 @@
 #
 # Maxim Dziumanenko <mvd@mylinux.com.ua>, 2003.
 # Yuri Chornoivan <yurchor@ukr.net>, 2015.
+#: tools/rpmkey.c:1649 tools/rpmkey.c:1699
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2015-04-19 13:20-0400\n"
+"POT-Creation-Date: 2016-02-27 17:23-0500\n"
 "PO-Revision-Date: 2015-03-30 14:51+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
@@ -340,52 +341,55 @@ msgstr ""
 "\n"
 "Помилки збирання RPM:\n"
 
-#: build/expression.c:230
+#: build/expression.c:231
 msgid "syntax error while parsing ==\n"
 msgstr "синтаксична помилка під час обробки ==\n"
 
-#: build/expression.c:260
+#: build/expression.c:261
 msgid "syntax error while parsing &&\n"
 msgstr "синтаксична помилка під час обробки &&\n"
 
-#: build/expression.c:269
+#: build/expression.c:270
 msgid "syntax error while parsing ||\n"
 msgstr "синтаксична помилка під час обробки ||\n"
 
-#: build/expression.c:312
+#: build/expression.c:313
 msgid "parse error in expression\n"
 msgstr "помилка обробки у виразі\n"
 
-#: build/expression.c:352
+#: build/expression.c:353
 msgid "unmatched (\n"
 msgstr "незакрита дужка (\n"
 
-#: build/expression.c:388
+#: build/expression.c:389
 msgid "- only on numbers\n"
 msgstr "- лише для чисел\n"
 
-#: build/expression.c:404
+#: build/expression.c:405
 msgid "! only on numbers\n"
 msgstr "! лише для чисел\n"
 
-#: build/expression.c:453 build/expression.c:510 build/expression.c:579
-#: build/expression.c:680
+#: build/expression.c:454 build/expression.c:511 build/expression.c:580
+#: build/expression.c:681
 msgid "types must match\n"
 msgstr "типи мають збігатися\n"
 
-#: build/expression.c:466
-msgid "* / not suported for strings\n"
+#: build/expression.c:467
+#, fuzzy
+msgid "* / not supported for strings\n"
 msgstr "* / не підтримується для рядків\n"
 
-#: build/expression.c:526
-msgid "- not suported for strings\n"
+#: build/expression.c:527
+#, fuzzy
+msgid "- not supported for strings\n"
 msgstr "- не підтримується для рядків\n"
 
-#: build/expression.c:693
-msgid "&& and || not suported for strings\n"
+#: build/expression.c:694
+#, fuzzy
+msgid "&& and || not supported for strings\n"
 msgstr "&& і || не підтримуються для рядків\n"
 
-#: build/expression.c:731 build/expression.c:778
+#: build/expression.c:732 build/expression.c:779
 msgid "syntax error in expression\n"
 msgstr "синтаксична помилка у виразі\n"
 
@@ -474,12 +478,12 @@ msgstr "Не можна змішувати ос. %%doc з іншими форм�
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "некоректне _docdir_fmt: %s\n"
 
-#: build/files.c:1389
+#: build/files.c:1410
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл вказано двічі: %s\n"
 
-#: build/files.c:1584
+#: build/files.c:1616
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
@@ -1405,107 +1409,107 @@ msgstr "пакунок %s вже було додано, пропускаємо %
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакунок %s вже було додано, замінюємо на %s\n"
 
-#: lib/depends.c:947
+#: lib/depends.c:953
 msgid "(cached)"
 msgstr "(кешовано)"
 
-#: lib/depends.c:963
+#: lib/depends.c:969
 msgid "(function probe)"
 msgstr "(перевірка функції)"
 
-#: lib/depends.c:982
+#: lib/depends.c:988
 msgid "(user lookup)"
 msgstr "(пошук користувача)"
 
-#: lib/depends.c:999
+#: lib/depends.c:1005
 msgid "(group lookup)"
 msgstr "(пошук групи)"
 
-#: lib/depends.c:1008
+#: lib/depends.c:1014
 msgid "(access probe)"
 msgstr "(перевірка доступу)"
 
-#: lib/depends.c:1030
+#: lib/depends.c:1036
 msgid "(mtab probe)"
 msgstr "(перевірка mtab)"
 
-#: lib/depends.c:1087
+#: lib/depends.c:1093
 msgid "(diskspace probe)"
 msgstr "(перевірка простору на диску)"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1135
 msgid "(digest probe)"
 msgstr "(перевірка контрольної суми)"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1159
 msgid "(signature probe)"
 msgstr "(перевірка підпису)"
 
-#: lib/depends.c:1184
+#: lib/depends.c:1190
 msgid "(verify probe)"
 msgstr "(перевірка verify)"
 
-#: lib/depends.c:1206
+#: lib/depends.c:1212
 msgid "(gnupg probe)"
 msgstr "(перевірка gnupg)"
 
-#: lib/depends.c:1219
+#: lib/depends.c:1225
 msgid "(macro probe)"
 msgstr "(перевірка macro)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1253
 msgid "(envvar probe)"
 msgstr "(перевірка envvar)"
 
-#: lib/depends.c:1274
+#: lib/depends.c:1280
 msgid "(running probe)"
 msgstr "(перевірка запуску)"
 
-#: lib/depends.c:1296
+#: lib/depends.c:1302
 msgid "(sanity probe)"
 msgstr "(перевірка коректності)"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1323
 msgid "(vcheck probe)"
 msgstr "(перевірка vcheck)"
 
-#: lib/depends.c:1338
+#: lib/depends.c:1344
 msgid "(sysinfo provides)"
 msgstr "(вміст sysinfo)"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid "(rpmlib provides)"
 msgstr "(вміст rpmlib)"
 
-#: lib/depends.c:1372
+#: lib/depends.c:1378
 msgid "(cpuinfo provides)"
 msgstr "(вміст cpuinfo)"
 
-#: lib/depends.c:1387
+#: lib/depends.c:1393
 msgid "(getconf provides)"
 msgstr "(вміст getconf)"
 
-#: lib/depends.c:1402
+#: lib/depends.c:1408
 msgid "(uname provides)"
 msgstr "(вміст uname)"
 
-#: lib/depends.c:1435
+#: lib/depends.c:1441
 msgid "(soname provides)"
 msgstr "(вміст soname)"
 
-#: lib/depends.c:1458
+#: lib/depends.c:1464
 msgid "(root files)"
 msgstr "(файли root)"
 
-#: lib/depends.c:1466
+#: lib/depends.c:1472
 msgid "(db files)"
 msgstr "(файли db)"
 
-#: lib/depends.c:1478
+#: lib/depends.c:1484
 msgid "(db provides)"
 msgstr "(вміст db)"
 
-#: lib/depends.c:1508
+#: lib/depends.c:1514
 msgid "(hint skipped)"
 msgstr "(підказку пропущено)"
 
@@ -1539,42 +1543,47 @@ msgstr "не вдалося відкрити %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "файл %s зберігається на невідомому пристрої\n"
 
-#: lib/fsm.c:920 rpmio/iosm.c:974
+#: lib/fsm.c:500 rpmio/iosm.c:522
+#, c-format
+msgid "Corrupted hardlinks found (count %d does not match %d), exiting.\n"
+msgstr ""
+
+#: lib/fsm.c:925 rpmio/iosm.c:979
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "запису користувача %s не існує, — використовуємо root\n"
 
-#: lib/fsm.c:930 rpmio/iosm.c:984
+#: lib/fsm.c:935 rpmio/iosm.c:989
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "запису групи %s не існує, — використовуємо root\n"
 
-#: lib/fsm.c:1825
+#: lib/fsm.c:1830
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "файла архіву %s не знайдено у списку файлів заголовка\n"
 
-#: lib/fsm.c:1968 lib/fsm.c:2088 rpmio/iosm.c:2008 rpmio/iosm.c:2127
+#: lib/fsm.c:1978 lib/fsm.c:2098 rpmio/iosm.c:2018 rpmio/iosm.c:2137
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s збережено як %s\n"
 
-#: lib/fsm.c:2115
+#: lib/fsm.c:2125
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s вилучення каталогу %s зазнало невдачі: каталог не є порожнім\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s вилучення каталогу %s зазнало невдачі: %s\n"
 
-#: lib/fsm.c:2136
+#: lib/fsm.c:2146
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s не вдалося вилучити %s: %s\n"
 
-#: lib/fsm.c:2161 rpmio/iosm.c:2200
+#: lib/fsm.c:2171 rpmio/iosm.c:2210
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s створено як %s\n"
@@ -1809,6 +1818,7 @@ msgid "Display operation statistics"
 msgstr "Показати статистичні дані щодо дії"
 
 #: lib/poptALL.c:831 rpmio/poptIO.c:927 rpmio/rpmsql.c:5412 rpmio/rpmtpm.c:152
+#: tools/rpmkey.c:1831
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: помилкове налаштування таблиці параметрів (%d)\n"
@@ -2558,7 +2568,7 @@ msgstr "помилка rpmTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: помилка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:135 rpmdb/package.c:333
+#: lib/rpmchecksig.c:135 rpmdb/package.c:334
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка fread: %s\n"
@@ -2568,7 +2578,7 @@ msgstr "%s: помилка fread: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: помилка Fflush: %s\n"
 
-#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:172
+#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1111 rpmdb/package.c:173
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: підпис недоступний\n"
@@ -2606,7 +2616,7 @@ msgstr "Файла XAR не знайдено (або немає підтримк
 msgid "Fread failed"
 msgstr "помилка fread"
 
-#: lib/rpmchecksig.c:1208 rpmdb/package.c:295
+#: lib/rpmchecksig.c:1208 rpmdb/package.c:296
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "пропущено пакунок %s з непридатним до перевірки підписом V%u\n"
@@ -2635,11 +2645,11 @@ msgstr ")"
 msgid "OK"
 msgstr "Гаразд"
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:915 lib/rpmds.c:4182
+#: lib/rpmds.c:915 lib/rpmds.c:4183
 msgid "YES"
 msgstr "ТАК"
 
@@ -2764,27 +2774,27 @@ msgstr "вміст пакунка може бути стиснуто за доп
 msgid "dependencies support set/subset versions."
 msgstr "у залежностях передбачено підтримку версій набору/піднабору."
 
-#: lib/rpmds.c:1675 lib/rpmds.c:3935
+#: lib/rpmds.c:1675 lib/rpmds.c:3936
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d «%s» містить некоректну назву. Пропускаємо…\n"
 
-#: lib/rpmds.c:1698 lib/rpmds.c:3952
+#: lib/rpmds.c:1698 lib/rpmds.c:3953
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d «%s» не містить оператора порівняння. Пропускаємо…\n"
 
-#: lib/rpmds.c:1709 lib/rpmds.c:3967
+#: lib/rpmds.c:1709 lib/rpmds.c:3968
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d «%s» не містить рядка EVR. Пропускаємо…\n"
 
-#: lib/rpmds.c:3934 lib/rpmds.c:3951 lib/rpmds.c:3963
+#: lib/rpmds.c:3935 lib/rpmds.c:3952 lib/rpmds.c:3964
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "запуск команди каналу «%s»\n"
 
-#: lib/rpmds.c:3965
+#: lib/rpmds.c:3966
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2793,7 +2803,7 @@ msgstr ""
 "\tрядок %d: не виявлено значення порівняння EVR.\n"
 " Пропускаємо…"
 
-#: lib/rpmds.c:4114
+#: lib/rpmds.c:4115
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2803,7 +2813,7 @@ msgstr ""
 "збігається з «A»)\n"
 "\tA = «%s»\tB = «%s»\n"
 
-#: lib/rpmds.c:4144 lib/rpmds.c:4146 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
+#: lib/rpmds.c:4145 lib/rpmds.c:4147 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
 #, c-format
 msgid "failed to decode %s\n"
 msgstr "не вдалося декодувати %s\n"
@@ -2860,7 +2870,7 @@ msgstr "Пошук %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Не вдалося знайти %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:507
+#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:519
 #: tools/rpmdigest.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3040,27 +3050,27 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "сталася невідома помилка %d під час обробки пакунка %s"
 
-#: lib/rpmrc.c:1222
+#: lib/rpmrc.c:1298
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Налаштовані системі дані (з %s):\n"
 
-#: lib/rpmrc.c:1237
+#: lib/rpmrc.c:1313
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Можливості надані інструментом встановлення rpmlib:\n"
 
-#: lib/rpmrc.c:1258
+#: lib/rpmrc.c:1334
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Можливості за поточними відомостями щодо процесора (з %s):\n"
 
-#: lib/rpmrc.c:1278
+#: lib/rpmrc.c:1354
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Можливості за поточними даними getconf:\n"
 
-#: lib/rpmrc.c:1293
+#: lib/rpmrc.c:1369
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Можливості за поточними даними uname:\n"
@@ -3098,7 +3108,7 @@ msgstr "не вдалося відкрити базу даних Packages у %s\
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:497
+#: lib/rpmts.c:509
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "некоректний форма шляху розв’язання: %s\n"
@@ -3191,214 +3201,216 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s має занадто велике або занадто мале ціле значення, пропущено\n"
 
-#: rpmdb/hdrfmt.c:105 rpmdb/hdrfmt.c:211 rpmdb/hdrfmt.c:1591
-#: rpmdb/hdrfmt.c:1641
+#: rpmdb/hdrfmt.c:107 rpmdb/hdrfmt.c:213 rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1659
 msgid "(not a number)"
 msgstr "(не є числом)"
 
-#: rpmdb/hdrfmt.c:239
+#: rpmdb/hdrfmt.c:241
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:251
+#: rpmdb/hdrfmt.c:253
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: rpmdb/hdrfmt.c:305
+#: rpmdb/hdrfmt.c:307
 msgid "invalid type"
 msgstr "некоректний тип"
 
-#: rpmdb/hdrfmt.c:669 rpmdb/hdrfmt.c:700 rpmdb/hdrfmt.c:723 rpmdb/hdrfmt.c:798
-#: rpmdb/hdrfmt.c:1475 rpmdb/hdrfmt.c:1527
+#: rpmdb/hdrfmt.c:671 rpmdb/hdrfmt.c:702 rpmdb/hdrfmt.c:725 rpmdb/hdrfmt.c:804
+#: rpmdb/hdrfmt.c:1481 rpmdb/hdrfmt.c:1533
 msgid "(invalid type)"
 msgstr "(некоректний тип)"
 
-#: rpmdb/hdrfmt.c:786
+#: rpmdb/hdrfmt.c:788
 msgid "(not base64)"
 msgstr "(не є base64)"
 
-#: rpmdb/hdrfmt.c:829
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid type :base64)"
 msgstr "(некоректний тип: base64)"
 
-#: rpmdb/hdrfmt.c:988 rpmdb/hdrfmt.c:1019 rpmdb/hdrfmt.c:3686
-#: rpmdb/hdrfmt.c:4534
+#: rpmdb/hdrfmt.c:994 rpmdb/hdrfmt.c:1025 rpmdb/hdrfmt.c:3708
+#: rpmdb/hdrfmt.c:4556
 msgid "(not a string)"
 msgstr "(не є рядком)"
 
-#: rpmdb/hdrfmt.c:1078
+#: rpmdb/hdrfmt.c:1084
 msgid "(invalid xml type)"
 msgstr "(некоректний тип xml)"
 
-#: rpmdb/hdrfmt.c:1229
+#: rpmdb/hdrfmt.c:1235
 msgid "(invalid yaml type)"
 msgstr "(некоректний тип yaml)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1341
 msgid "(invalid json type)"
 msgstr "(некоректний тип json)"
 
-#: rpmdb/hdrfmt.c:1390
+#: rpmdb/hdrfmt.c:1396
 msgid "(not a blob)"
 msgstr "(не є бінарним об’єктом)"
 
-#: rpmdb/hdrfmt.c:1413
+#: rpmdb/hdrfmt.c:1419
 msgid "(not an OpenPGP signature)"
 msgstr "(не є підписом OpenPGP)"
 
-#: rpmdb/hdrfmt.c:1597
+#: rpmdb/hdrfmt.c:1609
 #, fuzzy
 msgid "normal"
 msgstr "звичайний    "
 
-#: rpmdb/hdrfmt.c:1600
+#: rpmdb/hdrfmt.c:1612
 #, fuzzy
 msgid "replaced"
 msgstr "замінено      "
 
-#: rpmdb/hdrfmt.c:1603
+#: rpmdb/hdrfmt.c:1615
 #, fuzzy
 msgid "not installed"
 msgstr "не встановлено "
 
-#: rpmdb/hdrfmt.c:1606
+#: rpmdb/hdrfmt.c:1618
 #, fuzzy
 msgid "net shared"
 msgstr "мережевий     "
 
-#: rpmdb/hdrfmt.c:1609
+#: rpmdb/hdrfmt.c:1621
 #, fuzzy
 msgid "wrong color"
 msgstr "помилк. колір  "
 
-#: rpmdb/hdrfmt.c:1614
+#: rpmdb/hdrfmt.c:1626
 #, fuzzy
 msgid "missing"
 msgstr "не вистачає: %s"
 
-#: rpmdb/hdrfmt.c:1618
+#: rpmdb/hdrfmt.c:1630
 #, fuzzy
 msgid "(unknown)"
 msgstr "(невідомий %3d) "
 
-#: rpmdb/hdrfmt.c:4747
+#: rpmdb/hdrfmt.c:4769
 msgid "(invalid type :digest)"
 msgstr "(некоректний тип :digest)"
 
-#: rpmdb/hdrfmt.c:4806
+#: rpmdb/hdrfmt.c:4828
 msgid "(invalid type :stat)"
 msgstr "(некоректний тип :stat)"
 
-#: rpmdb/hdrfmt.c:4980
+#: rpmdb/hdrfmt.c:5002
 msgid "(invalid type :uuid)"
 msgstr "(некоректний тип :uuid)"
 
-#: rpmdb/hdrfmt.c:4988 rpmdb/hdrfmt.c:5021
+#: rpmdb/hdrfmt.c:5010 rpmdb/hdrfmt.c:5043
 msgid "(invalid tag :uuid)"
 msgstr "(некоректний теґ :uuid)"
 
-#: rpmdb/hdrfmt.c:5087
+#: rpmdb/hdrfmt.c:5113
 msgid "(invalid type :rpn)"
 msgstr "(некоректний тип :rpn)"
 
-#: rpmdb/hdrfmt.c:5099
+#: rpmdb/hdrfmt.c:5127
 msgid "(invalid string :rpn)"
 msgstr "(некоректний рядок :rpn)"
 
-#: rpmdb/hdrfmt.c:5115
-msgid "(expected number :rpn)"
-msgstr "(очікувалося число :rpn)"
-
-#: rpmdb/hdrfmt.c:5119
+#: rpmdb/hdrfmt.c:5143
 msgid "(stack overflow :rpn)"
 msgstr "(переповнення стека :rpn)"
 
-#: rpmdb/hdrfmt.c:5125
+#: rpmdb/hdrfmt.c:5155
 msgid "(invalid number :rpn)"
 msgstr "(некоректне число :rpn)"
 
-#: rpmdb/hdrfmt.c:5130
+#: rpmdb/hdrfmt.c:5161 rpmdb/hdrfmt.c:5202 rpmdb/hdrfmt.c:5237
+#: rpmdb/hdrfmt.c:5254
 msgid "(stack underflow :rpn)"
 msgstr "(вичерпання стека :rpn)"
 
-#: rpmdb/hdrfmt.c:5143
+#: rpmdb/hdrfmt.c:5223 rpmdb/hdrfmt.c:5233 rpmdb/hdrfmt.c:5259
 msgid "(divide by zero :rpn)"
 msgstr "(ділення на нуль :rpn)"
 
-#: rpmdb/hdrfmt.c:5186
+#: rpmdb/hdrfmt.c:5263
+#, fuzzy
+msgid "(negative exponent :rpn)"
+msgstr "(некоректний тип :rpn)"
+
+#: rpmdb/hdrfmt.c:5330
 msgid "(invalid type :strsub)"
 msgstr "(некоректний тип :strsub)"
 
-#: rpmdb/hdrfmt.c:5191
+#: rpmdb/hdrfmt.c:5335
 msgid "(invalid args :strsub)"
 msgstr "(некоректні аргументи :strsub)"
 
-#: rpmdb/hdrfmt.c:6067
+#: rpmdb/hdrfmt.c:6211
 msgid "missing { after %"
 msgstr "не вистачає { після %"
 
-#: rpmdb/hdrfmt.c:6101
+#: rpmdb/hdrfmt.c:6245
 msgid "missing } after %{"
 msgstr "не вистачає } після %{"
 
-#: rpmdb/hdrfmt.c:6117
+#: rpmdb/hdrfmt.c:6261
 msgid "empty tag format"
 msgstr "порожній формат теґу"
 
-#: rpmdb/hdrfmt.c:6138
+#: rpmdb/hdrfmt.c:6282
 msgid "malformed parameter list"
 msgstr "помилкове форматування списку параметрів"
 
-#: rpmdb/hdrfmt.c:6159
+#: rpmdb/hdrfmt.c:6303
 msgid "empty tag name"
 msgstr "порожня назва теґу"
 
-#: rpmdb/hdrfmt.c:6168
+#: rpmdb/hdrfmt.c:6312
 msgid "unknown tag"
 msgstr "невідома мітка"
 
-#: rpmdb/hdrfmt.c:6198
+#: rpmdb/hdrfmt.c:6342
 msgid "] expected at end of array"
 msgstr "не вистачає ] у кінці запису масиву"
 
-#: rpmdb/hdrfmt.c:6215
+#: rpmdb/hdrfmt.c:6359
 msgid "unexpected ]"
 msgstr "неочікувана ]"
 
-#: rpmdb/hdrfmt.c:6230
+#: rpmdb/hdrfmt.c:6374
 msgid "unexpected }"
 msgstr "неочікувана }"
 
-#: rpmdb/hdrfmt.c:6309
+#: rpmdb/hdrfmt.c:6453
 msgid "? expected in expression"
 msgstr "не вистачає ? у виразі"
 
-#: rpmdb/hdrfmt.c:6316
+#: rpmdb/hdrfmt.c:6460
 msgid "{ expected after ? in expression"
 msgstr "у виразі після ? слід вказати {"
 
-#: rpmdb/hdrfmt.c:6328 rpmdb/hdrfmt.c:6368
+#: rpmdb/hdrfmt.c:6472 rpmdb/hdrfmt.c:6512
 msgid "} expected in expression"
 msgstr "у виразі не вистачає }"
 
-#: rpmdb/hdrfmt.c:6336
+#: rpmdb/hdrfmt.c:6480
 msgid ": expected following ? subexpression"
 msgstr ": після ? не вистачає підвиразу"
 
-#: rpmdb/hdrfmt.c:6354
+#: rpmdb/hdrfmt.c:6498
 msgid "{ expected after : in expression"
 msgstr "у виразі після : слід вказати {"
 
-#: rpmdb/hdrfmt.c:6376
+#: rpmdb/hdrfmt.c:6520
 msgid "| expected at end of expression"
 msgstr "вираз має завершуватися символом |"
 
-#: rpmdb/hdrfmt.c:6720
+#: rpmdb/hdrfmt.c:6864
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використано з двома масивами різної розмірності"
 
-#: rpmdb/package.c:166
+#: rpmdb/package.c:167
 msgid "read failed\n"
 msgstr "помилка читання\n"
 
@@ -3616,7 +3628,7 @@ msgstr "Діагностика курсорів SQLDB"
 msgid "Debug SQLDB"
 msgstr "Діагностика SQLDB"
 
-#: rpmdb/rpmdb.c:268
+#: rpmdb/rpmdb.c:269
 #, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
@@ -3625,36 +3637,36 @@ msgstr ""
 "не вдалося відкрити покажчик %s(%u): %s(%d)\n"
 "\tDB: %s\n"
 
-#: rpmdb/rpmdb.c:593
+#: rpmdb/rpmdb.c:594
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "некоректний формат: «%s»: %s\n"
 
-#: rpmdb/rpmdb.c:1037
+#: rpmdb/rpmdb.c:1038
 msgid "no dbpath has been set\n"
 msgstr "не було встановлено шляху dbpath\n"
 
-#: rpmdb/rpmdb.c:1244 rpmdb/rpmdb.c:1606
+#: rpmdb/rpmdb.c:1245 rpmdb/rpmdb.c:1607
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "помилка(%d) отримання записів з покажчика %s\n"
 
-#: rpmdb/rpmdb.c:1477
+#: rpmdb/rpmdb.c:1478
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "помилка(%d) отримання ключів з покажчика %s\n"
 
-#: rpmdb/rpmdb.c:1675
+#: rpmdb/rpmdb.c:1676
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "помилка(%d) збереження запису h#%u до %s\n"
 
-#: rpmdb/rpmdb.c:2406
+#: rpmdb/rpmdb.c:2407
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: не вдалося завантажити заголовок №%u — пропускаємо.\n"
 
-#: rpmdb/rpmdb.c:2826
+#: rpmdb/rpmdb.c:2827
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: не вдалося прочитати заголовок за адресою 0x%x\n"
@@ -3830,7 +3842,7 @@ msgid "top level directory"
 msgstr "каталог найвищого рівня"
 
 #: rpmdb/rpmrepo.c:1713 rpmdb/rpmrepo.c:1739 rpmio/rpmaug.c:121
-#: tools/roto.c:4093 tools/roto.c:4097 tools/roto.c:4104 tools/rpmwget.c:1316
+#: tools/roto.c:4094 tools/roto.c:4098 tools/roto.c:4105 tools/rpmwget.c:1316
 msgid "DIR"
 msgstr "КАТАЛОГ"
 
@@ -3910,10 +3922,10 @@ msgstr "Доступні методи стискання:"
 msgid "Available digests:"
 msgstr "Доступні контрольні суми:"
 
-#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2665 rpmio/rpmsql.c:5272
+#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2663 rpmio/rpmsql.c:5272
 #: rpmio/rpmz.c:1833 rpmio/set.c:1516 tools/augtool.c:337 tools/cudftool.c:29
-#: tools/roto.c:4131 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
-#: tools/rpmkey.c:1549 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
+#: tools/roto.c:4132 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
+#: tools/rpmkey.c:1724 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:335
 msgid "Common options for all rpmio executables:"
 msgstr "Типові параметри для всіх виконуваних файлів rpmio:"
@@ -3993,64 +4005,64 @@ msgstr "Підпис: НЕВІДОМИЙ (%u)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Не вдалося отримати блокування БД %s, повторна спроба... (%d)\n"
 
-#: rpmio/iosm.c:1864
+#: rpmio/iosm.c:1869
 #, c-format
 msgid "archive file %s was not found in header\n"
 msgstr "файла архіву %s не знайдено у заголовку\n"
 
-#: rpmio/iosm.c:2153
+#: rpmio/iosm.c:2163
 #, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "вилучення каталогу %s зазнало невдачі: каталог не є порожнім\n"
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2169
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "спроба вилучення каталогу %s зазнала невдачі: %s\n"
 
-#: rpmio/iosm.c:2174
+#: rpmio/iosm.c:2184
 #, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "не вдалося вилучити символічне посилання %s: %s\n"
 
-#: rpmio/iosm.c:2779
+#: rpmio/iosm.c:2789
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(помилка 0x%x)"
 
-#: rpmio/iosm.c:2782
+#: rpmio/iosm.c:2792
 msgid "Bad magic"
 msgstr "Помилкове значення magic"
 
-#: rpmio/iosm.c:2783
+#: rpmio/iosm.c:2793
 msgid "Bad/unreadable header"
 msgstr "Помилковий/Непридатний до читання заголовок"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2815
 msgid "Header size too big"
 msgstr "Розмір заголовка занадто великий"
 
-#: rpmio/iosm.c:2806
+#: rpmio/iosm.c:2816
 msgid "Unknown file type"
 msgstr "Невідомий тип файла"
 
-#: rpmio/iosm.c:2807
+#: rpmio/iosm.c:2817
 msgid "Missing hard link(s)"
 msgstr "Не вистачає жорсткого посилання"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2818
 msgid "File digest mismatch"
 msgstr "Невідповідність контрольної суми файла"
 
-#: rpmio/iosm.c:2809
+#: rpmio/iosm.c:2819
 msgid "Internal error"
 msgstr "Внутрішня помилка"
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2820
 msgid "Archive file not in header"
 msgstr "Файла архіву не вказано у заголовку"
 
-#: rpmio/iosm.c:2821
+#: rpmio/iosm.c:2831
 msgid " failed - "
 msgstr " помилка - "
 
@@ -4109,57 +4121,57 @@ msgstr "Макрос %%%s (%s) не було використано під рі�
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Невідомий параметр у макросі %s(%s): %s: %s\n"
 
-#: rpmio/macro.c:1704
+#: rpmio/macro.c:1701
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Глибина рекурсії (%d) перевищує максимальну (%d)\n"
 
-#: rpmio/macro.c:1778 rpmio/macro.c:1795
+#: rpmio/macro.c:1775 rpmio/macro.c:1792
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Не закрито %c: %s\n"
 
-#: rpmio/macro.c:1840
+#: rpmio/macro.c:1837
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "За %% вказано непридатний до обробки макрос\n"
 
-#: rpmio/macro.c:1858
+#: rpmio/macro.c:1855
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: помилка завантаження макроса\n"
 
-#: rpmio/macro.c:2618
+#: rpmio/macro.c:2615
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не існує, пропущено\n"
 
-#: rpmio/macro.c:2863
+#: rpmio/macro.c:2860
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Розгорнутий макрос занадто великий для буфера призначення\n"
 
-#: rpmio/macro.c:2897
+#: rpmio/macro.c:2894
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 "Макрос «%s» призначено лише для читання, до нього не можна вносити зміни.\n"
 
-#: rpmio/macro.c:3026
+#: rpmio/macro.c:3023
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s:%u не вистачає «}» у «%s», пропускаємо.\n"
 
-#: rpmio/macro.c:3035
+#: rpmio/macro.c:3032
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr "%s:%u перевищено глибину завантаження, «%s» проігноровано.\n"
 
-#: rpmio/macro.c:3225 rpmio/macro.c:3231
+#: rpmio/macro.c:3222 rpmio/macro.c:3228
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:3234
+#: rpmio/macro.c:3231
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Розмір файла %s є меншим за %u байтів\n"
@@ -5063,12 +5075,14 @@ msgstr ""
 "augnew"
 
 #: rpmio/rpmaug.c:734
-msgid "Load files accordig to the transforms in /augeas/load."
+#, fuzzy
+msgid "Load files according to the transforms in /augeas/load."
 msgstr "Завантажити файли відповідно до перетворень, вказаних у /augeas/load."
 
 #: rpmio/rpmaug.c:737
+#, fuzzy
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR. The\n"
+"Define the variable NAME to the result of evaluating EXPR. The\n"
 "        variable can be used in path expressions as $NAME. Note that EXPR\n"
 "        is evaluated when the variable is defined, not when it is used."
 msgstr ""
@@ -5082,8 +5096,9 @@ msgid "<NAME> <EXPR>"
 msgstr "<НАЗВА> <ВИРАЗ>"
 
 #: rpmio/rpmaug.c:743
+#, fuzzy
 msgid ""
-"Define the variable NAME to the result of evalutating EXPR, which\n"
+"Define the variable NAME to the result of evaluating EXPR, which\n"
 "        must be a nodeset. If no node matching EXPR exists yet, one\n"
 "        is created and NAME will refer to it. If VALUE is given, this\n"
 "        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
@@ -5112,19 +5127,19 @@ msgstr "Завершити роботу програми"
 msgid "Print this help text"
 msgstr "Вивести цей довідковий текст"
 
-#: rpmio/rpmdav.c:1059
+#: rpmio/rpmdav.c:1066
 msgid "Authorization Required"
 msgstr "Потрібне уповноваження"
 
-#: rpmio/rpmdav.c:1061
+#: rpmio/rpmdav.c:1068
 msgid "Redirect"
 msgstr "Переспрямування"
 
-#: rpmio/rpmdav.c:1063
+#: rpmio/rpmdav.c:1070
 msgid "Server Error"
 msgstr "Помилка сервера"
 
-#: rpmio/rpmdav.c:1065
+#: rpmio/rpmdav.c:1072
 msgid "Unknown Error"
 msgstr "Невідома помилка"
 
@@ -5252,355 +5267,355 @@ msgstr "<префікс>"
 msgid "Show the given destination prefix instead of \"b/\"."
 msgstr "Показати вказаний <префікс> кінцевої версії замість «b/»"
 
-#: rpmio/rpmgit.c:2273
+#: rpmio/rpmgit.c:2271
 msgid "Give the output in the short-format."
 msgstr "Вивести дані у скороченому форматі."
 
-#: rpmio/rpmgit.c:2275
+#: rpmio/rpmgit.c:2273
 msgid "Give the output in the long-format."
 msgstr "Вивести дані у довгому форматі."
 
-#: rpmio/rpmgit.c:2277
+#: rpmio/rpmgit.c:2275
 msgid "Give the output in a stable, easy-to-parse format for scripts."
 msgstr "Вивести дані у стабільному, простому для обробки форматі для скриптів."
 
-#: rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281 rpmio/rpmgit.c:2283
-#: rpmio/rpmgit.c:2575
+#: rpmio/rpmgit.c:2277 rpmio/rpmgit.c:2279 rpmio/rpmgit.c:2281
+#: rpmio/rpmgit.c:2573
 msgid "."
 msgstr "."
 
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "Show untracked files."
 msgstr "Показати файли поза системою стеження."
 
-#: rpmio/rpmgit.c:2285
+#: rpmio/rpmgit.c:2283
 msgid "{no|normal|all}"
 msgstr "{no|normal|all}"
 
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "Ignore sub-modules."
 msgstr "Ігнорувати підмодулі."
 
-#: rpmio/rpmgit.c:2287
+#: rpmio/rpmgit.c:2285
 msgid "{all}"
 msgstr "{all}"
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "Repeat every <sec> seconds."
 msgstr "Повторювати кожні <число> секунд."
 
-#: rpmio/rpmgit.c:2289
+#: rpmio/rpmgit.c:2287
 msgid "<sec>"
 msgstr "<число>"
 
-#: rpmio/rpmgit.c:2291
+#: rpmio/rpmgit.c:2289
 #, fuzzy
 msgid "List submodules."
 msgstr "Ігнорувати підмодулі."
 
-#: rpmio/rpmgit.c:2437
+#: rpmio/rpmgit.c:2435
 msgid "Add file contents to the index."
 msgstr "Додати вміст файла до покажчика."
 
-#: rpmio/rpmgit.c:2440
+#: rpmio/rpmgit.c:2438
 msgid "Find by binary search the change that introduced a bug."
 msgstr "Знайти бінарним пошуком зміну, яка спричинила ваду."
 
-#: rpmio/rpmgit.c:2442
+#: rpmio/rpmgit.c:2440
 msgid "List, create, or delete branches."
 msgstr "Показати список гілок, створити або вилучити гілку."
 
-#: rpmio/rpmgit.c:2444
+#: rpmio/rpmgit.c:2442
 msgid "Checkout a branch or paths to the working tree."
 msgstr "Отримати гілку або шляхи у робочому дереві каталогів."
 
-#: rpmio/rpmgit.c:2446
+#: rpmio/rpmgit.c:2444
 msgid "Clone a repository into a new directory."
 msgstr "Клонувати сховище до нового каталогу."
 
-#: rpmio/rpmgit.c:2449
+#: rpmio/rpmgit.c:2447
 msgid "Record changes to the repository."
 msgstr "Записати зміни до сховища."
 
-#: rpmio/rpmgit.c:2451
+#: rpmio/rpmgit.c:2449
 msgid "Show changes between commits, commit and working tree, etc."
 msgstr "Показати зміни між внесками, внеском і робочим деревом каталогів тощо."
 
-#: rpmio/rpmgit.c:2454
+#: rpmio/rpmgit.c:2452
 msgid "Download objects and refs from another repository."
 msgstr "Отримати об’єкти та посилання з іншого сховища."
 
-#: rpmio/rpmgit.c:2456
+#: rpmio/rpmgit.c:2454
 msgid "Print lines matching a pattern."
 msgstr "Вивести рядки, що відповідають шаблону."
 
-#: rpmio/rpmgit.c:2460
+#: rpmio/rpmgit.c:2458
 msgid "Create an empty git repository or reinitialize an existing one."
 msgstr "Створити порожнє сховище git або повторно ініціалізувати наявне."
 
-#: rpmio/rpmgit.c:2463
+#: rpmio/rpmgit.c:2461
 msgid "Show commit logs."
 msgstr "Показати журнал внесків."
 
-#: rpmio/rpmgit.c:2465
+#: rpmio/rpmgit.c:2463
 msgid "Join two or more development histories together."
 msgstr "Об’єднати один або декілька журналів розробки."
 
-#: rpmio/rpmgit.c:2467
+#: rpmio/rpmgit.c:2465
 msgid "Move or rename a file, a directory, or a symlink."
 msgstr "Пересунути або перейменувати файл, каталог або символічне посилання."
 
-#: rpmio/rpmgit.c:2469
+#: rpmio/rpmgit.c:2467
 msgid "Fetch from and merge with another repository or a local branch."
 msgstr "Отримати дані і об’єднати їх із іншим сховищем або локальною гілкою."
 
-#: rpmio/rpmgit.c:2471
+#: rpmio/rpmgit.c:2469
 msgid "Update remote refs along with associated objects."
 msgstr "Оновити віддалені посилання разом із пов’язаними з ними об’єктами."
 
-#: rpmio/rpmgit.c:2473
+#: rpmio/rpmgit.c:2471
 msgid "Forward-port local commits to the updated upstream head."
 msgstr ""
 "Виконати пряме портування локальних внесків до оновленої основної гілки."
 
-#: rpmio/rpmgit.c:2475
+#: rpmio/rpmgit.c:2473
 msgid "Reset current HEAD to the specified state."
 msgstr "Відновити поточний HEAD до вказаного стану."
 
-#: rpmio/rpmgit.c:2477
+#: rpmio/rpmgit.c:2475
 msgid "Remove files from the working tree and from the index."
 msgstr "Вилучити файли з робочого дерева каталогів та з покажчика."
 
-#: rpmio/rpmgit.c:2479
+#: rpmio/rpmgit.c:2477
 msgid "Show various types of objects."
 msgstr "Показати різні типи об’єктів."
 
-#: rpmio/rpmgit.c:2482
+#: rpmio/rpmgit.c:2480
 msgid "Show the working tree status."
 msgstr "Показати стан робочого дерева каталогів."
 
-#: rpmio/rpmgit.c:2485
+#: rpmio/rpmgit.c:2483
 msgid "Create, list, delete or verify a tag object signed with GPG."
 msgstr ""
 "Створити об’єкт мітки, підписаний за допомогою GPG, показати список таких "
 "об’єктів або перевірити об’єкт."
 
-#: rpmio/rpmgit.c:2491
+#: rpmio/rpmgit.c:2489
 msgid "Apply a patch to files and/or to the index."
 msgstr "Застосувати латку до файлів і/або до покажчика."
 
-#: rpmio/rpmgit.c:2493
+#: rpmio/rpmgit.c:2491
 msgid "Copy files from the index to the working tree."
 msgstr "Скопіювати файли з покажчика до робочого дерева каталогів."
 
-#: rpmio/rpmgit.c:2495
+#: rpmio/rpmgit.c:2493
 msgid "Create a new commit object."
 msgstr "Створити новий об’єкт внеску."
 
-#: rpmio/rpmgit.c:2497
+#: rpmio/rpmgit.c:2495
 msgid "Compute object ID and optionally creates a blob from a file."
 msgstr ""
 "Обчислити ідентифікатор об’єкта і, необов’язково, створити бінарний запис з "
 "файла."
 
-#: rpmio/rpmgit.c:2499
+#: rpmio/rpmgit.c:2497
 msgid "Build pack index file for an existing packed archive."
 msgstr "Побудувати файл пакунка покажчика для наявного запакованого архіву."
 
-#: rpmio/rpmgit.c:2501
+#: rpmio/rpmgit.c:2499
 msgid "Run a three-way file merge."
 msgstr "Виконати трикомпонентне об’єднання файлів."
 
-#: rpmio/rpmgit.c:2503
+#: rpmio/rpmgit.c:2501
 msgid "Run a merge for files needing merging."
 msgstr "Виконати об’єднання файлів, які потребують об’єднання."
 
-#: rpmio/rpmgit.c:2505
+#: rpmio/rpmgit.c:2503
 msgid "Creates a tag object."
 msgstr "Створити об’єкт мітки."
 
-#: rpmio/rpmgit.c:2507
+#: rpmio/rpmgit.c:2505
 msgid "Build a tree-object from ls-tree formatted text."
 msgstr "Побудувати об’єкт tree на основі форматованого тексту ls-tree."
 
-#: rpmio/rpmgit.c:2509
+#: rpmio/rpmgit.c:2507
 msgid "Create a packed archive of objects."
 msgstr "Створити запакований архів об’єктів."
 
-#: rpmio/rpmgit.c:2511
+#: rpmio/rpmgit.c:2509
 msgid "Remove extra objects that are already in pack files."
 msgstr "Вилучити додаткові об’єкти, які вже є у файлах pack."
 
-#: rpmio/rpmgit.c:2513
+#: rpmio/rpmgit.c:2511
 msgid "iReads tree information into the index."
 msgstr "Прочитати дані дерева до покажчика."
 
-#: rpmio/rpmgit.c:2515
+#: rpmio/rpmgit.c:2513
 msgid "iRead and modify symbolic refs."
 msgstr "Прочитати і змінити символічні посилання."
 
-#: rpmio/rpmgit.c:2517
+#: rpmio/rpmgit.c:2515
 msgid "Unpack objects from a packed archive."
 msgstr "Розпакувати об’єкти із запакованого архіву."
 
-#: rpmio/rpmgit.c:2519
+#: rpmio/rpmgit.c:2517
 msgid "Register file contents in the working tree to the index."
 msgstr "Зареєструвати вміст файла у робочому дереві каталогів до покажчика."
 
-#: rpmio/rpmgit.c:2521
+#: rpmio/rpmgit.c:2519
 msgid "Update the object name stored in a ref safely."
 msgstr "Безпечно оновити назву об’єкта, збереженого у посиланні."
 
-#: rpmio/rpmgit.c:2523
+#: rpmio/rpmgit.c:2521
 msgid "Create a tree object from the current index."
 msgstr "Створити об’єкт дерева каталогів з поточного покажчика."
 
-#: rpmio/rpmgit.c:2529
+#: rpmio/rpmgit.c:2527
 msgid "Create a tar/zip archive of the files in the named tree object."
 msgstr "Створити архів tar/zip з файлів у вказаному об’єкті дерева каталогів."
 
-#: rpmio/rpmgit.c:2531
+#: rpmio/rpmgit.c:2529
 msgid "Provide content or type and size information for repository objects."
 msgstr "Надати дані щодо вмісту або типу і розміру для об’єктів у сховищі."
 
-#: rpmio/rpmgit.c:2533
+#: rpmio/rpmgit.c:2531
 msgid "Compares files in the working tree and the index."
 msgstr "Порівняти файли у робочому дереві каталогів та покажчику."
 
-#: rpmio/rpmgit.c:2535
+#: rpmio/rpmgit.c:2533
 msgid "Compares content and mode of blobs between the index and repository."
 msgstr ""
 "Порівняти вміст і режим доступу бінарних об’єктів у покажчику та у сховищі."
 
-#: rpmio/rpmgit.c:2537
+#: rpmio/rpmgit.c:2535
 msgid "Compares the content and mode of blobs found via two tree objects."
 msgstr ""
 "Порівняти вміст та режиму доступу бінарних файлів, найдених за допомогою "
 "двох об’єктів дерева каталогів."
 
-#: rpmio/rpmgit.c:2539
+#: rpmio/rpmgit.c:2537
 msgid "Output information on each ref."
 msgstr "Вивести дані щодо кожного посилання."
 
-#: rpmio/rpmgit.c:2541
+#: rpmio/rpmgit.c:2539
 msgid "Show information about files in the index and the working tree."
 msgstr "Показати дані щодо файлів у покажчику та у робочому дереві каталогів."
 
-#: rpmio/rpmgit.c:2543
+#: rpmio/rpmgit.c:2541
 msgid "List references in a remote repository."
 msgstr "Показати список посилань у віддаленому сховищі."
 
-#: rpmio/rpmgit.c:2545
+#: rpmio/rpmgit.c:2543
 msgid "List the contents of a tree object."
 msgstr "Показати список вмісту об’єкта дерева каталогів."
 
-#: rpmio/rpmgit.c:2547
+#: rpmio/rpmgit.c:2545
 msgid "Find as good common ancestors as possible for a merge."
 msgstr "Знайти якомога якісніших спільних попередників для об’єднання."
 
-#: rpmio/rpmgit.c:2549
+#: rpmio/rpmgit.c:2547
 msgid "Find symbolic names for given revs."
 msgstr "Знайти символічні назви для вказаних модифікацій."
 
-#: rpmio/rpmgit.c:2551
+#: rpmio/rpmgit.c:2549
 msgid "Find redundant pack files."
 msgstr "Знайти зайві файли pack."
 
-#: rpmio/rpmgit.c:2553
+#: rpmio/rpmgit.c:2551
 msgid "Lists commit objects in reverse chronological order."
 msgstr "Показати список об’єктів внеску у зворотному хронологічному порядку."
 
-#: rpmio/rpmgit.c:2555
+#: rpmio/rpmgit.c:2553
 msgid "Show packed archive index."
 msgstr "Показати покажчик запакованого архіву."
 
-#: rpmio/rpmgit.c:2557
+#: rpmio/rpmgit.c:2555
 msgid "List references in a local repository."
 msgstr "Показати список посилань у локальному сховищі."
 
-#: rpmio/rpmgit.c:2559
+#: rpmio/rpmgit.c:2557
 msgid "Creates a temporary file with blob contents."
 msgstr "Створити тимчасовий файл із вмістом бінарного запису."
 
-#: rpmio/rpmgit.c:2561
+#: rpmio/rpmgit.c:2559
 msgid "Show a git logical variable."
 msgstr "Показати логічну змінну git."
 
-#: rpmio/rpmgit.c:2563
+#: rpmio/rpmgit.c:2561
 msgid "Validate packed git archive files."
 msgstr "Перевірити файли запакованого архіву git."
 
-#: rpmio/rpmgit.c:2569
+#: rpmio/rpmgit.c:2567
 msgid "Show git configuration."
 msgstr "Показати налаштування git."
 
-#: rpmio/rpmgit.c:2571
+#: rpmio/rpmgit.c:2569
 msgid "Show git index."
 msgstr "Показати покажчик git."
 
-#: rpmio/rpmgit.c:2573
+#: rpmio/rpmgit.c:2571
 msgid "Show git references."
 msgstr "Показати посилання git."
 
-#: rpmio/rpmgit.c:2578
+#: rpmio/rpmgit.c:2576
 msgid "Index a <PACKFILE>."
 msgstr "Покажчик файла <PACKFILE>."
 
-#: rpmio/rpmgit.c:2578
+#: rpmio/rpmgit.c:2576
 msgid "<PACKFILE>"
 msgstr "<PACKFILE>"
 
-#: rpmio/rpmgit.c:2637
+#: rpmio/rpmgit.c:2635
 msgid "Set exec path to <DIR>. env(GIT_EXEC_PATH)"
 msgstr ""
 "Встановити шлях до виконуваних файлів у значення <КАТАЛОГ>. "
 "env(GIT_EXEC_PATH)"
 
-#: rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639 rpmio/rpmgit.c:2641
-#: rpmio/rpmgit.c:2643 rpmio/rpmgit.c:2655 rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2635 rpmio/rpmgit.c:2637 rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2641 rpmio/rpmgit.c:2653 rpmio/rpmgit.c:2655
 msgid "<DIR>"
 msgstr "<КАТАЛОГ>"
 
-#: rpmio/rpmgit.c:2639
+#: rpmio/rpmgit.c:2637
 msgid "Set html path to <DIR>. env(GIT_HTML_PATH)"
 msgstr ""
 "Встановити шлях до каталогу html у значення <КАТАЛОГ>. env(GIT_HTML_PATH)"
 
-#: rpmio/rpmgit.c:2641
+#: rpmio/rpmgit.c:2639
 msgid "Set man path to <DIR>."
 msgstr "Встановити шлях man у значення <КАТАЛОГ>."
 
-#: rpmio/rpmgit.c:2643
+#: rpmio/rpmgit.c:2641
 msgid "Set info path to <DIR>."
 msgstr "Встановити шлях info у значення <КАТАЛОГ>."
 
-#: rpmio/rpmgit.c:2646 rpmio/rpmgit.c:2648
+#: rpmio/rpmgit.c:2644 rpmio/rpmgit.c:2646
 msgid "Set paginate. env(PAGER)"
 msgstr "Встановити поділ на сторінки. env(PAGER)"
 
-#: rpmio/rpmgit.c:2650
+#: rpmio/rpmgit.c:2648
 msgid "Do not use replacement refs for objects."
 msgstr "Не використовувати посилання замінники для об’єктів."
 
-#: rpmio/rpmgit.c:2652
+#: rpmio/rpmgit.c:2650
 msgid "Treat as a bare repository."
 msgstr "Вважати сховище мінімальним."
 
-#: rpmio/rpmgit.c:2655
+#: rpmio/rpmgit.c:2653
 msgid "Set git repository dir to <DIR>. env(GIT_DIR)"
 msgstr "Встановити каталог сховища git у значення <КАТАЛОГ>. env(GIT_DIR)"
 
-#: rpmio/rpmgit.c:2657
+#: rpmio/rpmgit.c:2655
 msgid "Set git work tree to <DIR>. env(GIT_WORK_TREE)"
 msgstr ""
 "Встановити робоче дерево каталогів git у значення <КАТАЛОГ>. "
 "env(GIT_WORK_TREE)"
 
-#: rpmio/rpmgit.c:2660
+#: rpmio/rpmgit.c:2658
 msgid "The most commonly used git commands are::"
 msgstr "Найпоширенішим є використання таких команд git::"
 
-#: rpmio/rpmgit.c:2673
+#: rpmio/rpmgit.c:2671
 msgid ""
 "usage: git [--version] [--exec-path[=GIT_EXEC_PATH]] [--html-path]\n"
 "           [-p|--paginate|--no-pager] [--no-replace-objects]\n"
@@ -5727,7 +5742,8 @@ msgid "Malformed URL"
 msgstr "Неправильно записана адреса URL"
 
 #: rpmio/rpmjs.cpp:565
-msgid "Allow (read-only) access to caller's environmen"
+#, fuzzy
+msgid "Allow (read-only) access to caller's environment"
 msgstr "Дозволити (лише для читання) доступ до середовища виклику"
 
 #: rpmio/rpmjs.cpp:567
@@ -6311,7 +6327,8 @@ msgid "Display software version"
 msgstr "Показати дані щодо версії програмного забезпечення"
 
 #: rpmio/rpmz.c:1791
-msgid "Display softwre license"
+#, fuzzy
+msgid "Display software license"
 msgstr "Показати дані щодо ліцензування програмного забезпечення"
 
 #: rpmio/rpmz.c:1803
@@ -6549,15 +6566,15 @@ msgstr "Вказати основні ГРУПИ"
 msgid "GROUPS"
 msgstr "ГРУПИ"
 
-#: tools/roto.c:4039
+#: tools/roto.c:4040
 msgid "initialize the chroot, do not build anything"
 msgstr "ініціалізувати chroot, нічого не збирати"
 
-#: tools/roto.c:4041
+#: tools/roto.c:4042
 msgid "completely remove the specified chroot"
 msgstr "повністю вилучити вказаний chroot"
 
-#: tools/roto.c:4044
+#: tools/roto.c:4045
 msgid ""
 "completely remove the specified chroot or cache dir or all of the chroot and "
 "cache"
@@ -6565,141 +6582,141 @@ msgstr ""
 "повністю вилучити вказаний каталог chroot або кешу або усі каталоги chroot і "
 "кешу"
 
-#: tools/roto.c:4047
+#: tools/roto.c:4048
 msgid "rebuild the specified SRPM(s)"
 msgstr "повторно зібрати вказані SRPM"
 
-#: tools/roto.c:4050
+#: tools/roto.c:4051
 msgid ""
 "Build a SRPM from spec (--spec ...) and sources (--sources ...) or from SCM"
 msgstr ""
 "Зібрати SRPM на основі файла spec (--spec ...) та коду (--sources ...) або з "
 "SCM"
 
-#: tools/roto.c:4053
+#: tools/roto.c:4054
 msgid ""
 "run the specified command interactively within the chroot. Default command: /"
 "bin/sh"
 msgstr ""
 "виконати вказану команду інтерактивно у межах chroot. Типова команда: /bin/sh"
 
-#: tools/roto.c:4055
+#: tools/roto.c:4056
 msgid "run the specified command noninteractively within the chroot."
 msgstr "виконати вказану команду неінтерактивно у межах chroot."
 
-#: tools/roto.c:4058
+#: tools/roto.c:4059
 msgid "install build dependencies for a specified SRPM"
 msgstr "встановити залежності для збирання для вказаного SRPM"
 
-#: tools/roto.c:4061
+#: tools/roto.c:4062
 msgid "install packages using yum"
 msgstr "встановити пакунки за допомогою yum"
 
-#: tools/roto.c:4063
+#: tools/roto.c:4064
 msgid "update installed packages using yum"
 msgstr "оновити встановлені пакунки за допомогою yum"
 
-#: tools/roto.c:4065
+#: tools/roto.c:4066
 msgid "Kill all processes using specified buildroot."
 msgstr ""
 "Вбити усі процеси, що використовують вказаний кореневий каталог збирання."
 
-#: tools/roto.c:4068
+#: tools/roto.c:4069
 msgid "Copy file(s) into the specified chroot"
 msgstr "Копіювати файли до вказаного chroot"
 
-#: tools/roto.c:4071
+#: tools/roto.c:4072
 msgid "Copy file(s) from the specified chroot"
 msgstr "Копіювати файли із вказаного chroot"
 
-#: tools/roto.c:4074
+#: tools/roto.c:4075
 msgid "activate 'offline' mode."
 msgstr "задіяти автономний режим («offline»)."
 
-#: tools/roto.c:4076
+#: tools/roto.c:4077
 msgid "do not clean chroot before building"
 msgstr "не спорожняти chroot перед збиранням"
 
-#: tools/roto.c:4078
+#: tools/roto.c:4079
 msgid ""
 "Clean chroot after building. Use with --resultdir. Only active for 'rebuild'."
 msgstr ""
 "Спорожнити chroot після збирання. Використовується разом з --resultdir. "
 "Активний лише для «rebuild»."
 
-#: tools/roto.c:4081
+#: tools/roto.c:4082
 msgid "Sets kernel personality()."
 msgstr "Встановлює personality() ядра."
 
-#: tools/roto.c:4081 tools/roto.c:4083
+#: tools/roto.c:4082 tools/roto.c:4084
 msgid "ARCH"
 msgstr "АРХ"
 
-#: tools/roto.c:4083
+#: tools/roto.c:4084
 msgid "passed to rpmbuild as --target"
 msgstr "передано rpmbuild як --target"
 
-#: tools/roto.c:4085
+#: tools/roto.c:4086
 msgid "define an rpm macro (may be used more than once)"
 msgstr "визначити макрос rpm (можна використовувати декілька разів)"
 
-#: tools/roto.c:4085
+#: tools/roto.c:4086
 msgid "MACRO EXPR"
 msgstr "МАКРОС ВИРАЗ"
 
-#: tools/roto.c:4088
+#: tools/roto.c:4089
 msgid "enable configure option for build (may be used more than once)"
 msgstr ""
 "увімкнути параметр налаштування для збирання (можна використовувати декілька "
 "разів)"
 
-#: tools/roto.c:4088 tools/roto.c:4090 tools/roto.c:4125
+#: tools/roto.c:4089 tools/roto.c:4091 tools/roto.c:4126
 msgid "OPTION"
 msgstr "ПАРАМЕТР"
 
-#: tools/roto.c:4090
+#: tools/roto.c:4091
 msgid "disable configure option for build (may be used more than once)"
 msgstr ""
 "вимкнути параметр налаштування для збирання (можна використовувати декілька "
 "разів)"
 
-#: tools/roto.c:4093
+#: tools/roto.c:4094
 msgid "path for resulting files to be put"
 msgstr "каталог, до якого слід зберегти файли результатів"
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "Arbitrary, unique extension to append to buildroot directory name"
 msgstr ""
 "Довільний унікальний суфікс назви, який слід додати до назви кореневого "
 "каталогу збирання"
 
-#: tools/roto.c:4095
+#: tools/roto.c:4096
 msgid "EXT"
 msgstr "СУФ"
 
-#: tools/roto.c:4097
+#: tools/roto.c:4098
 msgid "Change where config files are found"
 msgstr "Змінити місце пошуку файлів налаштувань"
 
-#: tools/roto.c:4099
+#: tools/roto.c:4100
 msgid "Fail build if rpmbuild takes longer than 'timeout' seconds"
 msgstr ""
 "Вважати збирання невдалим, якщо виконання rpmbuild триває понад «час "
 "очікування» секунд"
 
-#: tools/roto.c:4099 tools/rpmwget.c:1181 tools/rpmwget.c:1183
+#: tools/roto.c:4100 tools/rpmwget.c:1181 tools/rpmwget.c:1183
 #: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
 #: tools/rpmwget.c:1192
 msgid "SECONDS"
 msgstr "СЕКУНДИ"
 
-#: tools/roto.c:4102
+#: tools/roto.c:4103
 msgid "Drop privileges before running command when using --chroot"
 msgstr ""
 "Скинути розширені права доступу до виконання команди, якщо використовується "
 "--chroot"
 
-#: tools/roto.c:4104
+#: tools/roto.c:4105
 msgid ""
 "Change to the specified directory (relative to the chroot) before running "
 "command when using --chroot"
@@ -6707,18 +6724,18 @@ msgstr ""
 "Перейти до вказаного каталогу (відносно chroot) до виконання команди, якщо "
 "використовується --chroot"
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid ""
 "Specifies spec file to use to build an SRPM (used only with --buildsrpm)"
 msgstr ""
 "Вказує файл spec, яким слід скористатися для збирання SRPM (використовується "
 "лише з --buildsrpm)"
 
-#: tools/roto.c:4107
+#: tools/roto.c:4108
 msgid "SPEC"
 msgstr "SPEC"
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid ""
 "Specifies sources (either a single file or a directory of files) to use to "
 "build an SRPM (used only with --buildsrpm)"
@@ -6726,35 +6743,35 @@ msgstr ""
 "Вказує місце коду (одного файла або каталогу з файлами), яким слід "
 "скористатися для збирання SRPM (використовується лише з --buildsrpm)"
 
-#: tools/roto.c:4109
+#: tools/roto.c:4110
 msgid "SOURCES"
 msgstr "ДЖЕРЕЛА"
 
-#: tools/roto.c:4112
+#: tools/roto.c:4113
 msgid "Enable internal mock tracing output."
 msgstr "Увімкнути внутрішнє трасувальне виведення даних моделі."
 
-#: tools/roto.c:4115
+#: tools/roto.c:4116
 msgid "Enable plugin."
 msgstr "Увімкнути додаток."
 
-#: tools/roto.c:4117
+#: tools/roto.c:4118
 msgid "Disable plugin."
 msgstr "Вимкнути додаток."
 
-#: tools/roto.c:4120
+#: tools/roto.c:4121
 msgid "print path to chroot root"
 msgstr "вивести шлях до кореневого каталогу chroot"
 
-#: tools/roto.c:4123
+#: tools/roto.c:4124
 msgid "build from SCM repository"
 msgstr "зібрати зі сховища SCM"
 
-#: tools/roto.c:4125
+#: tools/roto.c:4126
 msgid "define an SCM option (may be used more than once)"
 msgstr "визначити параметр SCM (можна використовувати декілька разів)"
 
-#: tools/roto.c:4128
+#: tools/roto.c:4129
 msgid "disable unshare(2)"
 msgstr "вимкнути unshare(2)"
 
@@ -6773,32 +6790,32 @@ msgstr "помилка під час спроби читання заголов�
 msgid "cannot re-open payload: %s\n"
 msgstr "не вдалося повторно відкрити вміст: %s\n"
 
-#: tools/rpmcache.c:552
+#: tools/rpmcache.c:553
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
 
-#: tools/rpmcache.c:555
+#: tools/rpmcache.c:556
 msgid "update cache database"
 msgstr "оновити базу даних кешу"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:558
 msgid "don't update cache database, only print package paths"
 msgstr "не оновлювати кеш бази даних, лише вивести перелік шляхів пакету"
 
-#: tools/rpmcache.c:560
+#: tools/rpmcache.c:561
 msgid "File tree walk options:"
 msgstr "Параметри обробки ієрархії файлів:"
 
-#: tools/rpmcache.c:564
+#: tools/rpmcache.c:565
 msgid "Common options for all rpm modes and executables:"
 msgstr "Загальні параметри для всіх режимів та виконуваних файлів rpm:"
 
-#: tools/rpmcache.c:596
+#: tools/rpmcache.c:597
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: макрос %%{_cache_dbpath} визначений неправильно.\n"
 
-#: tools/rpmcache.c:652
+#: tools/rpmcache.c:653
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: помилка роботи з кешем: код помилки %d.\n"
@@ -7342,170 +7359,303 @@ msgstr "%s: помилка у формальному виразі «exclude», �
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: помилка у формальному виразі «include», позиція %d: %s\n"
 
-#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
-msgid "Add a key to a keyring"
+#: tools/rpmkey.c:1627 tools/rpmkey.c:1653
+#, fuzzy
+msgid "Add key to <kr>"
 msgstr "Додати ключ до сховища ключів"
 
-#: tools/rpmkey.c:1481
-msgid "<type> <desc> <data> <keyring>"
+#: tools/rpmkey.c:1627
+#, fuzzy
+msgid "<type> <desc> <data> <kr>"
 msgstr "<тип> <опис> <дані> <сховище ключів>"
 
-#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
-msgid "Change the access controls on a key"
-msgstr "Змінити параметри доступу до ключа"
+#: tools/rpmkey.c:1629
+msgid "Change <gid> on <key>"
+msgstr ""
 
-#: tools/rpmkey.c:1483
+#: tools/rpmkey.c:1629
 msgid "<key> <gid>"
 msgstr "<ключ> <gid>"
 
-#: tools/rpmkey.c:1485
+#: tools/rpmkey.c:1631
+msgid "Change <uid> on <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1631
 msgid "<key> <uid>"
 msgstr "<ключ> <uid>"
 
-#: tools/rpmkey.c:1487
-msgid "Clear a keyring"
+#: tools/rpmkey.c:1633
+#, fuzzy
+msgid "Clear <kr>"
 msgstr "Спорожнити сховище ключів"
 
-#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
-#: tools/rpmkey.c:1528
-msgid "<keyring>"
-msgstr "<сховище ключів>"
+#: tools/rpmkey.c:1633 tools/rpmkey.c:1635 tools/rpmkey.c:1645
+#: tools/rpmkey.c:1692
+msgid "<kr>"
+msgstr ""
 
-#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
-msgid "Describe a key"
+#: tools/rpmkey.c:1635 tools/rpmkey.c:1676
+#, fuzzy
+msgid "Describe <kr>"
 msgstr "Описати ключ"
 
-#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
-msgid "Instantiate a key"
+#: tools/rpmkey.c:1637 tools/rpmkey.c:1655
+#, fuzzy
+msgid "Instantiate <key> in <kr>"
 msgstr "Створити екземпляр ключа"
 
-#: tools/rpmkey.c:1491
-msgid "<key> <data> <keyring>"
+#: tools/rpmkey.c:1637
+#, fuzzy
+msgid "<key> <data> <kr>"
 msgstr "<ключ> <дані> <сховище ключів>"
 
-#: tools/rpmkey.c:1493
-msgid "Link a key to a keyring"
-msgstr "Пов’язати ключ зі сховищем ключів"
+#: tools/rpmkey.c:1639
+#, fuzzy
+msgid "Invalidate <key>"
+msgstr "Створити екземпляр ключа"
 
-#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
-msgid "<key> <keyring>"
-msgstr "<ключ> <сховище ключів>"
-
-#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
-msgid "List a keyring"
-msgstr "Показати список вмісту сховища ключів"
-
-#: tools/rpmkey.c:1497
-msgid "<key> <timeout> <keyring>"
-msgstr "<ключ> <час очікування> <сховище ключів>"
-
-#: tools/rpmkey.c:1499
-msgid "Install a new session keyring"
-msgstr "Встановити нове сховище ключів сеансів"
-
-#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
-#: tools/rpmkey.c:1533 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
+#: tools/rpmkey.c:1639 tools/rpmkey.c:1657 tools/rpmkey.c:1661
+#: tools/rpmkey.c:1663 tools/rpmkey.c:1678 tools/rpmkey.c:1690
+#: tools/rpmkey.c:1696 tools/rpmmtree.c:3569 tools/rpmmtree.c:3571
 msgid "<key>"
 msgstr "<ключ>"
 
-#: tools/rpmkey.c:1501
-msgid "Create a keyring"
+#: tools/rpmkey.c:1641
+msgid "Get a persistent <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1641
+#, fuzzy
+msgid "<kr> [<uid>]"
+msgstr "<ключ> <uid>"
+
+#: tools/rpmkey.c:1643
+#, fuzzy
+msgid "Link <key> into <kr>"
+msgstr "Пов’язати ключ зі сховищем ключів"
+
+#: tools/rpmkey.c:1643 tools/rpmkey.c:1655
+#, fuzzy
+msgid "<key> <kr>"
+msgstr "<ключ> <маска>"
+
+#: tools/rpmkey.c:1645 tools/rpmkey.c:1692
+#, fuzzy
+msgid "List <kr>"
+msgstr "Показати список вмісту сховища ключів"
+
+#: tools/rpmkey.c:1647
+msgid "Negate <key> in <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1647
+#, fuzzy
+msgid "<key> <timeout> <kr>"
+msgstr "<ключ> <час очікування> <сховище ключів>"
+
+#: tools/rpmkey.c:1649
+#, fuzzy
+msgid "Install new session <kr>"
+msgstr "Встановити нове сховище ключів сеансів"
+
+#: tools/rpmkey.c:1651
+#, fuzzy
+msgid "Create <kr>"
 msgstr "Створити сховище ключів"
 
-#: tools/rpmkey.c:1501
-msgid "<name> <keyring>"
+#: tools/rpmkey.c:1651
+#, fuzzy
+msgid "<name> <kr>"
 msgstr "<назва> <сховище ключів>"
 
-#: tools/rpmkey.c:1503
-msgid "<type> <desc> <keyring>"
+#: tools/rpmkey.c:1653
+#, fuzzy
+msgid "<type> <desc> <kr>"
 msgstr "<тип> <опис> <сховище ключів>"
 
-#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
-msgid "Read a key"
+#: tools/rpmkey.c:1657 tools/rpmkey.c:1678
+#, fuzzy
+msgid "Read <key>"
 msgstr "Прочитати ключ"
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
-msgid "Request a key"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1688
+#, fuzzy
+msgid "Request <key>"
 msgstr "Надіслати запит щодо ключа"
 
-#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
-msgid "<type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1659 tools/rpmkey.c:1686
+#, fuzzy
+msgid "<type> <desc> [<destkr>]"
 msgstr "<тип> <опис> [<сховище ключів призначення>]"
 
-#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
-msgid "Update a key"
+#: tools/rpmkey.c:1661
+#, fuzzy
+msgid "Print <key>"
+msgstr "Виводити ключі PGP"
+
+#: tools/rpmkey.c:1663
+#, fuzzy
+msgid "Update <key>"
 msgstr "Оновити ключ"
 
-#: tools/rpmkey.c:1516
-msgid "<keyring> [sep]"
+#: tools/rpmkey.c:1667
+msgid "Purge all keys of <type>"
+msgstr ""
+
+#: tools/rpmkey.c:1667
+#, fuzzy
+msgid "<type>"
+msgstr "=тип"
+
+#: tools/rpmkey.c:1670
+msgid " Purge <key>"
+msgstr ""
+
+#: tools/rpmkey.c:1670
+msgid "[-p] [-i] <type> <desc>"
+msgstr ""
+
+#: tools/rpmkey.c:1673
+#, fuzzy
+msgid "Purge <key>"
+msgstr "<ключ>"
+
+#: tools/rpmkey.c:1673
+#, fuzzy
+msgid "-s <type> <desc>"
+msgstr "<тип> <опис> <сховище ключів>"
+
+#: tools/rpmkey.c:1676
+#, fuzzy
+msgid "<kr> [sep]"
 msgstr "<сховище ключів> [sep]"
 
-#: tools/rpmkey.c:1524
-msgid "<type> <desc> <info> [<dest_keyring>]"
+#: tools/rpmkey.c:1681
+msgid "Reap"
+msgstr ""
+
+#: tools/rpmkey.c:1681
+msgid "[-v]"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+msgid "Reject"
+msgstr ""
+
+#: tools/rpmkey.c:1683
+#, fuzzy
+msgid "<key> <timeout> <error> <kr>"
+msgstr "<ключ> <час очікування> <сховище ключів>"
+
+#: tools/rpmkey.c:1686
+#, fuzzy
+msgid "Request key"
+msgstr "Надіслати запит щодо ключа"
+
+#: tools/rpmkey.c:1688
+#, fuzzy
+msgid "<type> <desc> <info> [<destkr>]"
 msgstr "<тип> <опис> <інформація> [<сховище ключів призначення>]"
 
-#: tools/rpmkey.c:1526
-msgid "Revoke a key"
+#: tools/rpmkey.c:1690
+#, fuzzy
+msgid "Revoke <key>"
 msgstr "Відкликати ключ"
 
-#: tools/rpmkey.c:1530
-msgid "Search a keyring"
+#: tools/rpmkey.c:1694
+#, fuzzy
+msgid "Search <kr>"
 msgstr "Шукати у сховищі ключів"
 
-#: tools/rpmkey.c:1531
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1694
+#, fuzzy
+msgid "<kr> <type> <desc> [<destkr>]"
 msgstr "<сховище ключів> <тип> <опис> [<сховище ключів призначення>]"
 
-#: tools/rpmkey.c:1533
-msgid "Retrieve a key's security context"
+#: tools/rpmkey.c:1696
+#, fuzzy
+msgid "Retrieve <key> security"
 msgstr "Отримати контекст захисту ключа"
 
-#: tools/rpmkey.c:1535
-msgid "Start a new session with fresh keyrings"
-msgstr "Почати новий сеанс з новими сховищами ключів"
+#: tools/rpmkey.c:1699 tools/rpmkey.c:1703 tools/rpmkey.c:1707
+#, fuzzy
+msgid "Start new session"
+msgstr "Встановити нове сховище ключів сеансів"
 
-#: tools/rpmkey.c:1536
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+#: tools/rpmkey.c:1704
+#, fuzzy
+msgid "- [<prog> <arg1> <arg2> ...]"
 msgstr "[{-|<назва>} [<програма> <параметр1> <параметр2> ...]]"
 
-#: tools/rpmkey.c:1538
-msgid "Set the permissions mask on a key"
-msgstr "Встановити маску прав доступу до ключа"
+#: tools/rpmkey.c:1708
+#, fuzzy
+msgid "<name> [<prog> <arg1> <arg2> ...]"
+msgstr "[{-|<назва>} [<програма> <параметр1> <параметр2> ...]]"
 
-#: tools/rpmkey.c:1538
+#: tools/rpmkey.c:1711
+msgid "Set <mask> on <kr>"
+msgstr ""
+
+#: tools/rpmkey.c:1711
 msgid "<key> <mask>"
 msgstr "<ключ> <маска>"
 
-#: tools/rpmkey.c:1540
-msgid "Show process keyrings"
+#: tools/rpmkey.c:1713
+#, fuzzy
+msgid "Show process <kr>"
 msgstr "Показати дані щодо обробки сховищ ключів"
 
-#: tools/rpmkey.c:1542
-msgid "Set the expiry time on a key"
-msgstr "Встановити час завершення дії ключа"
+#: tools/rpmkey.c:1713
+msgid "[-x] [<kr>]"
+msgstr ""
 
-#: tools/rpmkey.c:1542
+#: tools/rpmkey.c:1715
+#, fuzzy
+msgid "Set <timeout> on <key>"
+msgstr "<ключ> <час очікування> <сховище ключів>"
+
+#: tools/rpmkey.c:1715
 msgid "<key> <timeout>"
 msgstr "<ключ> <час очікування>"
 
-#: tools/rpmkey.c:1544
-msgid "Unlink a key from a keyring"
+#: tools/rpmkey.c:1717
+#, fuzzy
+msgid "Unlink <key> from <kr>"
 msgstr "Скасувати зв’язок ключа зі сховищем ключів"
 
-#: tools/rpmkey.c:1546
+#: tools/rpmkey.c:1717
+#, fuzzy
+msgid "<key> [<kr>]"
+msgstr "<ключ> <маска>"
+
+#: tools/rpmkey.c:1719
+#, fuzzy
+msgid "Update <key> with <data>"
+msgstr "<ключ> <дані>"
+
+#: tools/rpmkey.c:1719
 msgid "<key> <data>"
 msgstr "<ключ> <дані>"
 
-#: tools/rpmkey.c:1556
+#: tools/rpmkey.c:1721
+#, fuzzy
+msgid "Display keyutils version"
+msgstr "Показати дані щодо версії програмного забезпечення"
+
+#: tools/rpmkey.c:1731
+#, fuzzy
 msgid ""
 "Format:\n"
+"  keyctl --version \n"
 "  keyctl add <type> <desc> <data> <keyring>\n"
 "  keyctl chgrp <key> <gid>\n"
 "  keyctl chown <key> <uid>\n"
 "  keyctl clear <keyring>\n"
 "  keyctl describe <keyring>\n"
 "  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl invalidate <key>\n"
+"  keyctl get_persistent <keyring> [<uid>]\n"
 "  keyctl link <key> <keyring>\n"
 "  keyctl list <keyring>\n"
 "  keyctl negate <key> <timeout> <keyring>\n"
@@ -7517,8 +7667,13 @@ msgid ""
 "  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
 "  keyctl print <key>\n"
 "  keyctl pupdate <key>\n"
+"  keyctl purge <type>\n"
+"  keyctl purge [-p] [-i] <type> <desc>\n"
+"  keyctl purge -s <type> <desc>\n"
 "  keyctl rdescribe <keyring> [sep]\n"
 "  keyctl read <key>\n"
+"  keyctl reap [-v]\n"
+"  keyctl reject <key> <timeout> <error> <keyring>\n"
 "  keyctl request <type> <desc> [<dest_keyring>]\n"
 "  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
 "  keyctl revoke <key>\n"
@@ -7529,9 +7684,9 @@ msgid ""
 "  keyctl session - [<prog> <arg1> <arg2> ...]\n"
 "  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
 "  keyctl setperm <key> <mask>\n"
-"  keyctl show \n"
+"  keyctl show [-x] [<keyring>]\n"
 "  keyctl timeout <key> <timeout>\n"
-"  keyctl unlink <key> <keyring>\n"
+"  keyctl unlink <key> [<keyring>]\n"
 "  keyctl update <key> <data>\n"
 "\n"
 "Key/keyring ID:\n"
@@ -7597,8 +7752,8 @@ msgstr ""
 "Якщо ви користуєтеся цим варіантом, додайте до опису префікс «<підтип>:»\n"
 
 #: tools/rpmmtree.c:320
-#, c-format
-msgid "%s: failed at line %d of the specification\n"
+#, fuzzy, c-format
+msgid "%s: failed at line %u of the specification\n"
 msgstr "%s: помилка у рядку %d специфікації\n"
 
 #: tools/rpmmtree.c:1481 tools/rpmmtree.c:1671
@@ -7902,8 +8057,8 @@ msgid "Remote file does not exist -- broken link!!!\n"
 msgstr "Файла на віддаленому комп’ютері не існує — помилкове посилання!!!\n"
 
 #: tools/rpmwget.c:794
-#, c-format
-msgid "Ouptut file \"%s\" exists, skipping retrieve.\n"
+#, fuzzy, c-format
+msgid "Output file \"%s\" exists, skipping retrieve.\n"
 msgstr ""
 "Файл виведення даних «%s» вже існує, дія зі звантаження не "
 "виконуватиметься.\n"
@@ -8577,6 +8732,9 @@ msgstr "Зібрати і перезавантажити правила."
 msgid "Exit the program."
 msgstr "Завершити роботу програми."
 
+#~ msgid "(expected number :rpn)"
+#~ msgstr "(очікувалося число :rpn)"
+
 #~ msgid "Success"
 #~ msgstr "Виконано"
 
@@ -8614,3 +8772,21 @@ msgstr "Завершити роботу програми."
 
 #~ msgid "Stay on thgis file system"
 #~ msgstr "Залишатися на цій файловій системі"
+
+#~ msgid "Change the access controls on a key"
+#~ msgstr "Змінити параметри доступу до ключа"
+
+#~ msgid "<keyring>"
+#~ msgstr "<сховище ключів>"
+
+#~ msgid "<key> <keyring>"
+#~ msgstr "<ключ> <сховище ключів>"
+
+#~ msgid "Start a new session with fresh keyrings"
+#~ msgstr "Почати новий сеанс з новими сховищами ключів"
+
+#~ msgid "Set the permissions mask on a key"
+#~ msgstr "Встановити маску прав доступу до ключа"
+
+#~ msgid "Set the expiry time on a key"
+#~ msgstr "Встановити час завершення дії ключа"
