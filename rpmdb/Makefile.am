@@ -33,8 +33,7 @@ CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \
-	logio_rec.c logio_auto.c logio_autop.c logio_auto.h \
-	qf.l qf.y qf.inp tqf.l tqf.y tqf.inp grammar.y scanner.l json1.js
+	logio_rec.c logio_auto.c logio_autop.c logio_auto.h
 
 EXTRA_PROGRAMS = qfcalc qfgraph logio tjfn tqf # tbdb
 noinst_PROGRAMS = json
@@ -193,7 +192,7 @@ install-data-local:
 check-local:
 
 clean-local:
-	rm -f *.o tagtbl.c
+	rm -f *.o tagtbl.c Tgrammar.* Qgrammar.*
 
 distclean-local:
 	rm -f .syntastic_c_config
@@ -332,8 +331,10 @@ LFLAGS=	-d -T -v -8 -b --yylineno --reentrant --bison-bridge --perf-report
 YACC =	bison
 YFLAGS=	-Dapi.pure -t -d -v --report=all
 
+EXTRA_DIST += grammar.y scanner.l json1.js
+EXTRA_DIST += Jgrammar.c Jgrammar.h Jscanner.c
 BUILT_SOURCES += Jgrammar.c Jgrammar.h Jscanner.c
-Jgrammar.c: grammar.y
+Jgrammar.c Jgrammar.h: grammar.y
 	$(YACC) $(YFLAGS) -o $@ $<
 Jscanner.c: scanner.l
 	$(LEX) -R -o $@ $<
@@ -342,8 +343,10 @@ json_SOURCES = Jgrammar.c Jscanner.c json.c
 testjson: json1.js json
 	./json json1.js
 
+EXTRA_DIST += qf.l qf.y qf.inp
+#EXTRA_DIST += Qgrammar.c Qgrammar.h Qscanner.c
 BUILT_SOURCES += Qgrammar.c Qgrammar.h Qscanner.c
-Qgrammar.c: qf.y
+Qgrammar.c Qgrammar.h: qf.y
 	$(YACC) $(YFLAGS) -o $@ $<
 Qscanner.c: qf.l
 	$(LEX) -R -o $@ $<
@@ -354,6 +357,8 @@ testqf: qfcalc qfgraph
 	./qfcalc < qf.inp
 	./qfgraph < qf.inp
 
+EXTRA_DIST += tqf.l tqf.y tqf.inp
+#EXTRA_DIST += Tgrammar.c Tgrammar.h Tscanner.c
 BUILT_SOURCES += Tgrammar.c Tgrammar.h Tscanner.c
 Tgrammar.c Tgrammar.h: tqf.y
 	$(YACC) $(YFLAGS) -o $@ $<
