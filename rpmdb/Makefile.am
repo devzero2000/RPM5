@@ -192,9 +192,10 @@ install-data-local:
 check-local:
 
 clean-local:
-	rm -f *.o tagtbl.c Tgrammar.* Qgrammar.*
+	rm -f *.o tagtbl.c
 
 distclean-local:
+	rm -f Tgrammar.* Qgrammar.*
 	rm -f .syntastic_c_config
 
 uninstall-local:
