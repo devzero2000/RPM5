@@ -316,7 +316,7 @@ static void addRpmTags(PyObject *module)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
-	PyDict_SetItemString(d, (char *) ext->name, to=PyCObject_FromVoidPtr((void *)ext, NULL));
+        PyDict_SetItemString(d, (char *) ext->name, to=PyInt_FromLong(tagValue(ext->name)));
 	Py_XDECREF(to);
         PyDict_SetItem(dict, to, o=PyString_FromString(ext->name + 7));
 	Py_XDECREF(o);
