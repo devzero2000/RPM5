@@ -11,11 +11,11 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
 Perl            mandatory 5.8.0   5.18.4  http://www.perl.com/
-GNU m4      [0] mandatory 1.4.0   1.4.13  http://www.gnu.org/software/m4/
+GNU m4      [0] mandatory 1.4.0   1.4.17  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.69    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.15    http://www.gnu.org/software/automake/
-GNU libtool     mandatory 1.5     2.4.2   http://www.gnu.org/software/libtool/
-GNU gettext     mandatory 0.16    0.19.4  http://www.gnu.org/software/gettext/
+GNU libtool     mandatory 1.5     2.4.6   http://www.gnu.org/software/libtool/
+GNU gettext     mandatory 0.16    0.19.7  http://www.gnu.org/software/gettext/
 GNU make        mandatory -       -       http://www.gnu.org/software/make/
 GNU bash        optional  -       -       http://www.gnu.org/software/bash/
 --------------- --------- ------- ------- -------------------------------------
@@ -29,40 +29,46 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
-Perl            mandatory 5.8.0   5.18.4  http://www.perl.com/
+Perl            mandatory 5.8.0   5.22.1  http://www.perl.com/
 POPT            mandatory 1.15    1.17    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
 Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
 Neon            mandatory 0.27.0  0.30.0  http://www.webdav.org/neon/
-PCRE            mandatory 7.0     8.33    http://www.pcre.org/
-Berkeley-DB [1] mandatory 6.1.19  6.1.19  http://www.oracle.com/database/berkeley-db.html
-Mozilla NSS     optional  3.11    3.17.4  http://www.mozilla.org/projects/security/pki/nss/
-OpenSSL         optional  0.9.8   1.0.1k  http://www.openssl.org/
+PCRE            mandatory 7.0     8.35    http://www.pcre.org/
+Berkeley-DB [1] mandatory 6.1.23  6.1.23  http://www.oracle.com/database/berkeley-db.html
+Mozilla NSS     optional  3.11    3.22.1  http://www.mozilla.org/projects/security/pki/nss/
+OpenSSL         optional  0.9.8   1.0.2g  http://www.openssl.org/
 OpenSSL-FIPS[7] optional  2.0.5   2.0.9   http://www.openssl.org/
 LibTomCrypt     optional  1.17    1.17    http://www.libtom.org/
-LibGcrypt   [6] optional  1.6.0   1.6.1   http://www.gnupg.org/
-SQLite      [1] optional  3.3     3.8.8   http://www.sqlite.org/
+LibGcrypt   [6] optional  1.6.0   1.6.5   http://www.gnupg.org/
+SQLite      [1] optional  3.3     3.11.02 http://www.sqlite.org/
 Lua         [2] optional  5.2     5.2.3   http://www.lua.org/
 ZLib            optional  1.2     1.2.8   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.6   http://www.bzip.org/
-XZ Utils    [3] optional  4.999.9 5.1.2   http://tukaani.org/xz/
-File/magic  [4] optional  4.00    5.19    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.18    0.19.4  http://www.gnu.org/software/gettext/
+XZ Utils    [3] optional  4.999.9 5.2.1   http://tukaani.org/xz/
+File/magic  [4] optional  4.00    5.22    ftp://ftp.astron.com/pub/file/
+GNU gettext     optional  0.18    0.19.7  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 Linux KeyUtils  optional  1.2     1.5.9   http://people.redhat.com/~dhowells/keyutils/
 System libelf   optional  -       -       e.g. http://www.mr511.de/software/english.html
 CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
-Ruby            optional  1.8.7   2.1.5   http://www.ruby-lang.org/
+Python          optional  2.7.10  2.7.10  http://www.ruby-lang.org/
+Tcl             optional  8.6.4   8.6.4   http://www.squirrel-lang.org
 MRuby           optional  1.0.0   1.0.0   https://github.com/iij/mruby
+Ruby            optional  1.8.7   2.2.4   http://www.ruby-lang.org/
 Squirrel        optional  3.0.6   3.1rc1  http://www.squirrel-lang.org
+Java        [8] optional  1.7.0_03 1.8.0_74 http://www.oracle.com/technetwork/java/javase/downloads/index.html
+libgit2         optional  0.23.4  0.23.4  https://libgit2.github.com
 --------------- --------- ------- ------- -------------------------------------
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
 [1] db/sqlite: Berkeley-DB used by RPM.
-               Building RPM against anything _EXCEPT_ db-6.1.19
+               Note that there is a regression between db-6.1.23 -> db-6.1.26
+               with no currently known solution.
+               Building RPM against anything _EXCEPT_ db-6.1.23
                external Berkeley-DB is not officially supported
                (but any version of Berkeley-DB since db-4.5.20 will "work").
 
@@ -89,6 +95,10 @@ Squirrel        optional  3.0.6   3.1rc1  http://www.squirrel-lang.org
 [7] OpenSSL:   openssl runs in FIPS 140-2 mode:
                    https://www.openssl.org/docs/fips/fipsnotes.html
 
+[8[ Java embedding needs /usr/java/jdk1.8.0_*/jre/lib/ext/bsh-2.0b[45].jar
+               installed
+                   http://www.beanshell.org/home.html
+
 Run-Time
 --------
 
@@ -102,7 +112,7 @@ XZ              optional  -       -       http://tukaani.org/xz/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
-GnuPG       [1] optional  2.1.0   2.1.2   http://www.gnupg.org/
+GnuPG       [1] optional  2.1.0   2.1.11  http://www.gnupg.org/
 --------------- --------- ------- ------- -------------------------------------
 
 [1] GnuPG:	gnupg-2.1.0 or later is necessary to externally sign with ECDSA.
