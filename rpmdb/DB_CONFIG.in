@@ -3,9 +3,14 @@ set_data_dir .
 set_lg_dir ./log
 set_tmp_dir ./tmp
 
-# -- thread_count must be >= 8
-#set_thread_count 64
+set_flags DB_MULTIVERSION on
+set_flags DB_AUTO_COMMIT on
+set_flags DB_TXN_SNAPSHOT on
 
+# -- thread_count must be >= 8
+set_thread_count 64
+
+# ================ Debugging
 #set_verbose DB_VERB_BACKUP
 #set_verbose DB_VERB_DEADLOCK
 #set_verbose DB_VERB_FILEOPS

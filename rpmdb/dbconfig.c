@@ -215,6 +215,14 @@ DB_SNAPSHOT	RECNO
  { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oflags, DB_AUTO_COMMIT,
 	NULL, NULL },
 #endif
+#if defined(DB_READ_UNCOMMITTED)
+ { "read_uncommitted", 0,POPT_BIT_SET, &db3dbi.dbi_oflags, DB_READ_UNCOMMITTED,
+	NULL, NULL },
+#endif
+#if defined(DB_READ_COMMITTED)
+ { "read_committed", 0,POPT_BIT_SET, &db3dbi.dbi_oflags, DB_READ_COMMITTED,
+	NULL, NULL },
+#endif
 #if defined(WITH_DB) && defined(DB_NO_AUTO_COMMIT) && defined(NOTYET)
  { "noautocommit", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_NO_AUTO_COMMIT,
 	NULL, NULL },
@@ -222,9 +230,6 @@ DB_SNAPSHOT	RECNO
 #if defined(WITH_DB) && defined(DB_RDWRMASTER) && defined(NOTYET)
  { "rdwrmaster", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDWRMASTER,
 	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(NOTYET)
-DB_READ_UNCOMITTED
 #endif
 #if defined(WITH_DB) && defined(DB_WRITEOPEN)
  { "writeopen", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_WRITEOPEN,

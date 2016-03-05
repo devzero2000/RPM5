@@ -880,7 +880,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
 {
     DB_ENV * dbenv = (DB_ENV *) rpmdb->db_dbenv;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOCK)
 	? dbenv->lock_id(dbenv, _idp) : ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p) id 0x%x rc %d\n", "dbenv->lock_id", dbenv, _idp, *_idp, rc);
@@ -891,7 +891,7 @@ fprintf(stderr, "<-- %s(%p,%p) id 0x%x rc %d\n", "dbenv->lock_id", dbenv, _idp, 
 int rpmlkIdFree(rpmdb rpmdb, uint32_t _id)
 {
     DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOCK)
 	? dbenv->lock_id_free(dbenv, _id) : ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%u) rc %d\n", "dbenv->lock_id_free", dbenv, (unsigned)_id, rc);
@@ -904,7 +904,7 @@ int rpmlkGet(rpmdb rpmdb, DBT * _object, uint32_t _lockmode, void * _lock)
     DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     uint32_t _locker = 0x12344321;
     uint32_t _flags = 0;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOCK)
 	? dbenv->lock_get(dbenv, _locker, _flags, _object, (db_lockmode_t)_lockmode, (DB_LOCK*)_lock)
 	: ENOTSUP;
 if (_rpmdb_debug)
@@ -916,11 +916,26 @@ fprintf(stderr, "<-- %s(%p,0x%x,0x%x,%p,0x%x,%p) rc %d\n", "dbenv->lock_get", db
 int rpmlkPut(rpmdb rpmdb, void * _lock)
 {
     DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOCK)
 	? dbenv->lock_put(dbenv, (DB_LOCK*)_lock)
 	: ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->lock_put", dbenv, _lock, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlkDetect(rpmdb rpmdb, uint32_t _flags, uint32_t _atype, int *_rejected)
+{
+    DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
+    int rejected = -1;
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOCK)
+	? dbenv->lock_detect(dbenv, _flags, _atype, &rejected)
+	: ENOTSUP;
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,0x%x,0x%x,%p) #rejected %d rc %d\n", "dbenv->lock_detect", dbenv, _flags, _atype, _rejected, rejected, rc);
+    if (_rejected)
+	*_rejected = rejected;
     return rc;
 }
 
@@ -930,7 +945,7 @@ int rpmlgcOpen(rpmdb rpmdb)
     DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     DB_LOGC * _logc = NULL;
     uint32_t _flags = 0;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_LOG)
 	? dbenv->log_cursor(dbenv, &_logc, _flags) : ENOTSUP;
     rpmdb->db_logc = (!rc ? _logc : NULL);
 if (_rpmdb_debug)
@@ -1006,7 +1021,7 @@ int rpmmpfSyncAll(rpmdb rpmdb)
 {
     DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     DB_LSN * _lsn = NULL;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_MPOOL)
 	? dbenv->memp_sync(dbenv, _lsn) : ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->memp_sync", dbenv, _lsn, rc);
@@ -1019,7 +1034,7 @@ int rpmmpfTrickle(rpmdb rpmdb)
     DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int _percent = 20;
     int _nwrote = 0;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_MPOOL)
 	? dbenv->memp_trickle(dbenv, _percent, &_nwrote) : ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%d) nwrote %d rc %d\n", "dbenv->memp_trickle", dbenv, _percent, _nwrote, rc);
@@ -1057,7 +1072,7 @@ int rpmmpfOpen(rpmdb rpmdb, /*@null@*/ const char * fn, uint32_t flags)
     int _perms = rpmdb->_dbi[0]->dbi_perms;
     size_t _pagesize = BUFSIZ;
     uint32_t _fcreate_flags = 0;
-    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_MPOOL)
 	? dbenv->memp_fcreate(dbenv, &mpf, _fcreate_flags) : ENOTSUP;
 
 if (_rpmdb_debug)

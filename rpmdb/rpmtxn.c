@@ -59,8 +59,15 @@ int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
     DB_TXN * _parent = (DB_TXN *) parent;
     DB_TXN * _txn = NULL;
     u_int32_t _flags = 0;
-    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
-	? dbenv->txn_begin(dbenv, _parent, &_txn, _flags) : ENOTSUP;
+    int rc = ENOTSUP;
+    if (dbenv && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN) {
+#define	FMASK	(DB_READ_UNCOMMITTED|DB_READ_COMMITTED)
+	_flags |= (rpmdb->_dbi[0]->dbi_oflags & FMASK);
+#undef	FMASK
+	if (rpmdb->_dbi[0]->dbi_oflags & DB_MULTIVERSION)
+	    _flags |= DB_TXN_SNAPSHOT;
+	rc = dbenv->txn_begin(dbenv, _parent, &_txn, _flags);
+    }
     if (!rc) {
 	if (txnp != NULL)
 	    *txnp = _txn;
