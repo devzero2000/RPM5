@@ -34,13 +34,13 @@ set_tmp_dir ./tmp
 #set_verbose DB_VERB_REPMGR_MISC
 #set_verbose DB_VERB_WAITSFOR
 
-#set_flags DB_AUTO_COMMIT on
+set_flags DB_AUTO_COMMIT on
 #set_flags DB_CDB_ALLDB on
 # XXX http://forums.oracle.com/forums/thread.jspa?messageID=3421463
 # XXX http://www.openldap.org/lists/openldap-devel/200701/msg00018.html
 #set_flags DB_DIRECT_DB on
 #set_flags DB_DSYNC_DB on
-#set_flags DB_MULTIVERSION on
+set_flags DB_MULTIVERSION on
 #set_flags DB_NOLOCKING on
 #set_flags DB_NOMMAP on
 #set_flags DB_NOPANIC on
@@ -48,7 +48,7 @@ set_tmp_dir ./tmp
 #set_flags DB_REGION_INIT on
 set_flags DB_TXN_NOSYNC on
 #set_flags DB_TXN_NOWAIT on
-#set_flags DB_TXN_SNAPSHOT on
+set_flags DB_TXN_SNAPSHOT on
 #set_flags DB_TXN_WRITE_NOSYNC on
 #set_flags DB_YIELDCPU         on
 
@@ -75,7 +75,7 @@ set_flags DB_TXN_NOSYNC on
 #set_lg_regionmax 131072
 
 # ================ Locking
-#set_lk_detect DB_LOCK_DEFAULT
+set_lk_detect DB_LOCK_DEFAULT
 #set_lk_detect DB_LOCK_EXPIRE
 #set_lk_detect DB_LOCK_MAXLOCKS
 #set_lk_detect DB_LOCK_MAXWRITE
