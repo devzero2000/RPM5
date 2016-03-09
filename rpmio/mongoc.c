@@ -39,8 +39,10 @@
 # include <winerror.h>
 #endif
 
+#ifdef HAVE_LIBSASL2
 #include <sasl/sasl.h>
 #include <sasl/saslutil.h>
+#endif
 
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
@@ -14228,6 +14230,7 @@ mongoc_read_prefs_copy (const mongoc_read_prefs_t *read_prefs)
    return ret;
 }
 
+#ifdef MONGOC_ENABLE_SASL
 /*==============================================================*/
 /* --- mongoc-sasl.c */
 
@@ -14555,6 +14558,7 @@ _mongoc_sasl_step (mongoc_sasl_t *sasl,
 
    return true;
 }
+#endif
 
 /*==============================================================*/
 /* --- mongoc-socket.c */
