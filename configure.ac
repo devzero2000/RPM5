@@ -2745,7 +2745,7 @@ unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga
 	test -f /usr/bin/crux &&		RPMCANONVENDOR=crux
 	test -f /etc/ark-release &&		RPMCANONVENDOR=ark
 	test -f /etc/openmamba-release &&	RPMCANONVENDOR=openmamba
-	test -r /etc/os-release && ID=$(. /etc/os-release && [ -n "$ID" ] && echo "$ID") && RPMCANONVENDOR="$ID"
+	test -r /etc/os-release && ID=$(. /etc/os-release && test -n "$ID" && echo "$ID") && RPMCANONVENDOR="$ID"
 	;;
 esac
 RPMCANONOS="$target_os_noversion"
