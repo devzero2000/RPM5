@@ -168,21 +168,21 @@
 <!-- bson.h -->
 <spec_type>
   <kind> common_param </kind>
-  <data_type> bson * </data_type>
-  <value> bson_alloc() </value>
+  <data_type> bson_t* </data_type>
+  <value> bson_new() </value>
   <global_code>
-    // bson* common_param global_code
+    // bson_t* common_param global_code
   </global_code>
   <decl_code>
-    // bson* common_param decl_code
-    bson * $0 = bson_alloc();
+    // bson_t* common_param decl_code
+    bson_t* $0 = bson_new();
   </decl_code>
   <init_code>
-    // bson* common_param init_code
+    // bson_t* common_param init_code
     assert(bson_init($0) == BSON_OK);
   </init_code>
   <final_code>
-    // bson* common_param final_code
+    // bson_t* common_param final_code
     assert(bson_finish($0) == BSON_OK);
     bson_destroy($0);
     bson_dealloc($0);
