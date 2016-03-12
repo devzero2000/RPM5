@@ -1,11 +1,10 @@
 #include "system.h"
 
-#include <mongoc.h>
+#include "mongoc.h"
 
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static void
 test_array (void)

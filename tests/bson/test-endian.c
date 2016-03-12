@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-
 #include "system.h"
 
-#include <bson.h>
+#include "bson.h"
 
 #include "bson-tests.h"
 #include "TestSuite.h"
 
 #include "debug.h"
 
-
-RPM_GNUC_PURE
+BSON_GNUC_PURE
 static void
 test_swap16 (void)
 {

@@ -6,80 +6,81 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 DISTCLEANFILES =
 EXTRA_DIST = \
-	abicheck.sh \
-	bson-tests.h \
-	binary/binary_deprecated.bson \
-	binary/codewscope.bson \
-	binary/dollarquery.bson \
-	binary/dotkey.bson \
-	binary/dotquery.bson \
-	binary/eurokey.bson \
-	binary/overflow1.bson \
-	binary/overflow2.bson \
-	binary/overflow3.bson \
-	binary/overflow4.bson \
-	binary/readergrow.bson \
-	binary/stackoverflow.bson \
-	binary/stream.bson \
-	binary/stream_corrupt.bson \
-	binary/test10.bson \
-	binary/test11.bson \
-	binary/test12.bson \
-	binary/test13.bson \
-	binary/test14.bson \
-	binary/test15.bson \
-	binary/test16.bson \
-	binary/test17.bson \
-	binary/test18.bson \
-	binary/test19.bson \
-	binary/test1.bson \
-	binary/test20.bson \
-	binary/test21.bson \
-	binary/test22.bson \
-	binary/test23.bson \
-	binary/test24.bson \
-	binary/test25.bson \
-	binary/test26.bson \
-	binary/test27.bson \
-	binary/test28.bson \
-	binary/test29.bson \
-	binary/test2.bson \
-	binary/test30.bson \
-	binary/test31.bson \
-	binary/test32.bson \
-	binary/test33.bson \
-	binary/test34.bson \
-	binary/test35.bson \
-	binary/test36.bson \
-	binary/test37.bson \
-	binary/test38.bson \
-	binary/test39.bson \
-	binary/test3.bson \
-	binary/test4.bson \
-	binary/test40.bson \
-	binary/test41.bson \
-	binary/test42.bson \
-	binary/test43.bson \
-	binary/test44.bson \
-	binary/test45.bson \
-	binary/test46.bson \
-	binary/test47.bson \
-	binary/test48.bson \
-	binary/test49.bson \
-	binary/test5.bson \
-	binary/test50.bson \
-	binary/test51.bson \
-	binary/test52.bson \
-	binary/test53.bson \
-	binary/test54.bson \
-	binary/test55.bson \
-	binary/test56.bson \
-	binary/test57.bson \
-	binary/test6.bson \
-	binary/test7.bson \
-	binary/test8.bson \
-	binary/test9.bson \
-	binary/trailingnull.bson
+	tests/abicheck.sh \
+	tests/bson-tests.h \
+	tests/binary/binary_deprecated.bson \
+	tests/binary/codewscope.bson \
+	tests/binary/dollarquery.bson \
+	tests/binary/dotkey.bson \
+	tests/binary/dotquery.bson \
+	tests/binary/eurokey.bson \
+	tests/binary/overflow1.bson \
+	tests/binary/overflow2.bson \
+	tests/binary/overflow3.bson \
+	tests/binary/overflow4.bson \
+	tests/binary/readergrow.bson \
+	tests/binary/stackoverflow.bson \
+	tests/binary/stream.bson \
+	tests/binary/stream_corrupt.bson \
+	tests/binary/test10.bson \
+	tests/binary/test11.bson \
+	tests/binary/test12.bson \
+	tests/binary/test13.bson \
+	tests/binary/test14.bson \
+	tests/binary/test15.bson \
+	tests/binary/test16.bson \
+	tests/binary/test17.bson \
+	tests/binary/test18.bson \
+	tests/binary/test19.bson \
+	tests/binary/test1.bson \
+	tests/binary/test20.bson \
+	tests/binary/test21.bson \
+	tests/binary/test22.bson \
+	tests/binary/test23.bson \
+	tests/binary/test24.bson \
+	tests/binary/test25.bson \
+	tests/binary/test26.bson \
+	tests/binary/test27.bson \
+	tests/binary/test28.bson \
+	tests/binary/test29.bson \
+	tests/binary/test2.bson \
+	tests/binary/test30.bson \
+	tests/binary/test31.bson \
+	tests/binary/test32.bson \
+	tests/binary/test33.bson \
+	tests/binary/test34.bson \
+	tests/binary/test35.bson \
+	tests/binary/test36.bson \
+	tests/binary/test37.bson \
+	tests/binary/test38.bson \
+	tests/binary/test39.bson \
+	tests/binary/test3.bson \
+	tests/binary/test4.bson \
+	tests/binary/test40.bson \
+	tests/binary/test41.bson \
+	tests/binary/test42.bson \
+	tests/binary/test43.bson \
+	tests/binary/test44.bson \
+	tests/binary/test45.bson \
+	tests/binary/test46.bson \
+	tests/binary/test47.bson \
+	tests/binary/test48.bson \
+	tests/binary/test49.bson \
+	tests/binary/test5.bson \
+	tests/binary/test50.bson \
+	tests/binary/test51.bson \
+	tests/binary/test52.bson \
+	tests/binary/test53.bson \
+	tests/binary/test54.bson \
+	tests/binary/test55.bson \
+	tests/binary/test56.bson \
+	tests/binary/test57.bson \
+	tests/binary/test6.bson \
+	tests/binary/test7.bson \
+	tests/binary/test8.bson \
+	tests/binary/test9.bson \
+	tests/binary/trailingnull.bson \
+	tests/json/test.json
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -115,6 +116,7 @@ test_libbson_SOURCES = \
 	test-endian.c \
 	test-clock.c \
 	test-error.c \
+	test-iso8601.c \
 	test-iter.c \
 	test-json.c \
 	test-oid.c \
@@ -122,6 +124,7 @@ test_libbson_SOURCES = \
 	test-string.c \
 	test-utf8.c \
 	test-value.c \
+	test-version.c \
 	test-writer.c \
 	test-bcon-basic.c \
 	test-bcon-extract.c

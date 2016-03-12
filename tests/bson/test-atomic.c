@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 #include "system.h"
 
 #include <bson.h>
@@ -21,7 +22,6 @@
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static void
 test1 (void)

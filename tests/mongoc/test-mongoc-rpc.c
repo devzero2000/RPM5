@@ -1,11 +1,11 @@
 #include "system.h"
 
+#include <bcon.h>
 #include <mongoc.h>
 
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static uint8_t *
 get_test_file (const char *filename,
@@ -31,7 +31,7 @@ get_test_file (const char *filename,
    }
 
    len = 40960;
-   buf = bson_malloc0(len);
+   buf = (uint8_t *)bson_malloc0(len);
 #ifdef _WIN32
    len = _read (fd, buf, (uint32_t)len);
 #else
@@ -69,16 +69,16 @@ assert_rpc_equal (const char   *filename,
    _mongoc_rpc_gather(rpc, &ar);
 
 #if 0
-   printf("Before swabbing\n");
-   printf("=========================\n");
+   fprintf(stderr, "Before swabbing\n");
+   fprintf(stderr, "=========================\n");
    mongoc_rpc_printf(rpc);
 #endif
 
    _mongoc_rpc_swab_to_le(rpc);
 
 #if 0
-   printf("After swabbing\n");
-   printf("=========================\n");
+   fprintf(stderr, "After swabbing\n");
+   fprintf(stderr, "=========================\n");
    mongoc_rpc_printf(rpc);
 #endif
 
@@ -87,7 +87,7 @@ assert_rpc_equal (const char   *filename,
       ASSERT(iov->iov_len <= (length - off));
       r = memcmp(&data[off], iov->iov_base, iov->iov_len);
       if (r) {
-         printf("\nError iovec: %u\n", i);
+         fprintf(stderr, "\nError iovec: %u\n", i);
       }
       ASSERT(r == 0);
       off += iov->iov_len;
@@ -108,14 +108,14 @@ test_mongoc_rpc_delete_gather (void)
 
    bson_init(&sel);
 
-   rpc.delete.msg_len = 0;
-   rpc.delete.request_id = 1234;
-   rpc.delete.response_to = -1;
-   rpc.delete.opcode = MONGOC_OPCODE_DELETE;
-   rpc.delete.zero = 0;
-   rpc.delete.collection = "test.test";
-   rpc.delete.flags = MONGOC_DELETE_SINGLE_REMOVE;
-   rpc.delete.selector = bson_get_data(&sel);
+   rpc.delete_.msg_len = 0;
+   rpc.delete_.request_id = 1234;
+   rpc.delete_.response_to = -1;
+   rpc.delete_.opcode = MONGOC_OPCODE_DELETE;
+   rpc.delete_.zero = 0;
+   rpc.delete_.collection = "test.test";
+   rpc.delete_.flags = MONGOC_DELETE_SINGLE_REMOVE;
+   rpc.delete_.selector = bson_get_data(&sel);
 
    assert_rpc_equal("delete1.dat", &rpc);
 }
@@ -139,14 +139,14 @@ test_mongoc_rpc_delete_scatter (void)
    ASSERT(r);
    _mongoc_rpc_swab_from_le(&rpc);
 
-   ASSERT_CMPINT(rpc.delete.msg_len, ==, 39);
-   ASSERT_CMPINT(rpc.delete.request_id, ==, 1234);
-   ASSERT_CMPINT(rpc.delete.response_to, ==, -1);
-   ASSERT_CMPINT(rpc.delete.opcode, ==, MONGOC_OPCODE_DELETE);
-   ASSERT_CMPINT(rpc.delete.zero, ==, 0);
-   ASSERT(!strcmp("test.test", rpc.delete.collection));
-   ASSERT_CMPINT(rpc.delete.flags, ==, MONGOC_DELETE_SINGLE_REMOVE);
-   ASSERT(!memcmp(rpc.delete.selector, bson_get_data(&sel), sel.len));
+   ASSERT_CMPINT(rpc.delete_.msg_len, ==, 39);
+   ASSERT_CMPINT(rpc.delete_.request_id, ==, 1234);
+   ASSERT_CMPINT(rpc.delete_.response_to, ==, -1);
+   ASSERT_CMPINT(rpc.delete_.opcode, ==, MONGOC_OPCODE_DELETE);
+   ASSERT_CMPINT(rpc.delete_.zero, ==, 0);
+   ASSERT(!strcmp("test.test", rpc.delete_.collection));
+   ASSERT_CMPINT(rpc.delete_.flags, ==, MONGOC_DELETE_SINGLE_REMOVE);
+   ASSERT(!memcmp(rpc.delete_.selector, bson_get_data(&sel), sel.len));
 
    assert_rpc_equal("delete1.dat", &rpc);
    bson_free(data);
@@ -257,7 +257,7 @@ test_mongoc_rpc_insert_scatter (void)
 
    ASSERT_CMPINT(rpc.insert.msg_len, ==, 130);
    ASSERT_CMPINT(rpc.insert.request_id, ==, 1234);
-   ASSERT_CMPINT((uint32_t)rpc.insert.response_to, ==, (uint32_t)-1);
+   ASSERT_CMPINT(rpc.insert.response_to, ==, (int32_t)-1);
    ASSERT_CMPINT(rpc.insert.opcode, ==, MONGOC_OPCODE_INSERT);
    ASSERT_CMPINT(rpc.insert.flags, ==, MONGOC_INSERT_CONTINUE_ON_ERROR);
    ASSERT(!strcmp("test.test", rpc.insert.collection));
@@ -414,7 +414,7 @@ test_mongoc_rpc_query_scatter (void)
 
    ASSERT(rpc.query.msg_len == 48);
    ASSERT(rpc.query.request_id == 1234);
-   ASSERT((uint32_t)rpc.query.response_to == (uint32_t)-1);
+   ASSERT(rpc.query.response_to == (int32_t)-1);
    ASSERT(rpc.query.opcode == MONGOC_OPCODE_QUERY);
    ASSERT(rpc.query.flags == MONGOC_QUERY_SLAVE_OK);
    ASSERT(!strcmp(rpc.query.collection, "test.test"));

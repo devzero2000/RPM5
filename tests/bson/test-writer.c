@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-
 #include "system.h"
-
-#include <assert.h>
 
 #include "bson-tests.h"
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static void *
 test_bson_writer_custom_realloc_helper (void  *mem,

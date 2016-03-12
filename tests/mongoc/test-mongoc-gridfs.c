@@ -1,16 +1,17 @@
 #include "system.h"
 
+#include <bcon.h>
 #include <mongoc.h>
 
 #include "test-libmongoc.h"
 #include "mongoc-tests.h"
 #include "TestSuite.h"
+#include "test-conveniences.h"
+#include "mock_server/mock-server.h"
+#include "mock_server/future.h"
+#include "mock_server/future-functions.h"
 
 #include "debug.h"
-
-
-static char *gTestUri;
-
 
 static mongoc_gridfs_t *
 get_test_gridfs (mongoc_client_t *client,
@@ -44,17 +45,18 @@ test_create (void)
    mongoc_client_t *client;
    bson_error_t error;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = mongoc_client_get_gridfs (client, "test", "foo", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (
+      (gridfs = mongoc_client_get_gridfs (client, "test", "foo", &error)),
+      error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
    file = mongoc_gridfs_create_file (gridfs, NULL);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
 
    mongoc_gridfs_file_destroy (file);
 
@@ -73,33 +75,29 @@ test_remove (void)
    mongoc_gridfs_file_opt_t opts = { 0 };
    mongoc_client_t *client;
    bson_error_t error;
-   bool r;
    char name[32];
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = mongoc_client_get_gridfs (client, "test", "foo", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = mongoc_client_get_gridfs (
+      client, "test", "foo", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
-
 
    bson_snprintf (name, sizeof name, "test-remove.%u", rand ());
    opts.filename = name;
 
    file = mongoc_gridfs_create_file (gridfs, &opts);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
 
-   r = mongoc_gridfs_file_remove (file, &error);
-   if (!r) fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   ASSERT_OR_PRINT (mongoc_gridfs_file_remove (file, &error), error);
 
    mongoc_gridfs_file_destroy (file);
 
    file = mongoc_gridfs_find_one_by_filename (gridfs, name, &error);
-   assert (!file);
+   ASSERT (!file);
 
    drop_collections (gridfs, &error);
    mongoc_gridfs_destroy (gridfs);
@@ -121,11 +119,10 @@ test_list (void)
    char buf[100];
    int i = 0;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "list", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "list", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -133,8 +130,8 @@ test_list (void)
       bson_snprintf (buf, sizeof buf, "file.%d", i);
       opt.filename = buf;
       file = mongoc_gridfs_create_file (gridfs, &opt);
-      assert (file);
-      assert (mongoc_gridfs_file_save (file));
+      ASSERT (file);
+      ASSERT (mongoc_gridfs_file_save (file));
       mongoc_gridfs_file_destroy (file);
    }
 
@@ -153,28 +150,88 @@ test_list (void)
    while ((file = mongoc_gridfs_file_list_next (list))) {
       bson_snprintf (buf, sizeof buf, "file.%d", i++);
 
-      assert (strcmp (mongoc_gridfs_file_get_filename (file), buf) == 0);
+      ASSERT_CMPINT (strcmp (mongoc_gridfs_file_get_filename (file), buf), ==, 0);
 
       mongoc_gridfs_file_destroy (file);
    }
-   assert(i == 3);
+   ASSERT_CMPINT (i, ==, 3);
    mongoc_gridfs_file_list_destroy (list);
 
    bson_init (&query);
    bson_append_utf8 (&query, "filename", -1, "file.1", -1);
-   file = mongoc_gridfs_find_one (gridfs, &query, &error);
-   assert (file);
-   assert (strcmp (mongoc_gridfs_file_get_filename (file), "file.1") == 0);
+   ASSERT_OR_PRINT (file = mongoc_gridfs_find_one (gridfs, &query, &error),
+                    error);
+
+   ASSERT_CMPINT (strcmp (mongoc_gridfs_file_get_filename (file), "file.1"), ==, 0);
    mongoc_gridfs_file_destroy (file);
 
-   file = mongoc_gridfs_find_one_by_filename (gridfs, "file.1", &error);
-   assert (file);
-   assert (strcmp (mongoc_gridfs_file_get_filename (file), "file.1") == 0);
+   ASSERT_OR_PRINT (
+      file = mongoc_gridfs_find_one_by_filename (gridfs, "file.1", &error),
+      error);
+
+   ASSERT_CMPINT (strcmp (mongoc_gridfs_file_get_filename (file), "file.1"), ==, 0);
    mongoc_gridfs_file_destroy (file);
 
    drop_collections (gridfs, &error);
    mongoc_gridfs_destroy (gridfs);
 
+   mongoc_client_destroy (client);
+}
+
+
+static void
+test_properties (void)
+{
+   mongoc_client_t *client;
+   mongoc_gridfs_t *gridfs;
+   bson_error_t error;
+   bson_t *doc_in;
+   mongoc_gridfs_file_t *file;
+   mongoc_gridfs_file_list_t *list;
+   bson_t query = BSON_INITIALIZER;
+   const bson_value_t *file_id;
+   const char *alias0, *alias1;
+
+   client = test_framework_client_new ();
+
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "list", &error), error);
+
+   mongoc_gridfs_drop (gridfs, &error);
+
+   /* the C Driver sets _id to an ObjectId, but other drivers can do anything */
+   doc_in = BCON_NEW (
+         "_id", BCON_INT32 (1),
+         "md5", BCON_UTF8 ("md5"),
+         "filename", BCON_UTF8 ("filename"),
+         "contentType", BCON_UTF8 ("content_type"),
+         "aliases", "[", BCON_UTF8 ("alias0"), BCON_UTF8 ("alias1"), "]",
+         "metadata", "{", "key", BCON_UTF8 ("value"), "}",
+         "chunkSize", BCON_INT32 (100));
+
+   ASSERT (mongoc_collection_insert (mongoc_gridfs_get_files (gridfs),
+                                     MONGOC_INSERT_NONE, doc_in, NULL, NULL));
+
+   list = mongoc_gridfs_find (gridfs, &query);
+   file = mongoc_gridfs_file_list_next (list);
+   file_id = mongoc_gridfs_file_get_id (file);
+   ASSERT (file_id);
+   ASSERT_CMPINT (BSON_TYPE_INT32, ==, file_id->value_type);
+   ASSERT_CMPINT (1, ==, file_id->value.v_int32);
+   ASSERT_CMPSTR ("md5", mongoc_gridfs_file_get_md5 (file));
+   ASSERT_CMPSTR ("filename", mongoc_gridfs_file_get_filename (file));
+   ASSERT_CMPSTR ("content_type", mongoc_gridfs_file_get_content_type (file));
+   ASSERT (BCON_EXTRACT ((bson_t *)mongoc_gridfs_file_get_aliases (file),
+                         "0", BCONE_UTF8 (alias0),
+                         "1", BCONE_UTF8 (alias1)));
+
+   ASSERT_CMPSTR ("alias0", alias0);
+   ASSERT_CMPSTR ("alias1", alias1);
+
+   drop_collections (gridfs, &error);
+   mongoc_gridfs_file_destroy (file);
+   mongoc_gridfs_file_list_destroy (list);
+   bson_destroy (doc_in);
+   mongoc_gridfs_destroy (gridfs);
    mongoc_client_destroy (client);
 }
 
@@ -188,20 +245,59 @@ test_create_from_stream (void)
    mongoc_client_t *client;
    bson_error_t error;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "from_stream", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "from_stream", &error)),
+                    error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
    stream = mongoc_stream_file_new_for_path (BINARY_DIR"/gridfs.dat", O_RDONLY, 0);
-   assert (stream);
+   ASSERT (stream);
 
    file = mongoc_gridfs_create_file_from_stream (gridfs, stream, NULL);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
+
+   mongoc_gridfs_file_destroy (file);
+
+   drop_collections (gridfs, &error);
+   mongoc_gridfs_destroy (gridfs);
+
+   mongoc_client_destroy (client);
+}
+
+
+static void
+test_seek (void)
+{
+   mongoc_gridfs_t *gridfs;
+   mongoc_gridfs_file_t *file;
+   mongoc_stream_t *stream;
+   mongoc_client_t *client;
+   bson_error_t error;
+
+   client = test_framework_client_new ();
+
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "seek", &error), error);
+
+   mongoc_gridfs_drop (gridfs, &error);
+
+   stream = mongoc_stream_file_new_for_path (BINARY_DIR"/gridfs-large.dat", O_RDONLY, 0);
+
+   file = mongoc_gridfs_create_file_from_stream (gridfs, stream, NULL);
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, file->chunk_size + 1, SEEK_CUR), ==, 0);
+   ASSERT_CMPINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)(file->chunk_size + 1));
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_END), ==, 0);
+   ASSERT_CMPINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)mongoc_gridfs_file_get_length (file));
 
    mongoc_gridfs_file_destroy (file);
 
@@ -223,6 +319,8 @@ test_read (void)
    ssize_t r;
    char buf[10], buf2[10];
    mongoc_iovec_t iov[2];
+   int previous_errno;
+   ssize_t twenty = 20L;
 
    iov[0].iov_base = buf;
    iov[0].iov_len = 10;
@@ -230,24 +328,46 @@ test_read (void)
    iov[1].iov_base = buf2;
    iov[1].iov_len = 10;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "read", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "read", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
-   stream = mongoc_stream_file_new_for_path (BINARY_DIR"/gridfs.dat", O_RDONLY, 0);
+   stream = mongoc_stream_file_new_for_path (BINARY_DIR"/gridfs-large.dat", O_RDONLY, 0);
 
    file = mongoc_gridfs_create_file_from_stream (gridfs, stream, NULL);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
 
    r = mongoc_gridfs_file_readv (file, iov, 2, 20, 0);
-   assert (r == 20);
-   assert (memcmp (iov[0].iov_base, "Bacon ipsu", 10) == 0);
-   assert (memcmp (iov[1].iov_base, "m dolor si", 10) == 0);
+   ASSERT_CMPSSIZE_T (r, ==, twenty);
+   ASSERT_MEMCMP (iov[0].iov_base, "Bacon ipsu", 10);
+   ASSERT_MEMCMP (iov[1].iov_base, "m dolor si", 10);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 1, SEEK_SET), ==, 0);
+   r = mongoc_gridfs_file_readv (file, iov, 2, 20, 0);
+
+   ASSERT_CMPSSIZE_T (r, ==, twenty);
+   ASSERT_MEMCMP (iov[0].iov_base, "acon ipsum", 10);
+   ASSERT_MEMCMP (iov[1].iov_base, " dolor sit", 10);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, file->chunk_size-1, SEEK_SET), ==, 0);
+   r = mongoc_gridfs_file_readv (file, iov, 2, 20, 0);
+
+   ASSERT_CMPSSIZE_T (r, ==, twenty);
+   ASSERT_CMPINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)(file->chunk_size+19));
+   ASSERT_MEMCMP (iov[0].iov_base, "turducken ", 10);
+   ASSERT_MEMCMP (iov[1].iov_base, "spare ribs", 10);
+
+   assert (mongoc_gridfs_file_seek (file, 20, SEEK_END) == 0);
+   previous_errno = errno;
+   r = mongoc_gridfs_file_readv (file, iov, 2, 20, 0);
+
+   assert (errno == previous_errno);
+   assert (r == 0);
+   assert (mongoc_gridfs_file_tell (file) == (uint64_t)file->length + 20);
 
    mongoc_gridfs_file_destroy (file);
 
@@ -272,7 +392,7 @@ test_write (void)
    mongoc_gridfs_file_opt_t opt = { 0 };
    mongoc_iovec_t iov[2];
    mongoc_iovec_t riov;
-   int len = sizeof buf + sizeof buf2 - 2;
+   ssize_t len = sizeof buf + sizeof buf2 - 2;
 
    iov [0].iov_base = buf;
    iov [0].iov_len = sizeof (buf) - 1;
@@ -284,31 +404,112 @@ test_write (void)
 
    opt.chunk_size = 2;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "write", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "write", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
    file = mongoc_gridfs_create_file (gridfs, &opt);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+
+   /* Test a write across many pages */
+   r = mongoc_gridfs_file_writev (file, iov, 2, 0);
+   ASSERT_CMPSSIZE_T (r, ==, len);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   r = mongoc_gridfs_file_readv (file, &riov, 1, len, 0);
+   ASSERT_CMPSSIZE_T (r, ==, len);
+   ASSERT_CMPINT (memcmp (buf3, "foo bar baz", len), ==, 0);
+
+   /* Test a write starting and ending exactly on chunk boundaries */
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, file->chunk_size, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)(file->chunk_size));
+
+   r = mongoc_gridfs_file_writev (file, iov+1, 1, 0);
+   ASSERT_CMPSSIZE_T (r, ==, (ssize_t)iov[1].iov_len);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   r = mongoc_gridfs_file_readv (file, &riov, 1, len, 0);
+   ASSERT_CMPSSIZE_T (r, ==, len);
+   ASSERT_CMPINT (memcmp (buf3, "fo bazr baz", len), ==, 0);
+
+   /* Test writing beyond the end of the file */
+   assert (mongoc_gridfs_file_seek (file, 5, SEEK_END) == 0);
+   assert (mongoc_gridfs_file_tell (file) == (uint64_t) file->length + 5);
 
    r = mongoc_gridfs_file_writev (file, iov, 2, 0);
    assert (r == len);
+   assert (mongoc_gridfs_file_tell (file) == (uint64_t)2*len + 5);
+   assert (file->length == 2*len + 5);
    assert (mongoc_gridfs_file_save (file));
 
-   r = mongoc_gridfs_file_seek (file, 0, SEEK_SET);
-   assert (!r);
+   assert (mongoc_gridfs_file_seek (file, 0, SEEK_SET) == 0);
+   assert (mongoc_gridfs_file_tell (file) == 0);
 
-   r = mongoc_gridfs_file_tell (file);
-   assert (r == 0);
+   r = mongoc_gridfs_file_readv (file, &riov, 1, 2*len + 5, 0);
+   assert (r == 2*len + 5);
+   assert (memcmp (buf3, "fo bazr baz\0\0\0\0\0foo bar baz", 2*len + 5) == 0);
+   assert (mongoc_gridfs_file_save (file));
 
-   r = mongoc_gridfs_file_readv (file, &riov, 1, len, 0);
-   assert (r == len);
-   assert (memcmp (buf3, "foo bar baz", len) == 0);
+
+   mongoc_gridfs_file_destroy (file);
+
+   drop_collections (gridfs, &error);
+   mongoc_gridfs_destroy (gridfs);
+
+   mongoc_client_destroy (client);
+}
+
+static void
+test_empty (void)
+{
+   mongoc_gridfs_t *gridfs;
+   mongoc_gridfs_file_t *file;
+   mongoc_stream_t *stream;
+   mongoc_client_t *client;
+   bson_error_t error;
+   ssize_t r;
+   char buf[2] = {'h', 'i'};
+   mongoc_iovec_t iov[1];
+   ssize_t two = 2L;
+
+   iov[0].iov_base = buf;
+   iov[0].iov_len = 2;
+
+   client = test_framework_client_new ();
+
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "empty", &error), error);
+
+   stream = mongoc_stream_file_new_for_path (BINARY_DIR"/empty.dat", O_RDONLY, 0);
+
+   file = mongoc_gridfs_create_file_from_stream (gridfs, stream, NULL);
+   ASSERT (file);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_CUR), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_END), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   r = mongoc_gridfs_file_writev(file, iov, 1, 0);
+
+   ASSERT_CMPSSIZE_T (r, ==, two);
+   ASSERT_CMPINT (mongoc_gridfs_file_seek (file, 0, SEEK_SET), ==, 0);
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file), ==, (uint64_t)0);
+
+   r = mongoc_gridfs_file_readv(file, iov, 1, 2, 0);
+
+   ASSERT_CMPSSIZE_T (r, ==, two);
+   ASSERT_CMPINT (strncmp (buf, "hi", 2), ==, 0);
 
    mongoc_gridfs_file_destroy (file);
 
@@ -335,24 +536,23 @@ test_stream (void)
    iov.iov_base = buf;
    iov.iov_len = sizeof buf;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "fs", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "fs", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
    in_stream = mongoc_stream_file_new_for_path (BINARY_DIR"/gridfs.dat", O_RDONLY, 0);
 
    file = mongoc_gridfs_create_file_from_stream (gridfs, in_stream, NULL);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
 
    stream = mongoc_stream_gridfs_new (file);
 
    r = mongoc_stream_readv (stream, &iov, 1, file->length, 0);
-   assert (r == file->length);
+   ASSERT_CMPINT64 ((int64_t)r, ==, file->length);
 
    /* cleanup */
    mongoc_stream_destroy (stream);
@@ -360,6 +560,89 @@ test_stream (void)
    mongoc_gridfs_file_destroy (file);
 
    drop_collections (gridfs, &error);
+   mongoc_gridfs_destroy (gridfs);
+   mongoc_client_destroy (client);
+}
+
+
+#define ASSERT_TELL(file_, position_) \
+   ASSERT_CMPUINT64 (mongoc_gridfs_file_tell (file_), ==, position_)
+
+
+static void
+test_long_seek (void)
+{
+   const uint64_t four_mb = 4 * 1024 * 1024;
+
+   mongoc_client_t *client;
+   bson_error_t error;
+   mongoc_gridfs_t *gridfs;
+   mongoc_gridfs_file_t *file;
+   ssize_t r;
+   mongoc_gridfs_file_opt_t opt = { 0, "filename" };
+   mongoc_iovec_t iov;
+   char buf[16 * 1024]; /* nothing special about 16k, just a buffer */
+   const ssize_t buflen = sizeof (buf);
+   ssize_t written;
+   int64_t cursor_id;
+   int i;
+
+   iov.iov_base = buf;
+   iov.iov_len = sizeof (buf);
+
+   client = test_framework_client_new ();
+   gridfs = get_test_gridfs (client, "long_seek", &error);
+   ASSERT_OR_PRINT (gridfs, error);
+   mongoc_gridfs_drop (gridfs, NULL);
+   file = mongoc_gridfs_create_file (gridfs, &opt);
+   ASSERT (file);
+
+   /* Write 20MB, enough to ensure we need many batches, below */
+   written = 0;
+   while (written < 20 * 1024 * 1024) {
+      r = mongoc_gridfs_file_writev (file, &iov, 1, 0);
+      ASSERT_CMPSSIZE_T (r, ==, buflen);
+      written += r;
+   }
+
+   /* new file handle */
+   mongoc_gridfs_file_save (file);
+   mongoc_gridfs_file_destroy (file);
+   file = mongoc_gridfs_find_one (gridfs,
+                                  tmp_bson ("{'filename': 'filename'}"),
+                                  &error);
+
+   ASSERT_OR_PRINT (file, error);
+
+   /* read the start of the file */
+   r = mongoc_gridfs_file_readv (file, &iov, 1, sizeof (buf), 0);
+   ASSERT_CMPSSIZE_T (r, ==, buflen);
+   ASSERT_TELL (file, (uint64_t) buflen);
+   cursor_id = mongoc_cursor_get_id (file->cursor);
+
+   /* seek forward into next batch and read, gridfs advances cursor */
+   i = mongoc_gridfs_file_seek (file, four_mb, SEEK_CUR);
+   ASSERT_CMPINT (i, ==, 0);
+   r = mongoc_gridfs_file_readv (file, &iov, 1, sizeof (buf), 0);
+   ASSERT_CMPSSIZE_T (r, ==, buflen);
+   ASSERT_TELL (file, four_mb + 2 * buflen);
+
+   /* same as the cursor we started with */
+   ASSERT_CMPINT64 (cursor_id, ==, mongoc_cursor_get_id (file->cursor));
+
+   /* seek more than a batch forward, gridfs discards cursor */
+   i = mongoc_gridfs_file_seek (file, 3 * four_mb, SEEK_CUR);
+   ASSERT_CMPINT (i, ==, 0);
+   ASSERT_TELL (file, 4 * four_mb + 2 * buflen);
+   r = mongoc_gridfs_file_readv (file, &iov, 1, sizeof (buf), 0);
+   ASSERT_CMPSSIZE_T (r, ==, buflen);
+   ASSERT_TELL (file, 4 * four_mb + 3 * buflen);
+
+   /* new cursor, not the one we started with */
+   ASSERT_CMPINT64 (cursor_id, !=, mongoc_cursor_get_id (file->cursor));
+
+   mongoc_gridfs_file_destroy (file);
+   ASSERT_OR_PRINT (drop_collections (gridfs, &error), error);
    mongoc_gridfs_destroy (gridfs);
    mongoc_client_destroy (client);
 }
@@ -373,37 +656,36 @@ test_remove_by_filename (void)
    mongoc_gridfs_file_opt_t opt = { 0 };
    mongoc_client_t *client;
    bson_error_t error;
-   bool ret;
 
-   client = mongoc_client_new (gTestUri);
-   assert (client);
+   client = test_framework_client_new ();
+   ASSERT (client);
 
-   gridfs = get_test_gridfs (client, "fs_remove_by_filename", &error);
-   assert (gridfs);
+   ASSERT_OR_PRINT (gridfs = get_test_gridfs (
+      client, "fs_remove_by_filename", &error), error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
    opt.filename = "foo_file_1.txt";
    file = mongoc_gridfs_create_file (gridfs, &opt);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
    mongoc_gridfs_file_destroy (file);
 
    opt.filename = "foo_file_2.txt";
    file = mongoc_gridfs_create_file (gridfs, &opt);
-   assert (file);
-   assert (mongoc_gridfs_file_save (file));
+   ASSERT (file);
+   ASSERT (mongoc_gridfs_file_save (file));
 
-   ret = mongoc_gridfs_remove_by_filename (gridfs, "foo_file_1.txt", &error);
-   if (!ret) fprintf (stderr, "ERROR: %s\n", error.message);
-   assert (ret);
+   ASSERT_OR_PRINT (
+      mongoc_gridfs_remove_by_filename (gridfs, "foo_file_1.txt", &error),
+      error);
    mongoc_gridfs_file_destroy (file);
 
    file = mongoc_gridfs_find_one_by_filename (gridfs, "foo_file_1.txt", &error);
-   assert (!file);
+   ASSERT (!file);
 
    file = mongoc_gridfs_find_one_by_filename (gridfs, "foo_file_2.txt", &error);
-   assert (file);
+   ASSERT (file);
    mongoc_gridfs_file_destroy (file);
 
    drop_collections (gridfs, &error);
@@ -412,27 +694,206 @@ test_remove_by_filename (void)
    mongoc_client_destroy (client);
 }
 
-
 static void
-cleanup_globals (void)
+test_missing_chunk (void)
 {
-   bson_free (gTestUri);
+   mongoc_client_t *client;
+   bson_error_t error;
+   mongoc_gridfs_t *gridfs;
+   mongoc_gridfs_file_t *file;
+   mongoc_collection_t *chunks;
+   ssize_t r;
+   mongoc_gridfs_file_opt_t opt = { 0, "filename" };
+   mongoc_iovec_t iov;
+   char buf[16 * 1024]; /* nothing special about 16k, just a buffer */
+   const ssize_t buflen = sizeof (buf);
+   ssize_t written;
+   bool ret;
+
+   iov.iov_base = buf;
+   iov.iov_len = sizeof (buf);
+
+   client = test_framework_client_new ();
+   gridfs = get_test_gridfs (client, "long_seek", &error);
+   ASSERT_OR_PRINT (gridfs, error);
+   mongoc_gridfs_drop (gridfs, NULL);
+   file = mongoc_gridfs_create_file (gridfs, &opt);
+   ASSERT (file);
+
+   /* 700k, enough to need three 255k chunks */
+   written = 0;
+   while (written < 700 * 1024) {
+      r = mongoc_gridfs_file_writev (file, &iov, 1, 0);
+      ASSERT_CMPSSIZE_T (r, ==, buflen);
+      written += r;
+   }
+
+   /* new file handle */
+   mongoc_gridfs_file_save (file);
+   mongoc_gridfs_file_destroy (file);
+   file = mongoc_gridfs_find_one_by_filename (gridfs, "filename", &error);
+   ASSERT_OR_PRINT (file, error);
+
+   /* chunks have n=0, 1, 2; remove the middle one */
+   chunks = mongoc_gridfs_get_chunks (gridfs);
+   ret = mongoc_collection_remove (chunks, MONGOC_REMOVE_NONE,
+                                   tmp_bson ("{'n': 1}"), NULL, &error);
+
+   ASSERT_OR_PRINT (ret, error);
+
+   /* read the file */
+   for (;;) {
+      r = mongoc_gridfs_file_readv (file, &iov, 1, sizeof (buf), 0);
+      if (r > 0) {
+         ASSERT_CMPSSIZE_T (r, ==, buflen);
+      } else {
+         ASSERT (mongoc_gridfs_file_error (file, &error));
+         ASSERT_ERROR_CONTAINS (error,
+                                MONGOC_ERROR_GRIDFS,
+                                MONGOC_ERROR_GRIDFS_CHUNK_MISSING,
+                                "missing chunk number 1");
+
+         break;
+      }
+   }
+
+   mongoc_gridfs_file_destroy (file);
+   ASSERT_OR_PRINT (drop_collections (gridfs, &error), error);
+   mongoc_gridfs_destroy (gridfs);
+   mongoc_client_destroy (client);
 }
 
+static mongoc_gridfs_t *
+_get_gridfs (mock_server_t *server,
+             mongoc_client_t *client)
+{
+   future_t *future;
+   bson_error_t error;
+   request_t *request;
+   int i;
+   mongoc_gridfs_t *gridfs;
+
+   /* gridfs ensures two indexes on fs.chunks */
+   future = future_client_get_gridfs (client, "db", NULL, &error);
+   for (i = 0; i < 2; i++) {
+      request = mock_server_receives_command (
+         server,
+         "db",
+         MONGOC_QUERY_NONE,
+         "{'createIndexes': 'fs.chunks'}");
+
+      mock_server_replies_ok_and_destroys (request);
+   }
+
+   gridfs = future_get_mongoc_gridfs_ptr (future);
+   ASSERT (gridfs);
+
+   future_destroy (future);
+
+   return gridfs;
+}
+
+
+/* check gridfs inherits read / write concern, read prefs from the client */
+static void
+test_inherit_client_config (void)
+{
+   mock_server_t *server;
+   mongoc_client_t *client;
+   mongoc_write_concern_t *write_concern;
+   mongoc_read_concern_t *read_concern;
+   mongoc_read_prefs_t *secondary_pref;
+   future_t *future;
+   bson_error_t error;
+   request_t *request;
+   mongoc_gridfs_t *gridfs;
+   mongoc_gridfs_file_t *file;
+
+   /* mock mongos: easiest way to test that read preference is configured */
+   server = mock_server_new ();
+   mock_server_auto_ismaster (server,
+                              "{'ok': 1,"
+                              " 'maxWireVersion': 4,"
+                              " 'ismaster': true,"
+                              " 'msg': 'isdbgrid'}");
+
+   mock_server_run (server);
+
+   /* configure read / write concern and read prefs on client */
+   client = mongoc_client_new_from_uri (mock_server_get_uri (server));
+
+   write_concern = mongoc_write_concern_new ();
+   mongoc_write_concern_set_w (write_concern, 2);
+   mongoc_client_set_write_concern (client, write_concern);
+
+   read_concern = mongoc_read_concern_new ();
+   mongoc_read_concern_set_level (read_concern,
+                                  MONGOC_READ_CONCERN_LEVEL_MAJORITY);
+   mongoc_client_set_read_concern (client, read_concern);
+
+   secondary_pref = mongoc_read_prefs_new (MONGOC_READ_SECONDARY);
+   mongoc_client_set_read_prefs (client, secondary_pref);
+
+   gridfs = _get_gridfs (server, client);
+
+   /* test read prefs and read concern */
+   future = future_gridfs_find_one (gridfs, tmp_bson ("{}"), &error);
+   request = mock_server_receives_command (
+      server, "db", MONGOC_QUERY_SLAVE_OK,
+      "{'$query': {'find': 'fs.files', 'readConcern': {'level': 'majority'}},"
+      " '$readPreference': {'mode': 'secondary'}}");
+
+   mock_server_replies_simple (
+      request,
+      "{'ok': 1, 'cursor': {'ns': 'fs.files', 'firstBatch': [{'_id': 1}]}}");
+
+   file = future_get_mongoc_gridfs_file_ptr (future);
+   ASSERT (file);
+
+   request_destroy (request);
+   future_destroy (future);
+
+   /* test write concern */
+   future = future_gridfs_file_remove (file, &error);
+
+   request = mock_server_receives_command (
+      server, "db", MONGOC_QUERY_NONE,
+      "{'delete': 'fs.files', 'writeConcern': {'w': 2}}");
+
+   mock_server_replies_ok_and_destroys (request);
+
+   request = mock_server_receives_command (
+      server, "db", MONGOC_QUERY_NONE,
+      "{'delete': 'fs.chunks', 'writeConcern': {'w': 2}}");
+
+   mock_server_replies_ok_and_destroys (request);
+   ASSERT (future_get_bool (future));
+   future_destroy (future);
+
+   mongoc_gridfs_file_destroy (file);
+   mongoc_gridfs_destroy (gridfs);
+   mongoc_write_concern_destroy (write_concern);
+   mongoc_read_concern_destroy (read_concern);
+   mongoc_read_prefs_destroy (secondary_pref);
+   mongoc_client_destroy (client);
+   mock_server_destroy (server);
+}
 
 void
 test_gridfs_install (TestSuite *suite)
 {
-   gTestUri = bson_strdup_printf ("mongodb://%s/", MONGOC_TEST_HOST);
-
    TestSuite_Add (suite, "/GridFS/create", test_create);
    TestSuite_Add (suite, "/GridFS/create_from_stream", test_create_from_stream);
    TestSuite_Add (suite, "/GridFS/list", test_list);
+   TestSuite_Add (suite, "/GridFS/properties", test_properties);
+   TestSuite_Add (suite, "/GridFS/empty", test_empty);
    TestSuite_Add (suite, "/GridFS/read", test_read);
+   TestSuite_Add (suite, "/GridFS/seek", test_seek);
    TestSuite_Add (suite, "/GridFS/stream", test_stream);
    TestSuite_Add (suite, "/GridFS/remove", test_remove);
    TestSuite_Add (suite, "/GridFS/write", test_write);
+   TestSuite_Add (suite, "/GridFS/test_long_seek", test_long_seek);
    TestSuite_Add (suite, "/GridFS/remove_by_filename", test_remove_by_filename);
-
-   atexit (cleanup_globals);
+   TestSuite_Add (suite, "/GridFS/missing_chunk", test_missing_chunk);
+   TestSuite_Add (suite, "/GridFS/inherit_client_config", test_inherit_client_config);
 }

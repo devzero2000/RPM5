@@ -18,22 +18,7 @@
 #ifndef MONGOC_TESTS_H
 #define MONGOC_TESTS_H
 
-
-#ifdef BSON_DISABLE_ASSERT
-# undef BSON_DISABLE_ASSERT
-#endif
-
-
-#ifdef BSON_DISABLE_CHECKS
-# undef BSON_DISABLE_CHECKS
-#endif
-
-
 #include <bson.h>
-#ifdef _WIN32
-# include <process.h>
-#endif
-
 
 BSON_BEGIN_DECLS
 
@@ -61,7 +46,7 @@ BSON_BEGIN_DECLS
          fprintf(stderr, "FAIL\n\nAssert Failure: %d %s %d\n"           \
                          "%s:%d  %s()\n",                               \
                          a, #eq, b,                                     \
-                         __FILE__, __LINE__, __FUNCTION__);             \
+                         __FILE__, __LINE__, BSON_FUNC);             \
          abort();                                                       \
       }                                                                 \
    } while (0)

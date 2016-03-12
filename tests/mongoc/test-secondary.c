@@ -15,6 +15,8 @@ query_collection (mongoc_collection_t *col)
    bson_error_t error;
    bson_t q;
 
+   mongoc_init ();
+
    bson_init(&q);
    bson_append_utf8(&q, "hello", -1, "world", -1);
 
@@ -43,7 +45,7 @@ query_collection (mongoc_collection_t *col)
          }
          gExpectingFailure = false;
       } else {
-         MONGOC_WARNING("%s", error.message);
+         fprintf (stderr, "%s", error.message);
          abort();
       }
    }

@@ -8,8 +8,10 @@ DISTCLEANFILES =
 EXTRA_DIST = \
 	abicheck.sh \
 	binary/delete1.dat \
+	binary/empty.dat \
 	binary/get_more1.dat \
 	binary/gridfs.dat \
+	binary/gridfs-large.dat \
 	binary/insert1.dat \
 	binary/kill_cursors1.dat \
 	binary/msg1.dat \
@@ -20,13 +22,26 @@ EXTRA_DIST = \
 	binary/update1.dat \
 	certificates/ca.pem \
 	certificates/client.pem \
-	mock-server.c \
-	mock-server.h \
+	mock_server/future-value.h \
+	mock_server/future.c \
+	mock_server/future.h \
+	mock_server/mock-server.c \
+	mock_server/mock-server.h \
+	mock_server/mock-rs.c \
+	mock_server/mock-rs.h \
+	mock_server/request.c \
+	mock_server/request.h \
+	mock_server/sync-queue.c \
+	mock_server/sync-queue.h \
 	mongoc-tests.c \
 	mongoc-tests.h \
 	trust_dir.cnf \
 	make_ca.pl \
-	c_rehash
+	c_rehash \
+	$(wildcard json/command_monitoring/*.json) \
+	$(wildcard json/server_discovery_and_monitoring/*/*.json) \
+	$(wildcard json/server_selection/rtt/*.json) \
+	$(wildcard json/server_selection/server_selection/*/*/*.json)
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -65,6 +80,7 @@ TEST_PROGS = test-libmongoc
 
 TEST_CFLAGS = \
 	$(AM_CPPFLAGS) \
+	-Wno-deprecated-declarations \
 	-DMONGOC_COMPILATION \
 	-DBINARY_DIR="\"$(srcdir)/binary\""
 
@@ -110,34 +126,72 @@ test_replica_set_ssl_LDADD = $(TEST_LIBS)
 
 
 test_libmongoc_SOURCES = \
-	mock-server.c \
-	mock-server.h \
+	debug-stream.c \
+	json-test.c \
+	json-test.h \
+	mock_server/future.c \
+	mock_server/future.h \
+	mock_server/future-functions.c \
+	mock_server/future-functions.h \
+	mock_server/future-value.c \
+	mock_server/future-value.h \
+	mock_server/mock-server.c \
+	mock_server/mock-server.h \
+	mock_server/mock-rs.c \
+	mock_server/mock-rs.h \
+	mock_server/request.c \
+	mock_server/request.h \
+	mock_server/sync-queue.c \
+	mock_server/sync-queue.h \
 	test-libmongoc.c \
 	test-bulk.c \
+	test-conveniences.c \
+	test-conveniences.h \
 	test-mongoc-array.c \
+	test-mongoc-async.c \
 	test-mongoc-buffer.c \
 	test-mongoc-client.c \
 	test-mongoc-client-pool.c \
+	test-mongoc-cluster.c \
 	test-mongoc-collection.c \
+	test-mongoc-collection-find.c \
+	test-mongoc-command-monitoring.c \
 	test-mongoc-cursor.c \
 	test-mongoc-database.c \
+	test-mongoc-exhaust.c \
+	test-mongoc-find-and-modify.c \
 	test-mongoc-gridfs.c \
 	test-mongoc-gridfs-file-page.c \
+	test-mongoc-log.c \
 	test-mongoc-list.c \
 	test-mongoc-matcher.c \
 	test-mongoc-queue.c \
 	test-mongoc-read-prefs.c \
 	test-mongoc-rpc.c \
+	test-mongoc-socket.c \
+	test-mongoc-sdam.c \
+	test-mongoc-server-selection.c \
+	test-mongoc-server-selection-errors.c \
+	test-mongoc-set.c \
 	test-mongoc-stream.c \
+	test-mongoc-thread.c \
+	test-mongoc-topology-reconcile.c \
+	test-mongoc-topology-scanner.c \
+	test-mongoc-topology.c \
 	test-mongoc-uri.c \
+	test-mongoc-usleep.c \
+	test-mongoc-util.c \
+	test-mongoc-version.c \
 	test-mongoc-write-concern.c \
 	test-libmongoc.h \
+	test-sasl.c \
 	test-write-commands.c \
 	TestSuite.c \
 	TestSuite.h
 test_libmongoc_SOURCES += \
 	test-x509.c \
 	test-mongoc-stream-tls.c \
+	test-mongoc-stream-tls-error.c \
 	ssl-test.c \
 	ssl-test.h
 test_libmongoc_CFLAGS = $(TEST_CFLAGS)
@@ -158,7 +212,7 @@ trust_dir/done: $(srcdir)/make_ca.pl $(srcdir)/trust_dir.cnf
 	$(srcdir)/make_ca.pl $(builddir)/trust_dir $(srcdir)/trust_dir.cnf
 	touch $(builddir)/trust_dir/done
 
-check: test
+check: test # abicheck
 
 TEST_ARGS = -f -p
 
@@ -168,7 +222,7 @@ test: $(TEST_PROGS) test_certs
 	done
 
 DISTCLEANFILES += \
-	test.log \
+	test-results.json \
 	trust_dir/ca.db.serial \
 	trust_dir/done \
 	trust_dir/keys/rev.mongodb.com.pem \

@@ -25,9 +25,11 @@
 #include <stdint.h>
 # include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #include <rpmutil.h>
+
 
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -59,10 +61,18 @@
 
 
 /*
- * Define to 1 if we have access to GCC 64-bit atomic builtins.
+ * Define to 1 if we have access to GCC 32-bit atomic builtins.
  * While this requires GCC 4.1+ in most cases, it is also architecture
  * dependent. For example, some PPC or ARM systems may not have it even
  * if it is a recent GCC version.
+ */
+#define BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1
+#if BSON_HAVE_ATOMIC_32_ADD_AND_FETCH != 1
+# undef BSON_HAVE_ATOMIC_32_ADD_AND_FETCH
+#endif
+
+/*
+ * Similarly, define to 1 if we have access to GCC 64-bit atomic builtins.
  */
 #define BSON_HAVE_ATOMIC_64_ADD_AND_FETCH 1
 #if BSON_HAVE_ATOMIC_64_ADD_AND_FETCH != 1
@@ -99,11 +109,37 @@
 
 
 /*
- * Define to 1 if you have strnlen available on your platform.
+ * Define to 1 if you have snprintf available on your platform.
  */
 #define BSON_HAVE_SNPRINTF 1
 #if BSON_HAVE_SNPRINTF != 1
 # undef BSON_HAVE_SNPRINTF
+#endif
+
+
+/*
+ * Define to 1 if you have _set_output_format (VS2013 and older).
+ */
+#define BSON_NEEDS_SET_OUTPUT_FORMAT 0
+#if BSON_NEEDS_SET_OUTPUT_FORMAT != 1
+# undef BSON_NEEDS_SET_OUTPUT_FORMAT
+#endif
+
+/*
+ * Define to 1 if you have struct timespec available on your platform.
+ */
+#define BSON_HAVE_TIMESPEC 1
+#if BSON_HAVE_TIMESPEC != 1
+# undef BSON_HAVE_TIMESPEC
+#endif
+
+
+/*
+ * Define to 1 if you want extra aligned types in libbson
+ */
+#define BSON_EXTRA_ALIGN 1
+#if BSON_EXTRA_ALIGN != 1
+# undef BSON_EXTRA_ALIGN
 #endif
 
 /*==============================================================*/
@@ -130,6 +166,20 @@
 #  define BSON_END_DECLS
 #endif
 
+
+#define BSON_GNUC_CHECK_VERSION(major, minor) \
+    (defined(__GNUC__) && \
+     ((__GNUC__ > (major)) || \
+      ((__GNUC__ == (major)) && \
+       (__GNUC_MINOR__ >= (minor)))))
+
+
+#define BSON_GNUC_IS_VERSION(major, minor) \
+    (defined(__GNUC__) && \
+     (__GNUC__ == (major)) && \
+     (__GNUC_MINOR__ == (minor)))
+
+
 #ifdef _MSC_VER
 #  ifdef BSON_COMPILATION
 #    define BSON_API __declspec(dllexport)
@@ -141,47 +191,60 @@
 #endif
 
 
-#ifndef MIN
-#  ifdef __cplusplus
-#    define MIN(a, b) ( (std::min)(a, b) )
-#  elif defined(_MSC_VER)
-#    define MIN(a, b) ((a) < (b) ? (a) : (b))
-#  else
-#    define MIN(a, b) ({     \
-                          __typeof__ (a)_a = (a); \
-                          __typeof__ (b)_b = (b); \
-                          _a < _b ? _a : _b;   \
-                       })
-#  endif
-#endif
-
-
-#ifndef MAX
-#  ifdef __cplusplus
-#    define MAX(a, b) ( (std::max)(a, b) )
-#  elif defined(_MSC_VER)
-#    define MAX(a, b) ((a) > (b) ? (a) : (b))
-#  else
-#    define MAX(a, b) ({     \
-                          __typeof__ (a)_a = (a); \
-                          __typeof__ (b)_b = (b); \
-                          _a > _b ? _a : _b;   \
-                       })
-#  endif
-#endif
-
-
-#ifndef ABS
-#  define ABS(a) (((a) < 0) ? ((a) * -1) : (a))
-#endif
-
-
-#if defined(_MSC_VER)
-#  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
-#  define BSON_ALIGNED_END(_N)
+#ifdef MIN
+#  define BSON_MIN MIN
+#elif defined(__cplusplus)
+#  define BSON_MIN(a, b) ( (std::min)(a, b) )
+#elif defined(_MSC_VER)
+#  define BSON_MIN(a, b) ((a) < (b) ? (a) : (b))
 #else
-#  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  define BSON_MIN(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
+
+#ifdef MAX
+#  define BSON_MAX MAX
+#elif defined(__cplusplus)
+#  define BSON_MAX(a, b) ( (std::max)(a, b) )
+#elif defined(_MSC_VER)
+#  define BSON_MAX(a, b) ((a) > (b) ? (a) : (b))
+#else
+#  define BSON_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
+
+#ifdef ABS
+#  define BSON_ABS ABS
+#else
+#  define BSON_ABS(a) (((a) < 0) ? ((a) * -1) : (a))
+#endif
+
+#ifdef _MSC_VER
+#  ifdef _WIN64
+#    define BSON_ALIGN_OF_PTR 8
+#  else
+#    define BSON_ALIGN_OF_PTR 4
+#  endif
+#else
+#  define BSON_ALIGN_OF_PTR (sizeof(void *))
+#endif
+
+#ifdef BSON_EXTRA_ALIGN
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  endif
+#else
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) ))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) )))
+#  endif
 #endif
 
 
@@ -189,11 +252,22 @@
 #define bson_str_empty0(s) (!s || !s[0])
 
 
-#ifndef BSON_DISABLE_ASSERT
-#  define BSON_ASSERT(s) assert ((s))
+#if defined(_WIN32)
+#  define BSON_FUNC __FUNCTION__
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ < 199901L
+#  define BSON_FUNC __FUNCTION__
 #else
-#  define BSON_ASSERT(s)
+#  define BSON_FUNC __func__
 #endif
+
+#define BSON_ASSERT(test) \
+   do { \
+      if (!(BSON_LIKELY(test))) { \
+         fprintf (stderr, "%s:%d %s(): precondition failed: %s\n", \
+                  __FILE__, __LINE__, BSON_FUNC, #test); \
+         abort (); \
+      } \
+   } while (0)
 
 
 #define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_ (s, __LINE__)
@@ -217,8 +291,8 @@
 #endif
 
 
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(_WIN32)
-#  define BSON_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
+#if BSON_GNUC_CHECK_VERSION(4, 0) && !defined(_WIN32)
+#  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
 #  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
 #else
 #  define BSON_GNUC_NULL_TERMINATED
@@ -236,19 +310,12 @@
 
 
 #if defined(__clang__)
-# define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
-#elif defined(__GNUC__)
-#  define GCC_VERSION (__GNUC__ * 10000 \
-                       + __GNUC_MINOR__ * 100 \
-                       + __GNUC_PATCHLEVEL__)
-#  if GCC_VERSION > 40400
-#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
-#  else
-#    define BSON_GNUC_PRINTF(f, v)
-#  endif /* GCC_VERSION > 40400 */
+#  define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
+#elif BSON_GNUC_CHECK_VERSION(4, 4)
+#  define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
 #else
 #  define BSON_GNUC_PRINTF(f, v)
-#endif /* __GNUC__ */
+#endif
 
 
 #if defined(__LP64__) || defined(_LP64)
@@ -258,13 +325,8 @@
 #endif
 
 
-#if defined(_MSC_VER)
-#  define BSON_INLINE __inline
-#else
-#  define BSON_INLINE __inline__
-#endif
-
-
+#ifndef	DYING
+/* XXX delete these when bson.c => 1.3.3 */
 #ifndef BSON_DISABLE_CHECKS
 #  define bson_return_if_fail(test) \
    do { \
@@ -291,25 +353,32 @@
 #else
 #  define bson_return_val_if_fail(test, val)
 #endif
+#endif
 
-
-#ifdef _MSC_VER
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
-#define BSON_TYPEOF decltype
+#if defined(_MSC_VER)
+#  define BSON_INLINE __inline
 #else
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
-#define BSON_TYPEOF typeof
+#  define BSON_INLINE __inline__
 #endif
 
 
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+#ifdef _MSC_VER
+#  define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+#  define BSON_TYPEOF decltype
+#else
+#  define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+#  define BSON_TYPEOF typeof
+#endif
+
+
+#if BSON_GNUC_CHECK_VERSION(3, 1)
 # define BSON_GNUC_DEPRECATED __attribute__((__deprecated__))
 #else
 # define BSON_GNUC_DEPRECATED
 #endif
 
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#if BSON_GNUC_CHECK_VERSION(4, 5)
 # define BSON_GNUC_DEPRECATED_FOR(f) __attribute__((deprecated("Use " #f " instead")))
 #else
 # define BSON_GNUC_DEPRECATED_FOR(f) BSON_GNUC_DEPRECATED
@@ -318,7 +387,7 @@
 /*==============================================================*/
 /* --- bson-stdint.h */
 
-/* generated using a gnu compiler version gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-4) Copyright (C) 2010 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. */
+/* generated using a gnu compiler version gcc (GCC) 5.3.1 20151207 (Red Hat 5.3.1-2) Copyright (C) 2015 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. */
 
 #include <stdint.h>
 
@@ -332,25 +401,6 @@
 /* --- bson-compat.h */
 
 BSON_BEGIN_DECLS
-
-
-#ifdef _MSC_VER
-# include "bson-stdint-win32.h"
-# ifndef __cplusplus
-   /* benign redefinition of type */
-#  pragma warning (disable :4142)
-    typedef SSIZE_T ssize_t;
-    typedef SIZE_T size_t;
-#  pragma warning (default :4142)
-# endif
-# define PRIi32 "d"
-# define PRId32 "d"
-# define PRIu32 "u"
-# define PRIi64 "I64i"
-# define PRId64 "I64i"
-# define PRIu64 "I64u"
-#endif
-
 
 #ifdef BSON_HAVE_STDBOOL_H
 # include <stdbool.h>
@@ -482,7 +532,7 @@ typedef struct _bson_context_t bson_context_t;
  * This structure is meant to fit in two sequential 64-byte cachelines.
  */
 BSON_ALIGNED_BEGIN (128)
-typedef struct
+typedef struct _bson_t
 {
    uint32_t flags;        /* Internal flags for the bson_t. */
    uint32_t len;          /* Length of BSON data. */
@@ -609,9 +659,11 @@ typedef enum
  *--------------------------------------------------------------------------
  */
 
+BSON_ALIGNED_BEGIN (8)
 typedef struct _bson_value_t
 {
    bson_type_t           value_type;
+   int32_t               padding;
    union {
       bson_oid_t         v_oid;
       int64_t            v_int64;
@@ -625,16 +677,16 @@ typedef struct _bson_value_t
          uint32_t        increment;
       } v_timestamp;
       struct {
-         uint32_t        len;
          char           *str;
+         uint32_t        len;
       } v_utf8;
       struct {
-         uint32_t        data_len;
          uint8_t        *data;
+         uint32_t        data_len;
       } v_doc;
       struct {
-         uint32_t        data_len;
          uint8_t        *data;
+         uint32_t        data_len;
          bson_subtype_t  subtype;
       } v_binary;
       struct {
@@ -647,21 +699,22 @@ typedef struct _bson_value_t
          bson_oid_t      oid;
       } v_dbpointer;
       struct {
-         uint32_t        code_len;
          char           *code;
+         uint32_t        code_len;
       } v_code;
       struct {
-         uint32_t        code_len;
          char           *code;
-         uint32_t        scope_len;
          uint8_t        *scope_data;
+         uint32_t        code_len;
+         uint32_t        scope_len;
       } v_codewscope;
       struct {
-         uint32_t        len;
          char           *symbol;
+         uint32_t        len;
       } v_symbol;
    } value;
-} bson_value_t;
+} bson_value_t
+BSON_ALIGNED_END (8);
 
 
 /**
@@ -702,13 +755,14 @@ BSON_ALIGNED_END (128);
  * memory allocations under certain circumstances such as reading from an
  * incoming mongo packet.
  */
-BSON_ALIGNED_BEGIN (128)
+
+BSON_ALIGNED_BEGIN (BSON_ALIGN_OF_PTR)
 typedef struct
 {
    uint32_t type;
    /*< private >*/
 } bson_reader_t
-BSON_ALIGNED_END (128);
+BSON_ALIGNED_END (BSON_ALIGN_OF_PTR);
 
 
 /**
@@ -726,114 +780,118 @@ BSON_ALIGNED_END (128);
  * You may pre-maturely stop the visitation of fields by returning true in your
  * visitor. Returning false will continue visitation to further fields.
  */
+BSON_ALIGNED_BEGIN (8)
 typedef struct
 {
-   bool (*visit_before)(const bson_iter_t *iter,
-                               const char        *key,
-                               void              *data);
-   bool (*visit_after)(const bson_iter_t *iter,
-                              const char        *key,
-                              void              *data);
-   void (*visit_corrupt)(const bson_iter_t *iter,
-                         void              *data);
-   bool (*visit_double)(const bson_iter_t *iter,
-                               const char        *key,
-                               double             v_double,
-                               void              *data);
-   bool (*visit_utf8)(const bson_iter_t *iter,
+   bool (*visit_before)     (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
+   bool (*visit_after)      (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
+   void (*visit_corrupt)    (const bson_iter_t *iter,
+                             void              *data);
+   bool (*visit_double)     (const bson_iter_t *iter,
+                             const char        *key,
+                             double             v_double,
+                             void              *data);
+   bool (*visit_utf8)       (const bson_iter_t *iter,
                              const char        *key,
                              size_t             v_utf8_len,
                              const char        *v_utf8,
                              void              *data);
-   bool (*visit_document)(const bson_iter_t *iter,
-                                 const char        *key,
-                                 const bson_t      *v_document,
-                                 void              *data);
-   bool (*visit_array)(const bson_iter_t *iter,
-                              const char        *key,
-                              const bson_t      *v_array,
-                              void              *data);
-   bool (*visit_binary)(const bson_iter_t  *iter,
-                               const char         *key,
-                               bson_subtype_t      v_subtype,
-                               size_t              v_binary_len,
-                               const uint8_t *v_binary,
-                               void               *data);
-   bool (*visit_undefined)(const bson_iter_t *iter,
-                                  const char        *key,
-                                  void              *data);
-   bool (*visit_oid)(const bson_iter_t *iter,
-                            const char        *key,
-                            const bson_oid_t  *v_oid,
-                            void              *data);
-   bool (*visit_bool)(const bson_iter_t *iter,
+   bool (*visit_document)   (const bson_iter_t *iter,
                              const char        *key,
-                             bool        v_bool,
+                             const bson_t      *v_document,
                              void              *data);
-   bool (*visit_date_time)(const bson_iter_t *iter,
-                                  const char        *key,
-                                  int64_t       msec_since_epoch,
-                                  void              *data);
-   bool (*visit_null)(const bson_iter_t *iter,
+   bool (*visit_array)      (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_t      *v_array,
+                             void              *data);
+   bool (*visit_binary)     (const bson_iter_t *iter,
+                             const char        *key,
+                             bson_subtype_t     v_subtype,
+                             size_t             v_binary_len,
+                             const uint8_t     *v_binary,
+                             void              *data);
+   bool (*visit_undefined)  (const bson_iter_t *iter,
                              const char        *key,
                              void              *data);
-   bool (*visit_regex)(const bson_iter_t *iter,
-                              const char        *key,
-                              const char        *v_regex,
-                              const char        *v_options,
-                              void              *data);
-   bool (*visit_dbpointer)(const bson_iter_t *iter,
-                                  const char        *key,
-                                  size_t             v_collection_len,
-                                  const char        *v_collection,
-                                  const bson_oid_t  *v_oid,
-                                  void              *data);
-   bool (*visit_code)(const bson_iter_t *iter,
+   bool (*visit_oid)        (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_oid_t  *v_oid,
+                             void              *data);
+   bool (*visit_bool)       (const bson_iter_t *iter,
+                             const char        *key,
+                             bool               v_bool,
+                             void              *data);
+   bool (*visit_date_time)  (const bson_iter_t *iter,
+                             const char        *key,
+                             int64_t            msec_since_epoch,
+                             void              *data);
+   bool (*visit_null)       (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
+   bool (*visit_regex)      (const bson_iter_t *iter,
+                             const char        *key,
+                             const char        *v_regex,
+                             const char        *v_options,
+                             void              *data);
+   bool (*visit_dbpointer)  (const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_collection_len,
+                             const char        *v_collection,
+                             const bson_oid_t  *v_oid,
+                             void              *data);
+   bool (*visit_code)       (const bson_iter_t *iter,
                              const char        *key,
                              size_t             v_code_len,
                              const char        *v_code,
                              void              *data);
-   bool (*visit_symbol)(const bson_iter_t *iter,
-                               const char        *key,
-                               size_t             v_symbol_len,
-                               const char        *v_symbol,
-                               void              *data);
-   bool (*visit_codewscope)(const bson_iter_t *iter,
-                                   const char        *key,
-                                   size_t             v_code_len,
-                                   const char        *v_code,
-                                   const bson_t      *v_scope,
-                                   void              *data);
-   bool (*visit_int32)(const bson_iter_t *iter,
-                              const char        *key,
-                              int32_t       v_int32,
-                              void              *data);
-   bool (*visit_timestamp)(const bson_iter_t *iter,
-                                  const char        *key,
-                                  uint32_t      v_timestamp,
-                                  uint32_t      v_increment,
-                                  void              *data);
-   bool (*visit_int64)(const bson_iter_t *iter,
-                              const char        *key,
-                              int64_t       v_int64,
-                              void              *data);
-   bool (*visit_maxkey)(const bson_iter_t *iter,
-                               const char        *key,
-                               void              *data);
-   bool (*visit_minkey)(const bson_iter_t *iter,
-                               const char        *key,
-                               void              *data);
+   bool (*visit_symbol)     (const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_symbol_len,
+                             const char        *v_symbol,
+                             void              *data);
+   bool (*visit_codewscope) (const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_code_len,
+                             const char        *v_code,
+                             const bson_t      *v_scope,
+                             void              *data);
+   bool (*visit_int32)      (const bson_iter_t *iter,
+                             const char        *key,
+                             int32_t            v_int32,
+                             void              *data);
+   bool (*visit_timestamp)  (const bson_iter_t *iter,
+                             const char        *key,
+                             uint32_t           v_timestamp,
+                             uint32_t           v_increment,
+                             void              *data);
+   bool (*visit_int64)      (const bson_iter_t *iter,
+                             const char        *key,
+                             int64_t            v_int64,
+                             void              *data);
+   bool (*visit_maxkey)     (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
+   bool (*visit_minkey)     (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
 
    void *padding[9];
-} bson_visitor_t;
+} bson_visitor_t
+BSON_ALIGNED_END (8);
 
 
-typedef struct
+BSON_ALIGNED_BEGIN (8)
+typedef struct _bson_error_t
 {
    uint32_t domain;
    uint32_t code;
-   char          message[504];
-} bson_error_t;
+   char     message[504];
+} bson_error_t
+BSON_ALIGNED_END (8);
 
 
 BSON_STATIC_ASSERT (sizeof (bson_error_t) == 512);
@@ -850,8 +908,8 @@ BSON_STATIC_ASSERT (sizeof (bson_error_t) == 512);
  *
  * Returns: The next power of 2 from @v.
  */
-static BSON_INLINE uint32_t
-bson_next_power_of_two (uint32_t v)
+static BSON_INLINE size_t
+bson_next_power_of_two (size_t v)
 {
    v--;
    v |= v >> 1;
@@ -859,6 +917,9 @@ bson_next_power_of_two (uint32_t v)
    v |= v >> 4;
    v |= v >> 8;
    v |= v >> 16;
+#if BSON_WORD_SIZE == 64
+   v |= v >> 32;
+#endif
    v++;
 
    return v;
@@ -879,23 +940,65 @@ BSON_END_DECLS
 
 BSON_BEGIN_DECLS
 
-/* Some architectures do not support __sync_add_and_fetch_8 */
-#if (__mips == 32) || (defined(__PPC__) && !defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8))
-# define __BSON_NEED_ATOMIC_64 1
+
+#if defined(__sun) && defined(__SVR4)
+   /* Solaris */
+#  include <atomic.h>
+#  define bson_atomic_int_add(p,v)   atomic_add_32_nv((volatile uint32_t *)p, (v))
+#  define bson_atomic_int64_add(p,v) atomic_add_64_nv((volatile uint64_t *)p, (v))
+#elif defined(_WIN32)
+   /* MSVC/MinGW */
+#  define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((volatile LONG *)(p), (LONG)(v)) + (LONG)(v))
+#  define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)) + (LONGLONG)(v))
+#else
+#  ifdef BSON_HAVE_ATOMIC_32_ADD_AND_FETCH
+#    define bson_atomic_int_add(p,v) __sync_add_and_fetch((p), (v))
+#  else
+#    define __BSON_NEED_ATOMIC_32
+#  endif
+#  ifdef BSON_HAVE_ATOMIC_64_ADD_AND_FETCH
+#    if BSON_GNUC_IS_VERSION(4, 1)
+       /*
+        * GCC 4.1 on i386 can generate buggy 64-bit atomic increment.
+        * So we will work around with a fallback.
+        *
+        * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=40693
+        */
+#      define __BSON_NEED_ATOMIC_64
+#    else
+#      define bson_atomic_int64_add(p, v) __sync_add_and_fetch((volatile int64_t*)(p), (int64_t)(v))
+#    endif
+#  else
+#    define __BSON_NEED_ATOMIC_64
+#  endif
 #endif
 
-#if defined(__GNUC__)
-# define bson_atomic_int_add(p, v)   (__sync_add_and_fetch(p, v))
-#ifndef __BSON_NEED_ATOMIC_64
-#  define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
+#ifdef __BSON_NEED_ATOMIC_32
+  int32_t bson_atomic_int_add   (volatile int32_t *p, int32_t n);
+#endif
+#ifdef __BSON_NEED_ATOMIC_64
+  int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
+#endif
+
+
+#if defined(_WIN32)
+# define bson_memory_barrier() MemoryBarrier()
+#elif defined(__GNUC__)
+# if BSON_GNUC_CHECK_VERSION(4, 1)
+#  define bson_memory_barrier() __sync_synchronize()
 # else
-   int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
+#  warning "GCC Pre-4.1 discovered, using inline assembly for memory barrier."
+#  define bson_memory_barrier() __asm__ volatile ("":::"memory")
 # endif
-# define bson_memory_barrier         __sync_synchronize
-#elif defined(_MSC_VER) || defined(_WIN32)
-# define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
-# define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
-# define bson_memory_barrier         MemoryBarrier
+#elif defined(__SUNPRO_C)
+# include <mbarrier.h>
+# define bson_memory_barrier() __machine_rw_barrier()
+#elif defined(__xlC__)
+# define bson_memory_barrier() __sync()
+#else
+# define __BSON_NEED_BARRIER 1
+# warning "Unknown compiler, using lock for compiler barrier."
+void bson_memory_barrier (void);
 #endif
 
 
@@ -908,8 +1011,7 @@ BSON_BEGIN_DECLS
 
 
 int64_t bson_get_monotonic_time (void);
-int     bson_gettimeofday       (struct timeval  *tv,
-                                 struct timezone *tz);
+int     bson_gettimeofday       (struct timeval *tv);
 
 
 BSON_END_DECLS
@@ -937,134 +1039,22 @@ BSON_BEGIN_DECLS
 #define BSON_LITTLE_ENDIAN 1234
 
 
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint16_swap_slow --
- *
- *       Fallback endianness conversion for 16-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint16_t
-__bson_uint16_swap_slow (uint16_t v) /* IN */
-{
-   return ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint32_swap_slow --
- *
- *       Fallback endianness conversion for 32-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint32_t
-__bson_uint32_swap_slow (uint32_t v) /* IN */
-{
-   uint32_t ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[3];
-   dst[1] = src[2];
-   dst[2] = src[1];
-   dst[3] = src[0];
-
-   return ret;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint64_swap_slow --
- *
- *       Fallback endianness conversion for 64-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint64_t
-__bson_uint64_swap_slow (uint64_t v) /* IN */
-{
-   uint64_t ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[7];
-   dst[1] = src[6];
-   dst[2] = src[5];
-   dst[3] = src[4];
-   dst[4] = src[3];
-   dst[5] = src[2];
-   dst[6] = src[1];
-   dst[7] = src[0];
-
-   return ret;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_double_swap_slow --
- *
- *       Fallback endianness conversion for double floating point.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE double
-__bson_double_swap_slow (double v) /* IN */
-{
-   double ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[7];
-   dst[1] = src[6];
-   dst[2] = src[5];
-   dst[3] = src[4];
-   dst[4] = src[3];
-   dst[5] = src[2];
-   dst[6] = src[1];
-   dst[7] = src[0];
-
-   return ret;
-}
-
-
-#if defined (__GNUC__) && (__GNUC__ >= 4)
+#if defined(__sun)
+# define BSON_UINT16_SWAP_LE_BE(v) BSWAP_16((uint16_t)v)
+# define BSON_UINT32_SWAP_LE_BE(v) BSWAP_32((uint32_t)v)
+# define BSON_UINT64_SWAP_LE_BE(v) BSWAP_64((uint64_t)v)
+#elif defined(__clang__) && defined(__clang_major__) && defined(__clang_minor__) && \
+  (__clang_major__ >= 3) && (__clang_minor__ >= 1)
+# if __has_builtin(__builtin_bswap16)
+#  define BSON_UINT16_SWAP_LE_BE(v) __builtin_bswap16(v)
+# endif
+# if __has_builtin(__builtin_bswap32)
+#  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32(v)
+# endif
+# if __has_builtin(__builtin_bswap64)
+#  define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64(v)
+# endif
+#elif defined(__GNUC__) && (__GNUC__ >= 4)
 # if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 3
 #  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32 ((uint32_t)v)
 #  define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64 ((uint64_t)v)
@@ -1076,17 +1066,17 @@ __bson_double_swap_slow (double v) /* IN */
 
 
 #ifndef BSON_UINT16_SWAP_LE_BE
-# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow (v)
+# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow ((uint16_t)v)
 #endif
 
 
 #ifndef BSON_UINT32_SWAP_LE_BE
-# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow (v)
+# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow ((uint32_t)v)
 #endif
 
 
 #ifndef BSON_UINT64_SWAP_LE_BE
-# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow (v)
+# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow ((uint64_t)v)
 #endif
 
 
@@ -1125,6 +1115,116 @@ __bson_double_swap_slow (double v) /* IN */
 #endif
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint16_swap_slow --
+ *
+ *       Fallback endianness conversion for 16-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint16_t
+__bson_uint16_swap_slow (uint16_t v) /* IN */
+{
+   return ((v & 0x00FF) << 8) |
+          ((v & 0xFF00) >> 8);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint32_swap_slow --
+ *
+ *       Fallback endianness conversion for 32-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint32_t
+__bson_uint32_swap_slow (uint32_t v) /* IN */
+{
+   return ((v & 0x000000FFU) << 24) |
+          ((v & 0x0000FF00U) <<  8) |
+          ((v & 0x00FF0000U) >>  8) |
+          ((v & 0xFF000000U) >> 24);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint64_swap_slow --
+ *
+ *       Fallback endianness conversion for 64-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint64_t
+__bson_uint64_swap_slow (uint64_t v) /* IN */
+{
+   return ((v & 0x00000000000000FFULL) << 56) |
+          ((v & 0x000000000000FF00ULL) << 40) |
+          ((v & 0x0000000000FF0000ULL) << 24) |
+          ((v & 0x00000000FF000000ULL) <<  8) |
+          ((v & 0x000000FF00000000ULL) >>  8) |
+          ((v & 0x0000FF0000000000ULL) >> 24) |
+          ((v & 0x00FF000000000000ULL) >> 40) |
+          ((v & 0xFF00000000000000ULL) >> 56);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_double_swap_slow --
+ *
+ *       Fallback endianness conversion for double floating point.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+BSON_STATIC_ASSERT(sizeof(double) == sizeof(uint64_t));
+
+static BSON_INLINE double
+__bson_double_swap_slow (double v) /* IN */
+{
+   uint64_t uv;
+
+   memcpy(&uv, &v, sizeof(v));
+   uv = BSON_UINT64_SWAP_LE_BE(uv);
+   memcpy(&v, &uv, sizeof(v));
+
+   return v;
+}
+
 BSON_END_DECLS
 
 /*==============================================================*/
@@ -1136,6 +1236,7 @@ BSON_BEGIN_DECLS
 #define BSON_ERROR_JSON   1
 #define BSON_ERROR_READER 2
 
+#define BSON_ERROR_BUFFER_SIZE      64
 
 void  bson_set_error  (bson_error_t *error,
                        uint32_t      domain,
@@ -1151,6 +1252,7 @@ BSON_END_DECLS
 
 /*==============================================================*/
 /* --- bson-iter.h */
+
 
 BSON_BEGIN_DECLS
 
@@ -1236,28 +1338,28 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
    int32_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 4);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    val = BSON_UINT32_FROM_LE (val);
-   return MAX (0, val - 1);
+   return BSON_MAX (0, val - 1);
 }
 
 
 void
 bson_iter_array (const bson_iter_t   *iter,
-                 uint32_t       *array_len,
-                 const uint8_t **array);
+                 uint32_t            *array_len,
+                 const uint8_t      **array);
 
 
 void
 bson_iter_binary (const bson_iter_t   *iter,
                   bson_subtype_t      *subtype,
-                  uint32_t       *binary_len,
-                  const uint8_t **binary);
+                  uint32_t            *binary_len,
+                  const uint8_t      **binary);
 
 
 const char *
 bson_iter_code (const bson_iter_t *iter,
-                uint32_t     *length);
+                uint32_t          *length);
 
 
 /**
@@ -1271,7 +1373,7 @@ bson_iter_code (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_code_unsafe (const bson_iter_t *iter,
-                       uint32_t     *length)
+                       uint32_t          *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -1280,22 +1382,22 @@ bson_iter_code_unsafe (const bson_iter_t *iter,
 
 const char *
 bson_iter_codewscope (const bson_iter_t   *iter,
-                      uint32_t       *length,
-                      uint32_t       *scope_len,
-                      const uint8_t **scope);
+                      uint32_t            *length,
+                      uint32_t            *scope_len,
+                      const uint8_t      **scope);
 
 
 void
 bson_iter_dbpointer (const bson_iter_t *iter,
-                     uint32_t     *collection_len,
+                     uint32_t          *collection_len,
                      const char       **collection,
                      const bson_oid_t **oid);
 
 
 void
 bson_iter_document (const bson_iter_t   *iter,
-                    uint32_t       *document_len,
-                    const uint8_t **document);
+                    uint32_t            *document_len,
+                    const uint8_t      **document);
 
 
 double
@@ -1315,7 +1417,7 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_DOUBLE_FROM_LE (val);
 }
 
@@ -1354,7 +1456,7 @@ bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
    int32_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 4);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT32_FROM_LE (val);
 }
 
@@ -1380,7 +1482,7 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
    int64_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT64_FROM_LE (val);
 }
 
@@ -1445,7 +1547,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
 
 const char *
 bson_iter_utf8 (const bson_iter_t *iter,
-                uint32_t     *length);
+                uint32_t          *length);
 
 
 /**
@@ -1457,7 +1559,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_utf8_unsafe (const bson_iter_t *iter,
-                       uint32_t     *length)
+                       size_t            *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -1466,7 +1568,7 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter,
 
 char *
 bson_iter_dup_utf8 (const bson_iter_t *iter,
-                    uint32_t     *length);
+                    uint32_t          *length);
 
 
 int64_t
@@ -1509,12 +1611,13 @@ static BSON_INLINE void
 bson_iter_timeval_unsafe (const bson_iter_t *iter,
                           struct timeval    *tv)
 {
+   int64_t value = bson_iter_int64_unsafe (iter);
 #ifdef BSON_OS_WIN32
-   tv->tv_sec = (long)bson_iter_int64_unsafe (iter);
+   tv->tv_sec = (long) (value / 1000);
 #else
-   tv->tv_sec = (suseconds_t)bson_iter_int64_unsafe (iter);
+   tv->tv_sec = (suseconds_t) (value / 1000);
 #endif
-   tv->tv_usec = 0;
+   tv->tv_usec = (value % 1000) * 1000;
 }
 
 
@@ -1557,7 +1660,7 @@ bson_iter_regex (const bson_iter_t *iter,
 
 const char *
 bson_iter_symbol (const bson_iter_t *iter,
-                  uint32_t     *length);
+                  uint32_t          *length);
 
 
 bson_type_t
@@ -1762,16 +1865,30 @@ typedef void *(*bson_realloc_func) (void  *mem,
                                     void  *ctx);
 
 
-void *bson_malloc    (size_t  num_bytes);
-void *bson_malloc0   (size_t  num_bytes);
-void *bson_realloc   (void   *mem,
-                      size_t  num_bytes);
-void *bson_realloc_ctx (void   *mem,
-                        size_t  num_bytes,
-                        void   *ctx);
-void  bson_free      (void   *mem);
-void  bson_zero_free (void   *mem,
-                      size_t  size);
+typedef struct _bson_mem_vtable_t
+{
+   void *(*malloc)    (size_t  num_bytes);
+   void *(*calloc)    (size_t  n_members,
+                       size_t  num_bytes);
+   void *(*realloc)   (void   *mem,
+                       size_t  num_bytes);
+   void  (*free)      (void   *mem);
+   void *padding [4];
+} bson_mem_vtable_t;
+
+
+void  bson_mem_set_vtable (const bson_mem_vtable_t *vtable);
+void  bson_mem_restore_vtable (void);
+void *bson_malloc         (size_t  num_bytes);
+void *bson_malloc0        (size_t  num_bytes);
+void *bson_realloc        (void   *mem,
+                           size_t  num_bytes);
+void *bson_realloc_ctx    (void   *mem,
+                           size_t  num_bytes,
+                           void   *ctx);
+void  bson_free           (void   *mem);
+void  bson_zero_free      (void   *mem,
+                           size_t  size);
 
 
 BSON_END_DECLS
@@ -1984,7 +2101,7 @@ bson_oid_get_time_t_unsafe (const bson_oid_t *oid)
 {
    uint32_t t;
 
-   memcpy (&t, oid, 4);
+   memcpy (&t, oid, sizeof (t));
    return BSON_UINT32_FROM_BE (t);
 }
 
@@ -2072,7 +2189,7 @@ void           bson_reader_set_destroy_func (bson_reader_t              *reader,
 const bson_t  *bson_reader_read             (bson_reader_t              *reader,
                                              bool                       *reached_eof);
 off_t          bson_reader_tell             (bson_reader_t              *reader);
-
+void           bson_reader_reset            (bson_reader_t              *reader);
 
 BSON_END_DECLS
 
@@ -2124,8 +2241,10 @@ int            bson_snprintf              (char           *str,
                                            ...) BSON_GNUC_PRINTF (3, 4);
 void           bson_strfreev              (char          **strv);
 size_t         bson_strnlen               (const char     *s,
-                                           size_t          maxlen)
-	BSON_GNUC_PURE;
+                                           size_t          maxlen) BSON_GNUC_PURE;
+int64_t        bson_ascii_strtoll         (const char     *str,
+                                           char          **endptr,
+                                           int             base);
 
 
 BSON_END_DECLS
@@ -2179,7 +2298,7 @@ BSON_END_DECLS
  *
  * BSON minor version component (e.g. 2 if %BSON_VERSION is 1.2.3)
  */
-#define BSON_MINOR_VERSION (0)
+#define BSON_MINOR_VERSION (3)
 
 
 /**
@@ -2187,15 +2306,22 @@ BSON_END_DECLS
  *
  * BSON micro version component (e.g. 3 if %BSON_VERSION is 1.2.3)
  */
-#define BSON_MICRO_VERSION (1)
+#define BSON_MICRO_VERSION (3)
 
+
+/**
+ * BSON_PRERELEASE_VERSION:
+ *
+ * BSON prerelease version component (e.g. rc0 if %BSON_VERSION is 1.2.3-rc0)
+ */
+#define BSON_PRERELEASE_VERSION ()
 
 /**
  * BSON_VERSION:
  *
  * BSON version.
  */
-#define BSON_VERSION (1.0.1)
+#define BSON_VERSION (1.3.3)
 
 
 /**
@@ -2204,7 +2330,7 @@ BSON_END_DECLS
  * BSON version, encoded as a string, useful for printing and
  * concatenation.
  */
-#define BSON_VERSION_S "1.0.1"
+#define BSON_VERSION_S "1.3.3"
 
 
 /**
@@ -2233,7 +2359,6 @@ BSON_END_DECLS
          (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION == (minor) && \
           BSON_MICRO_VERSION >= (micro)))
 
-
 /*==============================================================*/
 /* --- bson-writer.h */
 
@@ -2260,8 +2385,7 @@ bson_writer_t *bson_writer_new        (uint8_t           **buf,
                                        bson_realloc_func   realloc_func,
                                        void               *realloc_func_ctx);
 void           bson_writer_destroy    (bson_writer_t      *writer);
-size_t         bson_writer_get_length (bson_writer_t      *writer)
-	BSON_GNUC_PURE;
+size_t         bson_writer_get_length (bson_writer_t      *writer) BSON_GNUC_PURE;
 bool           bson_writer_begin      (bson_writer_t      *writer,
                                        bson_t            **bson);
 void           bson_writer_end        (bson_writer_t      *writer);
@@ -2269,6 +2393,7 @@ void           bson_writer_rollback   (bson_writer_t      *writer);
 
 
 BSON_END_DECLS
+
 
 /*==============================================================*/
 /* --- bson-private.h */
@@ -2324,6 +2449,7 @@ BSON_STATIC_ASSERT (sizeof (bson_impl_alloc_t) <= 128);
 
 BSON_END_DECLS
 
+
 /*==============================================================*/
 /* --- bson-context-private.h */
 
@@ -2336,14 +2462,8 @@ struct _bson_context_t
    bool                 pidbe_once : 1;
    uint8_t              pidbe[2];
    uint8_t              md5[3];
-   uint32_t             seq32;
-   uint64_t             seq64;
-#if defined WITH_OID32_PT
-   bson_mutex_t         _m32;
-#endif
-#if defined WITH_OID64_PT
-   bson_mutex_t        _m64;
-#endif
+   int32_t              seq32;
+   int64_t              seq64;
 
    void (*oid_get_host)  (bson_context_t *context,
                           bson_oid_t     *oid);
@@ -2357,6 +2477,7 @@ struct _bson_context_t
 
 
 BSON_END_DECLS
+
 
 /*==============================================================*/
 /* --- bson-thread-private.h */
@@ -2378,7 +2499,7 @@ BSON_BEGIN_DECLS
 #  define bson_once                       pthread_once
 #  define BSON_ONCE_FUN(n)                void n(void)
 #  define BSON_ONCE_RETURN                return
-#  ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
+#  ifdef BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES
 #    define BSON_ONCE_INIT                {PTHREAD_ONCE_INIT}
 #  else
 #    define BSON_ONCE_INIT                PTHREAD_ONCE_INIT
@@ -2401,6 +2522,42 @@ BSON_BEGIN_DECLS
 
 
 BSON_END_DECLS
+
+
+/*==============================================================*/
+/* --- bson-iso8601-private.h */
+
+BSON_BEGIN_DECLS
+
+bool
+_bson_iso8601_date_parse (const char   *str,
+                          int32_t       len,
+                          int64_t      *out);
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-timegm-private.h */
+
+BSON_BEGIN_DECLS
+
+time_t
+_bson_timegm (struct tm *const tmp);
+
+BSON_END_DECLS
+
+
+/*==============================================================*/
+/* --- bson-version-functions.h */
+
+int bson_get_major_version (void) BSON_GNUC_CONST;
+int bson_get_minor_version (void) BSON_GNUC_CONST;
+int bson_get_micro_version (void) BSON_GNUC_CONST;
+const char *bson_get_version (void) BSON_GNUC_CONST;
+bool bson_check_version (int required_major,
+                           int required_minor,
+                           int required_micro) BSON_GNUC_CONST;
+
 
 /*==============================================================*/
 /* --- bson.h */
@@ -2544,7 +2701,7 @@ bson_new (void);
 
 bson_t *
 bson_new_from_json (const uint8_t *data,
-                    size_t         len,
+                    ssize_t        len,
                     bson_error_t  *error);
 
 
@@ -2568,9 +2725,9 @@ bson_init_from_json (bson_t        *bson,
  * Returns: true if initialized successfully; otherwise false.
  */
 bool
-bson_init_static (bson_t             *b,
+bson_init_static (bson_t        *b,
                   const uint8_t *data,
-                  uint32_t       length);
+                  size_t         length);
 
 
 /**
@@ -2611,13 +2768,13 @@ bson_reinit (bson_t *b);
  * Creates a new bson_t structure using the data provided. @data should contain
  * at least @length bytes that can be copied into the new bson_t structure.
  *
- * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  *   If the first four bytes (little-endian) of data do not match @length,
  *   then NULL will be returned.
  */
 bson_t *
 bson_new_from_data (const uint8_t *data,
-                    uint32_t       length);
+                    size_t         length);
 
 
 /**
@@ -2630,7 +2787,7 @@ bson_new_from_data (const uint8_t *data,
  * Creates a new bson_t structure using the data provided. @buf should contain
  * a bson document, or null pointer should be passed for new allocations.
  *
- * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  *          The underlying buffer will be used and not be freed in destroy.
  */
 bson_t *
@@ -2686,14 +2843,30 @@ bson_copy_to (const bson_t *src,
  *
  * Copies @src into @dst excluding any field that is provided.
  * This is handy for situations when you need to remove one or
- * more fields in a bson_t.
+ * more fields in a bson_t. Note that bson_init() will be called
+ * on dst.
  */
 void
 bson_copy_to_excluding (const bson_t *src,
                         bson_t       *dst,
                         const char   *first_exclude,
-                        ...) BSON_GNUC_NULL_TERMINATED;
+                        ...) BSON_GNUC_NULL_TERMINATED BSON_GNUC_DEPRECATED_FOR(bson_copy_to_excluding_noinit);
 
+/**
+ * bson_copy_to_excluding_noinit:
+ * @src: A bson_t.
+ * @dst: A bson_t to initialize and copy into.
+ * @first_exclude: First field name to exclude.
+ *
+ * The same as bson_copy_to_excluding, but does not call bson_init()
+ * on the dst. This version should be preferred in new code, but the
+ * old function is left for backwards compatibility.
+ */
+void
+bson_copy_to_excluding_noinit (const bson_t *src,
+                               bson_t       *dst,
+                               const char   *first_exclude,
+                               ...) BSON_GNUC_NULL_TERMINATED;
 
 /**
  * bson_destroy:
@@ -2780,8 +2953,7 @@ bson_has_field (const bson_t *bson,
  */
 int
 bson_compare (const bson_t *bson,
-              const bson_t *other)
-	BSON_GNUC_PURE;
+              const bson_t *other) BSON_GNUC_PURE;
 
 /*
  * bson_compare:
@@ -2794,8 +2966,7 @@ bson_compare (const bson_t *bson,
  */
 bool
 bson_equal (const bson_t *bson,
-            const bson_t *other)
-	BSON_GNUC_PURE;
+            const bson_t *other) BSON_GNUC_PURE;
 
 
 /**
@@ -2831,6 +3002,12 @@ bson_validate (const bson_t         *bson,
 char *
 bson_as_json (const bson_t *bson,
               size_t       *length);
+
+
+/* like bson_as_json() but for outermost arrays. */
+char *
+bson_array_as_json (const bson_t *bson,
+                    size_t       *length);
 
 
 bool
@@ -2872,12 +3049,12 @@ bson_append_array (bson_t       *bson,
  * Returns: true if successful; false if append would overflow max size.
  */
 bool
-bson_append_binary (bson_t             *bson,
-                    const char         *key,
-                    int                 key_length,
-                    bson_subtype_t      subtype,
-                    const uint8_t *binary,
-                    uint32_t       length);
+bson_append_binary (bson_t         *bson,
+                    const char     *key,
+                    int             key_length,
+                    bson_subtype_t  subtype,
+                    const uint8_t  *binary,
+                    uint32_t        length);
 
 
 /**
@@ -3392,4 +3569,4 @@ BSON_END_DECLS
 #pragma clang diagnostic pop
 #endif
 
-#endif	/* H_BSON */
+#endif /* H_BSON */

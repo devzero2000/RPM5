@@ -4,7 +4,6 @@
 
 #include "debug.h"
 
-
 static void
 print_doc (const bson_t *b)
 {
@@ -118,7 +117,7 @@ main (int   argc,
    }
 
    if (argc > 2) {
-      count = MAX(atoi(argv[2]), 1);
+      count = BSON_MAX(atoi(argv[2]), 1);
    }
 
    pool = mongoc_client_pool_new(uri);

@@ -1,13 +1,11 @@
 #include "system.h"
 
 #include <bson.h>
-#include <assert.h>
 
 #include "TestSuite.h"
 #include "bson-tests.h"
 
 #include "debug.h"
-
 
 static void
 test_get_monotonic_time (void)

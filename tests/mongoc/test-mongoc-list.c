@@ -6,7 +6,6 @@
 
 #include "debug.h"
 
-
 static void
 test_mongoc_list_basic (void)
 {

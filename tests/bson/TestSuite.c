@@ -17,9 +17,6 @@
 #include "system.h"
 #include <stdarg.h>
 
-#include <assert.h>
-# include <inttypes.h>
-
 #if defined(__APPLE__)
 # include <mach/mach_time.h>
 #endif
@@ -63,24 +60,14 @@
 
 
 #if !defined(Memory_Barrier)
-# ifdef _MSC_VER
-#  define Memory_Barrier MemoryBarrier
-# else
-#  define Memory_Barrier __sync_synchronize
-# endif
+# define Memory_Barrier() bson_memory_barrier()
 #endif
 
 
-#if !defined(AtomicInt_DecrementAndTest)
-# if defined(__GNUC__)
-#  define AtomicInt_DecrementAndTest(p) (__sync_sub_and_fetch(p, 1) == 0)
-# elif defined(_MSC_VER)
-#  define AtomicInt_DecrementAndTest(p) (InterlockedDecrement(p) == 0)
-# endif
-#endif
+# define AtomicInt_DecrementAndTest(p) (bson_atomic_int_add(p, -1) == 0)
 
 
-#if defined(_MSC_VER)
+#if !defined(BSON_HAVE_TIMESPEC)
 struct timespec
 {
    time_t tv_sec;

@@ -16,14 +16,12 @@
 
 #include "system.h"
 
-#include <assert.h>
 #include <bson.h>
 
 #include "bson-tests.h"
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static void
 test_bson_string_new (void)
@@ -116,7 +114,7 @@ test_bson_string_append_printf (void)
 static void
 test_bson_string_append_unichar (void)
 {
-   static const char test1[] = {0xe2, 0x82, 0xac, 0};
+   static const unsigned char test1[] = {0xe2, 0x82, 0xac, 0};
    bson_string_t *str;
    char *s;
 
@@ -124,7 +122,7 @@ test_bson_string_append_unichar (void)
    bson_string_append_unichar(str, 0x20AC);
    s = bson_string_free(str, false);
    assert(s);
-   assert(!strcmp(s, test1));
+   assert(!strcmp(s, (const char *)test1));
    bson_free(s);
 }
 
@@ -162,6 +160,97 @@ test_bson_strndup (void)
 }
 
 
+static void
+test_bson_strnlen (void)
+{
+   char *s = "test";
+
+   ASSERT_CMPINT ((int) strlen (s), ==, (int) bson_strnlen (s, 100));
+}
+
+
+typedef struct
+{
+   const char *str;
+   int         base;
+   int64_t     rv;
+   int         _errno;
+} strtoll_test;
+
+
+static void
+test_bson_ascii_strtoll (void)
+{
+   char *endptr = NULL;
+   int64_t rv;
+   int i;
+   strtoll_test tests[] = {
+      /* input, base, expected output, expected errno */
+      { "1", 10, 1, 0 },
+      { "+1", 10, 1, 0 },
+      { "-1", 10, -1, 0 },
+      { "0", 10, 0, 0 },
+      { "0 ", 10, 0, 0 },
+      { " 0 ", 10, 0, 0 },
+      { " 0", 10, 0, 0 },
+      { " 0\"", 10, 0, 0 },
+      { "0l", 10, 0, 0 },
+      { "0l ", 10, 0, 0 },
+      { "0u", 10, 0, 0 },
+      { "0u ", 10, 0, 0 },
+      { "0L", 10, 0, 0 },
+      { "0L ", 10, 0, 0 },
+      { "0U", 10, 0, 0 },
+      { "0U ", 10, 0, 0 },
+      { "-0", 10, 0, 0 },
+      { "+0", 10, 0, 0 },
+      { "010", 8, 8, 0 },
+      { "08", 8, 0, EINVAL },
+      { "010", 10, 0, EINVAL },
+      { "68719476736", 10, 68719476736, 0 },
+      { "-68719476736", 10, -68719476736, 0 },
+      { "+68719476736", 10, 68719476736, 0 },
+      { "   68719476736  ", 10, 68719476736, 0 },
+      { "   -68719476736  ", 10, -68719476736, 0 },
+      { "   4611686018427387904LL", 10, 4611686018427387904LL, 0 },
+      { " -4611686018427387904LL ", 10, -4611686018427387904LL, 0 },
+      { "0x1000000000", 16, 68719476736, 0 },
+      { "-0x1000000000", 16, -68719476736, 0 },
+      { "+0x1000000000", 16, 68719476736, 0 },
+      { "01234", 8, 668, 0 },
+      { "-01234", 8, -668, 0 },
+      { "+01234", 8, 668, 0 },
+      { NULL }
+   };
+
+   for (i = 0; tests [i].str; i++) {
+      errno = 0;
+      endptr = NULL;
+
+      rv = bson_ascii_strtoll (tests [i].str, &endptr, tests [i].base);
+
+#if 0
+      fprintf (stderr, "rv=%"PRId64" errno=%d\n", rv, errno);
+#endif
+
+      assert_cmpint (rv, ==, tests [i].rv);
+      assert_cmpint (errno, ==, tests [i]._errno);
+   }
+}
+
+
+static void
+test_bson_strncpy (void)
+{
+   char buf[5];
+
+   bson_strncpy (buf, "foo", sizeof buf);
+   assert_cmpstr ("foo", buf);
+   bson_strncpy (buf, "foobar", sizeof buf);
+   assert_cmpstr ("foob", buf);
+}
+
+
 void
 test_string_install (TestSuite *suite)
 {
@@ -173,4 +262,7 @@ test_string_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/string/strdup", test_bson_strdup);
    TestSuite_Add (suite, "/bson/string/strdup_printf", test_bson_strdup_printf);
    TestSuite_Add (suite, "/bson/string/strndup", test_bson_strndup);
+   TestSuite_Add (suite, "/bson/string/ascii_strtoll", test_bson_ascii_strtoll);
+   TestSuite_Add (suite, "/bson/string/strncpy", test_bson_strncpy);
+   TestSuite_Add (suite, "/bson/string/strnlen", test_bson_strnlen);
 }

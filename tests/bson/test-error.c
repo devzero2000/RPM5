@@ -21,7 +21,6 @@
 
 #include "debug.h"
 
-
 static void
 test_bson_error_basic (void)
 {

@@ -13,16 +13,15 @@ run_test (const char *name,
    struct timeval begin;
    struct timeval end;
    struct timeval diff;
-   struct timezone tz;
    double format;
 
    TEST_RESULT = "PASS";
 
    fprintf(stdout, "%-42s : ", name);
    fflush(stdout);
-   bson_gettimeofday(&begin, &tz);
+   bson_gettimeofday(&begin);
    func();
-   bson_gettimeofday(&end, &tz);
+   bson_gettimeofday(&end);
    fprintf(stdout, "%s", TEST_RESULT);
 
    diff.tv_sec = end.tv_sec - begin.tv_sec;

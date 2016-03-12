@@ -1,3 +1,6 @@
+
+/* --- bcon.c */
+
 /*
  * @file bcon.c
  * @brief BCON (BSON C Object Notation) Implementation
@@ -19,7 +22,7 @@
  */
 
 #include "system.h"
-#include <stdarg.h>
+#include "stdarg.h"
 
 #include "bcon.h"
 
@@ -155,8 +158,8 @@ typedef union bcon_extract {
    struct
    {
       bson_subtype_t      *subtype;
-      const uint8_t **binary;
-      uint32_t       *length;
+      const uint8_t      **binary;
+      uint32_t            *length;
    } BIN;
 
    const bson_oid_t **OID;
@@ -459,7 +462,7 @@ _bcon_extract_single (const bson_iter_t *iter,
  *          appropriate recursion token
  *       II. If not, just call it a UTF8 token and pass that back
  */
-bcon_type_t
+static bcon_type_t
 _bcon_append_tokenize (va_list       *ap,
                        bcon_append_t *u)
 {
@@ -589,7 +592,7 @@ _bcon_append_tokenize (va_list       *ap,
  *          appropriate recursion token
  *       II. If not, just call it a UTF8 token and pass that back
  */
-bcon_type_t
+static bcon_type_t
 _bcon_extract_tokenize (va_list        *ap,
                         bcon_extract_t *u)
 {
@@ -713,16 +716,22 @@ _bson_concat_array (bson_t            *dest,
                     const bson_t      *src,
                     bcon_append_ctx_t *ctx)
 {
-   const char *key;
-   char i_str[11];
    bson_iter_t iter;
+   const char *key;
+   char i_str[16];
+   bool r;
 
-   bson_iter_init (&iter, src);
+   r = bson_iter_init (&iter, src);
+
+   if (!r) {
+      fprintf (stderr, "Invalid BSON document, possible memory coruption.\n");
+      return;
+   }
 
    STACK_I--;
 
    while (bson_iter_next (&iter)) {
-      bson_uint32_to_string (STACK_I, &key, i_str, 11);
+      bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
       STACK_I++;
 
       bson_append_iter (dest, key, -1, &iter);
@@ -755,14 +764,13 @@ bcon_append_ctx_va (bson_t            *bson,
 {
    bcon_type_t type;
    const char *key;
-
-   char i_str[11];
+   char i_str[16];
 
    bcon_append_t u = { 0 };
 
    while (1) {
       if (STACK_IS_ARRAY) {
-         bson_uint32_to_string (STACK_I, &key, i_str, 11);
+         bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
          STACK_I++;
       } else {
          type = _bcon_append_tokenize (ap, &u);
@@ -851,8 +859,7 @@ bcon_extract_ctx_va (bson_t             *bson,
    const char *key;
    bson_iter_t root_iter;
    bson_iter_t current_iter;
-
-   char i_str[11];
+   char i_str[16];
 
    bcon_extract_t u = { 0 };
 
@@ -860,7 +867,7 @@ bcon_extract_ctx_va (bson_t             *bson,
 
    while (1) {
       if (STACK_IS_ARRAY) {
-         bson_uint32_to_string (STACK_I, &key, i_str, 11);
+         bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
          STACK_I++;
       } else {
          type = _bcon_extract_tokenize (ap, &u);
@@ -900,9 +907,6 @@ bcon_extract_ctx_va (bson_t             *bson,
             STACK_PUSH_DOC (bson_iter_recurse (&current_iter,
                                                STACK_ITER_CHILD));
             break;
-         case BCON_TYPE_DOC_END:
-            STACK_POP_DOC (_noop ());
-            break;
          case BCON_TYPE_ARRAY_START:
 
             if (bson_iter_type (&current_iter) !=
@@ -910,9 +914,6 @@ bcon_extract_ctx_va (bson_t             *bson,
 
             STACK_PUSH_ARRAY (bson_iter_recurse (&current_iter,
                                                  STACK_ITER_CHILD));
-            break;
-         case BCON_TYPE_ARRAY_END:
-            STACK_POP_ARRAY (_noop ());
             break;
          default:
 

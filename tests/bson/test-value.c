@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include "system.h"
 
 #include <bcon.h>
@@ -23,7 +22,6 @@
 #include "TestSuite.h"
 
 #include "debug.h"
-
 
 static void
 test_value_basic (void)

@@ -1,8 +1,8 @@
 #include "system.h"
 
-#include <mongoc.h>
-
 #include "mongoc-tests.h"
+
+#include <mongoc.h>
 
 #include "ha-test.h"
 

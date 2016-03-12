@@ -17,6 +17,7 @@
 #include "system.h"
 
 #include <bson.h>
+#include <bcon.h>
 
 #include "bson-tests.h"
 #include "TestSuite.h"
@@ -24,9 +25,8 @@
 #include "debug.h"
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+# define BINARY_DIR "binary"
 #endif
-
 
 #define FUZZ_N_PASSES 100000
 
@@ -163,6 +163,26 @@ test_bson_iter_binary_deprecated (void)
 
 
 static void
+test_bson_iter_timeval (void)
+{
+   bson_iter_t iter;
+   bson_t * b;
+   struct timeval tv;
+
+   b = get_bson(BINARY_DIR"/test26.bson");
+   assert(b);
+
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   bson_iter_timeval(&iter, &tv);
+   assert(tv.tv_sec == 1234567890);
+   assert(tv.tv_usec == 0);
+
+   bson_destroy(b);
+}
+
+
+static void
 test_bson_iter_trailing_null (void)
 {
    bson_iter_t iter;
@@ -192,11 +212,11 @@ test_bson_iter_fuzz (void)
 
    for (pass = 0; pass < FUZZ_N_PASSES; pass++) {
       data = bson_malloc0(len);
-      memcpy(data, &len_le, 4);
+      memcpy(data, &len_le, sizeof (len_le));
 
       for (i = 4; i < len; i += 4) {
          r = rand();
-         memcpy(&data[i], &r, 4);
+         memcpy(&data[i], &r, sizeof (r));
       }
 
       if (!(b = bson_new_from_data(data, len))) {
@@ -222,14 +242,14 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_DOCUMENT:
             {
                const uint8_t *child = NULL;
-               uint32_t child_len = -1;
+               uint32_t child_len = 0;
 
                bson_iter_document(&iter, &child_len, &child);
                assert(child);
                assert(child_len >= 5);
                assert((iter.off + child_len) < b->len);
                assert(child_len < (uint32_t)-1);
-               memcpy(&child_len, child, 4);
+               memcpy(&child_len, child, sizeof (child_len));
                child_len = BSON_UINT32_FROM_LE(child_len);
                assert(child_len >= 5);
             }
@@ -450,6 +470,25 @@ test_bson_iter_find_descendant (void)
    assert(BSON_ITER_HOLDS_INT32(&desc));
    assert(bson_iter_int32(&desc) == 1);
    bson_destroy(b);
+
+   b = BCON_NEW ("foo", "{", "bar", "[", "{", "baz", BCON_INT32 (1), "}", "]", "}");
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_find_descendant (&iter, "foo.bar.0.baz", &desc));
+   assert (BSON_ITER_HOLDS_INT32 (&desc));
+   assert (bson_iter_int32 (&desc) == 1);
+   bson_destroy (b);
+
+   b = BCON_NEW ("nModified", BCON_INT32 (1), "n", BCON_INT32 (2));
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_find_descendant (&iter, "n", &desc));
+   assert (!strcmp (bson_iter_key (&desc), "n"));
+   bson_destroy (b);
+
+   b = BCON_NEW ("", BCON_INT32 (1), "n", BCON_INT32 (2));
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_find_descendant (&iter, "n", &desc));
+   assert (!strcmp (bson_iter_key (&desc), "n"));
+   bson_destroy (b);
 }
 
 
@@ -491,6 +530,7 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/test_string", test_bson_iter_utf8);
    TestSuite_Add (suite, "/bson/iter/test_mixed", test_bson_iter_mixed);
    TestSuite_Add (suite, "/bson/iter/test_overflow", test_bson_iter_overflow);
+   TestSuite_Add (suite, "/bson/iter/test_timeval", test_bson_iter_timeval);
    TestSuite_Add (suite, "/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
    TestSuite_Add (suite, "/bson/iter/test_fuzz", test_bson_iter_fuzz);
    TestSuite_Add (suite, "/bson/iter/test_regex", test_bson_iter_regex);

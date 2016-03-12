@@ -1,8 +1,11 @@
 #include "system.h"
 
 #include <bson.h>
+
+#ifdef MONGOC_ENABLE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#endif
 
 #include "ssl-test.h"
 
@@ -10,30 +13,20 @@
 
 #define TIMEOUT 1000
 
-#define LOCALHOST "127.0.0.1"
+#define NUM_IOVECS 2000
 
-typedef struct ssl_test_data
-{
-   mongoc_ssl_opt_t  *client;
-   mongoc_ssl_opt_t  *server;
-   const char        *host;
-   unsigned short     server_port;
-   mongoc_cond_t      cond;
-   mongoc_mutex_t     cond_mutex;
-   ssl_test_result_t *client_result;
-   ssl_test_result_t *server_result;
-} ssl_test_data_t;
+#define LOCALHOST "127.0.0.1"
 
 /** this function is meant to be run from ssl_test as a child thread
  *
  * It:
  *    1. spins up
  *    2. binds and listens to a random port
- *    3. notifies the client of it's port through a condvar
+ *    3. notifies the client of its port through a condvar
  *    4. accepts a request
  *    5. reads a 32 bit length
  *    6. reads a string of that length
- *    7. echos it back to the client
+ *    7. echoes it back to the client
  *    8. shuts down
  */
 static void *
@@ -46,7 +39,7 @@ ssl_test_server (void * ptr)
    mongoc_socket_t *listen_sock;
    mongoc_socket_t *conn_sock;
    socklen_t sock_len;
-   char buf[1024];
+   char buf[4 * NUM_IOVECS];
    ssize_t r;
    mongoc_iovec_t iov;
    struct sockaddr_in server_addr = { 0 };
@@ -86,7 +79,11 @@ ssl_test_server (void * ptr)
    assert (sock_stream);
    ssl_stream = mongoc_stream_tls_new(sock_stream, data->server, 0);
    if (!ssl_stream) {
+#ifdef MONGOC_ENABLE_OPENSSL
       unsigned long err = ERR_get_error();
+#else
+      unsigned long err = 42;
+#endif
       assert(err);
 
       data->server_result->ssl_err = err;
@@ -101,7 +98,11 @@ ssl_test_server (void * ptr)
 
    r = mongoc_stream_tls_do_handshake (ssl_stream, TIMEOUT);
    if (!r) {
+#ifdef MONGOC_ENABLE_OPENSSL
       unsigned long err = ERR_get_error();
+#else
+      unsigned long err = 42;
+#endif
       assert(err);
 
       data->server_result->ssl_err = err;
@@ -112,15 +113,9 @@ ssl_test_server (void * ptr)
 
       return NULL;
    }
-   
+
    r = mongoc_stream_readv(ssl_stream, &iov, 1, 4, TIMEOUT);
    if (r < 0) {
-#ifdef _WIN32
-      assert(errno == WSAETIMEDOUT);
-#else
-      assert(errno == ETIMEDOUT);
-#endif
-
       data->server_result->err = errno;
       data->server_result->result = SSL_TEST_TIMEOUT;
 
@@ -153,7 +148,7 @@ ssl_test_server (void * ptr)
  * It:
  *    1. spins up
  *    2. waits on a condvar until the server is up
- *    3. connects to the servers port
+ *    3. connects to the server's port
  *    4. writes a 4 bytes length
  *    5. writes a string of length size
  *    6. reads a response back of the given length
@@ -167,11 +162,13 @@ ssl_test_client (void * ptr)
    mongoc_stream_t *sock_stream;
    mongoc_stream_t *ssl_stream;
    mongoc_socket_t *conn_sock;
+   int i;
    int errno_captured;
    char buf[1024];
    ssize_t r;
    mongoc_iovec_t riov;
    mongoc_iovec_t wiov;
+   mongoc_iovec_t wiov_many[NUM_IOVECS];
    struct sockaddr_in server_addr = { 0 };
    int len;
 
@@ -192,13 +189,21 @@ ssl_test_client (void * ptr)
    server_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
    r = mongoc_socket_connect (conn_sock, (struct sockaddr *)&server_addr, sizeof(server_addr), -1);
-   assert (r == 0);
+   if (r != 0) {
+      fprintf (stderr, "mongoc_socket_connect returned %zd: \"%s\"",
+               r, strerror (errno));
+      abort ();
+   }
 
    sock_stream = mongoc_stream_socket_new (conn_sock);
    assert(sock_stream);
    ssl_stream = mongoc_stream_tls_new(sock_stream, data->client, 1);
    if (! ssl_stream) {
+#ifdef MONGOC_ENABLE_OPENSSL
       unsigned long err = ERR_get_error();
+#else
+      unsigned long err = 42;
+#endif
       assert(err);
 
       data->client_result->ssl_err = err;
@@ -215,7 +220,11 @@ ssl_test_client (void * ptr)
    errno_captured = errno;
 
    if (! r) {
+#ifdef MONGOC_ENABLE_OPENSSL
       unsigned long err = ERR_get_error();
+#else
+      unsigned long err = 42;
+#endif
       assert(err || errno_captured);
 
       if (err) {
@@ -238,7 +247,7 @@ ssl_test_client (void * ptr)
       return NULL;
    }
 
-   len = 4;
+   len = 4 * NUM_IOVECS;
 
    wiov.iov_base = (void *)&len;
    wiov.iov_len = 4;
@@ -246,10 +255,13 @@ ssl_test_client (void * ptr)
 
    assert(r == (ssize_t)wiov.iov_len);
 
-   wiov.iov_base = "foo";
-   wiov.iov_len = 4;
-   r = mongoc_stream_writev(ssl_stream, &wiov, 1, TIMEOUT);
-   assert(r == (ssize_t)wiov.iov_len);
+   for (i = 0; i < NUM_IOVECS; i++) {
+      wiov_many[i].iov_base = (void *)"foo";
+      wiov_many[i].iov_len = 4;
+   }
+
+   r = mongoc_stream_writev(ssl_stream, wiov_many, NUM_IOVECS, TIMEOUT);
+   assert(r == (ssize_t)wiov_many[0].iov_len * NUM_IOVECS);
 
    riov.iov_len = 1;
 
@@ -274,9 +286,9 @@ ssl_test_client (void * ptr)
 /** This is the testing function for the ssl-test lib
  *
  * The basic idea is that you spin up a client and server, which will
- * communicate over a mongoc-stream-tls, with varrying mongoc_ssl_opt's.  The
+ * communicate over a mongoc-stream-tls, with varying mongoc_ssl_opt's.  The
  * client and server speak a simple echo protocol, so all we're really testing
- * here is that any given configuration suceeds or fails as it should
+ * here is that any given configuration succeeds or fails as it should
  */
 void
 ssl_test (mongoc_ssl_opt_t  *client,

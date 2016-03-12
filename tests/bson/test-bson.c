@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-
 #include "system.h"
 #include <assert.h>
 
 #include <bson.h>
+#include <bcon.h>
 
 #include "bson-tests.h"
 #include "TestSuite.h"
@@ -125,7 +125,7 @@ assert_bson_equal (const bson_t *a,
    uint32_t i;
 
    if (!bson_equal(a, b)) {
-      for (i = 0; i < MAX(a->len, b->len); i++) {
+      for (i = 0; i < BSON_MAX(a->len, b->len); i++) {
          if (i >= a->len) {
             printf("a is too short len=%u\n", a->len);
             abort();
@@ -730,6 +730,206 @@ test_bson_append_deep (void)
 
 
 static void
+test_bson_validate_dbref (void)
+{
+   size_t offset;
+   bson_t dbref, child, child2;
+
+   /* should fail, $ref without an $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with non id field */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id at the top */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_UTF8 (&dbref, "$ref", "foo");
+      BSON_APPEND_UTF8 (&dbref, "$id", "bar");
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id not first keys */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$db", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, non-string $ref with $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_INT32 (&child, "$ref", 1);
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, non-string $ref with nothing */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_INT32 (&child, "$ref", 1);
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with non-string $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_INT32 (&child, "$db", 1);
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with non-string $db with stuff after */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_INT32 (&child, "$db", 1);
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with stuff, then $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with nested dbref $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_DOCUMENT_BEGIN (&child, "$id", &child2);
+      BSON_APPEND_UTF8 (&child2, "$ref", "foo2");
+      BSON_APPEND_UTF8 (&child2, "$id", "bar2");
+      BSON_APPEND_UTF8 (&child2, "$db", "baz2");
+      bson_append_document_end (&child, &child2);
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id and $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id and $db and trailing */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+}
+
+
+static void
 test_bson_validate (void)
 {
    char filename[64];
@@ -840,7 +1040,7 @@ test_bson_new_from_buffer (void)
    size_t len = 5;
    uint32_t len_le = BSON_UINT32_TO_LE(5);
 
-   memcpy(buf, &len_le, 4);
+   memcpy(buf, &len_le, sizeof (len_le));
 
    b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
 
@@ -874,6 +1074,9 @@ test_bson_new_from_buffer (void)
 static void
 test_bson_utf8_key (void)
 {
+   /* euro currency symbol */
+#define EU "\xe2\x82\xac"
+#define FIVE_EUROS EU EU EU EU EU
    uint32_t length;
    bson_iter_t iter;
    const char *str;
@@ -884,10 +1087,10 @@ test_bson_utf8_key (void)
    assert(bson_validate(b, BSON_VALIDATE_NONE, &offset));
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
-   assert(!strcmp(bson_iter_key(&iter), "€€€€€"));
+   assert(!strcmp(bson_iter_key(&iter), FIVE_EUROS));
    assert((str = bson_iter_utf8(&iter, &length)));
    assert(length == 15); /* 5 3-byte sequences. */
-   assert(!strcmp(str, "€€€€€"));
+   assert(!strcmp(str, FIVE_EUROS));
    bson_destroy(b);
 }
 
@@ -1120,7 +1323,7 @@ test_bson_copy_to (void)
 
 
 static void
-test_bson_copy_to_excluding (void)
+test_bson_copy_to_excluding_noinit (void)
 {
    bson_iter_t iter;
    bool r;
@@ -1132,7 +1335,8 @@ test_bson_copy_to_excluding (void)
    bson_append_int32(&b, "a", 1, 1);
    bson_append_int32(&b, "b", 1, 2);
 
-   bson_copy_to_excluding(&b, &c, "b", NULL);
+   bson_init(&c);
+   bson_copy_to_excluding_noinit(&b, &c, "b", NULL);
    r = bson_iter_init_find(&iter, &c, "a");
    assert(r);
    r = bson_iter_init_find(&iter, &c, "b");
@@ -1324,6 +1528,90 @@ test_bson_destroy_with_steal (void)
 }
 
 
+static void
+test_bson_has_field (void)
+{
+   bson_t *b;
+   bool r;
+
+   b = BCON_NEW ("foo", "[", "{", "bar", BCON_INT32 (1), "}", "]");
+
+   r = bson_has_field (b, "foo");
+   assert (r);
+
+   r = bson_has_field (b, "foo.0");
+   assert (r);
+
+   r = bson_has_field (b, "foo.0.bar");
+   assert (r);
+
+   r = bson_has_field (b, "0");
+   assert (!r);
+
+   r = bson_has_field (b, "bar");
+   assert (!r);
+
+   r = bson_has_field (b, "0.bar");
+   assert (!r);
+
+   bson_destroy (b);
+}
+
+
+BSON_GNUC_PURE
+static void
+test_next_power_of_two (void)
+{
+   size_t s;
+
+   s = 3;
+   s = bson_next_power_of_two (s);
+   assert (s == 4);
+
+   s = 4;
+   s = bson_next_power_of_two (s);
+   assert (s == 4);
+
+   s = 33;
+   s = bson_next_power_of_two (s);
+   assert (s == 64);
+
+   s = 91;
+   s = bson_next_power_of_two (s);
+   assert (s == 128);
+
+   s = 939524096UL;
+   s = bson_next_power_of_two (s);
+   assert (s == 1073741824);
+
+   s = 1073741824UL;
+   s = bson_next_power_of_two (s);
+   assert (s == 1073741824UL);
+
+#if BSON_WORD_SIZE == 64
+   s = 4294967296LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 4294967296LL);
+
+   s = 4294967297LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 8589934592LL);
+
+   s = 17179901952LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 34359738368LL);
+
+   s = 9223372036854775807ULL;
+   s = bson_next_power_of_two (s);
+   assert (s == 9223372036854775808ULL);
+
+   s = 36028795806651656ULL;
+   s = bson_next_power_of_two (s);
+   assert (s == 36028797018963968ULL);
+#endif
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
@@ -1360,6 +1648,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_deep", test_bson_append_deep);
    TestSuite_Add (suite, "/bson/utf8_key", test_bson_utf8_key);
    TestSuite_Add (suite, "/bson/validate", test_bson_validate);
+   TestSuite_Add (suite, "/bson/validate/dbref", test_bson_validate_dbref);
    TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
    TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
    TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);
@@ -1369,11 +1658,14 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/count", test_bson_count_keys);
    TestSuite_Add (suite, "/bson/copy", test_bson_copy);
    TestSuite_Add (suite, "/bson/copy_to", test_bson_copy_to);
-   TestSuite_Add (suite, "/bson/copy_to_excluding", test_bson_copy_to_excluding);
+   TestSuite_Add (suite, "/bson/copy_to_excluding_noinit", test_bson_copy_to_excluding_noinit);
    TestSuite_Add (suite, "/bson/initializer", test_bson_initializer);
    TestSuite_Add (suite, "/bson/concat", test_bson_concat);
    TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
    TestSuite_Add (suite, "/bson/macros", test_bson_macros);
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
+   TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+
+   TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }
