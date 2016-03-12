@@ -1,8 +1,14 @@
 #include "system.h"
+#include <stdarg.h>
 
 #include <rpmutil.h>
 
 #include "debug.h"
+
+/*==============================================================*/
+/* --- test.h */
+#ifndef __TEST_H__
+#define __TEST_H__
 
 static int test_passed = 0;
 static int test_failed = 0;
@@ -28,294 +34,284 @@ static void test(int (*func) (void), const char *name)
     }
 }
 
-#define TOKEN_EQ(t, tok_start, tok_end, tok_type) \
-	((t).start == tok_start \
-	 && (t).end == tok_end  \
-	 && (t).type == (tok_type))
+#endif				/* __TEST_H__ */
 
-#define TOKEN_STRING(js, t, s) \
-	(strncmp(js+(t).start, s, (t).end - (t).start) == 0 \
-	 && (int)strlen(s) == (t).end - (t).start)
+/*==============================================================*/
+/* --- testutil.h */
+#ifndef __TEST_UTIL_H__
+#define __TEST_UTIL_H__
 
-#define TOKEN_PRINT(t) \
-	printf("start: %d, end: %d, type: %d, size: %d\n", \
-			(t).start, (t).end, (t).type, (t).size)
-
-#define JSMN_STRICT
 #include "jsmn.c"
 
-int test_empty()
+static int vtokeq(const char *s, jsmntok_t * t, int numtok, va_list ap)
 {
-    const char *js;
+    if (numtok > 0) {
+	int i, start, end, size;
+	int type;
+	char *value;
+
+	size = -1;
+	value = NULL;
+	for (i = 0; i < numtok; i++) {
+	    type = va_arg(ap, int);
+	    if (type == JSMN_STRING) {
+		value = va_arg(ap, char *);
+		size = va_arg(ap, int);
+		start = end = -1;
+	    } else if (type == JSMN_PRIMITIVE) {
+		value = va_arg(ap, char *);
+		start = end = size = -1;
+	    } else {
+		start = va_arg(ap, int);
+		end = va_arg(ap, int);
+		size = va_arg(ap, int);
+		value = NULL;
+	    }
+	    if ((int)t[i].type != type) {
+		printf("token %d type is %d, not %d\n", i, t[i].type,
+		       type);
+		return 0;
+	    }
+	    if (start != -1 && end != -1) {
+		if (t[i].start != start) {
+		    printf("token %d start is %d, not %d\n", i, t[i].start,
+			   start);
+		    return 0;
+		}
+		if (t[i].end != end) {
+		    printf("token %d end is %d, not %d\n", i, t[i].end,
+			   end);
+		    return 0;
+		}
+	    }
+	    if (size != -1 && t[i].size != size) {
+		printf("token %d size is %d, not %d\n", i, t[i].size,
+		       size);
+		return 0;
+	    }
+
+	    if (s != NULL && value != NULL) {
+		const char *p = s + t[i].start;
+		if ((int)strlen(value) != t[i].end - t[i].start ||
+		    strncmp(p, value, t[i].end - t[i].start) != 0) {
+		    printf("token %d value is %.*s, not %s\n", i,
+			   t[i].end - t[i].start, s + t[i].start, value);
+		    return 0;
+		}
+	    }
+	}
+    }
+    return 1;
+}
+
+static int tokeq(const char *s, jsmntok_t * tokens, int numtok, ...)
+{
+    int ok;
+    va_list args;
+    va_start(args, numtok);
+    ok = vtokeq(s, tokens, numtok, args);
+    va_end(args);
+    return ok;
+}
+
+static int parse(const char *s, int status, int numtok, ...)
+{
     int r;
+    int ok = 1;
+    va_list args;
     jsmn_parser p;
-    jsmntok_t t[10];
+    jsmntok_t *t = malloc(numtok * sizeof(jsmntok_t));
 
-    js = "{}";
     jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), t, 10);
-    check(r >= 0);
-    check(t[0].type == JSMN_OBJECT);
-    check(t[0].start == 0 && t[0].end == 2);
+    r = jsmn_parse(&p, s, strlen(s), t, numtok);
+    if (r != status) {
+	printf("status is %d, not %d\n", r, status);
+	return 0;
+    }
 
-    js = "[]";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), t, 10);
-    check(r >= 0);
-    check(t[0].type == JSMN_ARRAY);
-    check(t[0].start == 0 && t[0].end == 2);
+    if (status >= 0) {
+	va_start(args, numtok);
+	ok = vtokeq(s, t, numtok, args);
+	va_end(args);
+    }
+    free(t);
+    return ok;
+}
 
-    js = "{\"a\":[]}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), t, 10);
-    check(r >= 0);
-    check(t[0].type == JSMN_OBJECT && t[0].start == 0 && t[0].end == 8);
-    check(t[1].type == JSMN_STRING && t[1].start == 2 && t[1].end == 3);
-    check(t[2].type == JSMN_ARRAY && t[2].start == 5 && t[2].end == 7);
+#endif				/* __TEST_UTIL_H__ */
 
-    js = "[{},{}]";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), t, 10);
-    check(r >= 0);
-    check(t[0].type == JSMN_ARRAY && t[0].start == 0 && t[0].end == 7);
-    check(t[1].type == JSMN_OBJECT && t[1].start == 1 && t[1].end == 3);
-    check(t[2].type == JSMN_OBJECT && t[2].start == 4 && t[2].end == 6);
+/*==============================================================*/
+/* --- tests.c */
+int test_empty(void)
+{
+    check(parse("{}", 1, 1, JSMN_OBJECT, 0, 2, 0));
+    check(parse("[]", 1, 1, JSMN_ARRAY, 0, 2, 0));
+    check(parse("[{},{}]", 3, 3,
+		JSMN_ARRAY, 0, 7, 2,
+		JSMN_OBJECT, 1, 3, 0, JSMN_OBJECT, 4, 6, 0));
     return 0;
 }
 
-int test_simple()
+int test_object(void)
 {
-    const char *js;
-    int r;
-    jsmn_parser p;
-    jsmntok_t tokens[10];
+    check(parse("{\"a\":0}", 3, 3,
+		JSMN_OBJECT, 0, 7, 1,
+		JSMN_STRING, "a", 1, JSMN_PRIMITIVE, "0"));
+    check(parse("{\"a\":[]}", 3, 3,
+		JSMN_OBJECT, 0, 8, 1,
+		JSMN_STRING, "a", 1, JSMN_ARRAY, 5, 7, 0));
+    check(parse("{\"a\":{},\"b\":{}}", 5, 5,
+		JSMN_OBJECT, -1, -1, 2,
+		JSMN_STRING, "a", 1,
+		JSMN_OBJECT, -1, -1, 0,
+		JSMN_STRING, "b", 1, JSMN_OBJECT, -1, -1, 0));
+    check(parse
+	  ("{\n \"Day\": 26,\n \"Month\": 9,\n \"Year\": 12\n }", 7, 7,
+	   JSMN_OBJECT, -1, -1, 3, JSMN_STRING, "Day", 1, JSMN_PRIMITIVE,
+	   "26", JSMN_STRING, "Month", 1, JSMN_PRIMITIVE, "9", JSMN_STRING,
+	   "Year", 1, JSMN_PRIMITIVE, "12"));
+    check(parse
+	  ("{\"a\": 0, \"b\": \"c\"}", 5, 5, JSMN_OBJECT, -1, -1, 2,
+	   JSMN_STRING, "a", 1, JSMN_PRIMITIVE, 0, JSMN_STRING, "b", 1,
+	   JSMN_STRING, "c", 0));
 
-    js = "{\"a\": 0}";
-
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-    check(TOKEN_EQ(tokens[0], 0, 8, JSMN_OBJECT));
-    check(TOKEN_EQ(tokens[1], 2, 3, JSMN_STRING));
-    check(TOKEN_EQ(tokens[2], 6, 7, JSMN_PRIMITIVE));
-
-    check(TOKEN_STRING(js, tokens[0], js));
-    check(TOKEN_STRING(js, tokens[1], "a"));
-    check(TOKEN_STRING(js, tokens[2], "0"));
-
-    jsmn_init(&p);
-    js = "[\"a\":{},\"b\":{}]";
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
-    jsmn_init(&p);
-    js = "{\n \"Day\": 26,\n \"Month\": 9,\n \"Year\": 12\n }";
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
-    return 0;
-}
-
-RPM_GNUC_CONST
-int test_primitive()
-{
-#ifndef JSMN_STRICT
-    int r;
-    jsmn_parser p;
-    jsmntok_t tok[10];
-    const char *js;
-    js = "\"boolVar\" : true";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "boolVar"));
-    check(TOKEN_STRING(js, tok[1], "true"));
-
-    js = "\"boolVar\" : false";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "boolVar"));
-    check(TOKEN_STRING(js, tok[1], "false"));
-
-    js = "\"intVar\" : 12345";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "intVar"));
-    check(TOKEN_STRING(js, tok[1], "12345"));
-
-    js = "\"floatVar\" : 12.345";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "floatVar"));
-    check(TOKEN_STRING(js, tok[1], "12.345"));
-
-    js = "\"nullVar\" : null";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "nullVar"));
-    check(TOKEN_STRING(js, tok[1], "null"));
+#ifdef JSMN_STRICT
+    check(parse("{\"a\"\n0}", JSMN_ERROR_INVAL, 3));
+    check(parse("{\"a\", 0}", JSMN_ERROR_INVAL, 3));
+    check(parse("{\"a\": {2}}", JSMN_ERROR_INVAL, 3));
+    check(parse("{\"a\": {2: 3}}", JSMN_ERROR_INVAL, 3));
+    check(parse("{\"a\": {\"a\": 2 3}}", JSMN_ERROR_INVAL, 5));
+    /* FIXME */
+    /*check(parse("{\"a\"}", JSMN_ERROR_INVAL, 2)); */
+    /*check(parse("{\"a\": 1, \"b\"}", JSMN_ERROR_INVAL, 4)); */
+    /*check(parse("{\"a\",\"b\":1}", JSMN_ERROR_INVAL, 4)); */
+    /*check(parse("{\"a\":1,}", JSMN_ERROR_INVAL, 4)); */
+    /*check(parse("{\"a\":\"b\":\"c\"}", JSMN_ERROR_INVAL, 4)); */
+    /*check(parse("{,}", JSMN_ERROR_INVAL, 4)); */
 #endif
     return 0;
 }
 
-int test_string()
+int test_array(void)
 {
-    int r;
-    jsmn_parser p;
-    jsmntok_t tok[10];
-    const char *js;
-
-    js = "\"strVar\" : \"hello world\"";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "strVar"));
-    check(TOKEN_STRING(js, tok[1], "hello world"));
-
-    js = "\"strVar\" : \"escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\\"";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "strVar"));
-    check(TOKEN_STRING(js, tok[1], "escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\"));
-
-    js = "\"strVar\" : \"\"";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "strVar"));
-    check(TOKEN_STRING(js, tok[1], ""));
-
+    /* FIXME */
+    /*check(parse("[10}", JSMN_ERROR_INVAL, 3)); */
+    /*check(parse("[1,,3]", JSMN_ERROR_INVAL, 3) */
+    check(parse("[10]", 2, 2,
+		JSMN_ARRAY, -1, -1, 1, JSMN_PRIMITIVE, "10"));
+    check(parse("{\"a\": 1]", JSMN_ERROR_INVAL, 3));
+    /* FIXME */
+    /*check(parse("[\"a\": 1]", JSMN_ERROR_INVAL, 3)); */
     return 0;
 }
 
-int test_partial_string()
+int test_primitive(void)
 {
+    check(parse("{\"boolVar\" : true }", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "boolVar", 1, JSMN_PRIMITIVE, "true"));
+    check(parse("{\"boolVar\" : false }", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "boolVar", 1, JSMN_PRIMITIVE, "false"));
+    check(parse("{\"nullVar\" : null }", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "nullVar", 1, JSMN_PRIMITIVE, "null"));
+    check(parse("{\"intVar\" : 12}", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "intVar", 1, JSMN_PRIMITIVE, "12"));
+    check(parse("{\"floatVar\" : 12.345}", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "floatVar", 1, JSMN_PRIMITIVE, "12.345"));
+    return 0;
+}
+
+int test_string(void)
+{
+    check(parse("{\"strVar\" : \"hello world\"}", 3, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "strVar", 1, JSMN_STRING, "hello world", 0));
+    check(parse
+	  ("{\"strVar\" : \"escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\\"}", 3, 3,
+	   JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "strVar", 1, JSMN_STRING,
+	   "escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\", 0));
+    check(parse
+	  ("{\"strVar\": \"\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING,
+	   "strVar", 1, JSMN_STRING, "", 0));
+    check(parse
+	  ("{\"a\":\"\\uAbcD\"}", 3, 3, JSMN_OBJECT, -1, -1, 1,
+	   JSMN_STRING, "a", 1, JSMN_STRING, "\\uAbcD", 0));
+    check(parse
+	  ("{\"a\":\"str\\u0000\"}", 3, 3, JSMN_OBJECT, -1, -1, 1,
+	   JSMN_STRING, "a", 1, JSMN_STRING, "str\\u0000", 0));
+    check(parse
+	  ("{\"a\":\"\\uFFFFstr\"}", 3, 3, JSMN_OBJECT, -1, -1, 1,
+	   JSMN_STRING, "a", 1, JSMN_STRING, "\\uFFFFstr", 0));
+    check(parse
+	  ("{\"a\":[\"\\u0280\"]}", 4, 4, JSMN_OBJECT, -1, -1, 1,
+	   JSMN_STRING, "a", 1, JSMN_ARRAY, -1, -1, 1, JSMN_STRING,
+	   "\\u0280", 0));
+
+    check(parse("{\"a\":\"str\\uFFGFstr\"}", JSMN_ERROR_INVAL, 3));
+    check(parse("{\"a\":\"str\\u@FfF\"}", JSMN_ERROR_INVAL, 3));
+    check(parse("{{\"a\":[\"\\u028\"]}", JSMN_ERROR_INVAL, 4));
+    return 0;
+}
+
+int test_partial_string(void)
+{
+    int i;
     int r;
     jsmn_parser p;
-    jsmntok_t tok[10];
-    const char *js;
+    jsmntok_t tok[5];
+    const char *js = "{\"x\": \"va\\\\ue\", \"y\": \"value y\"}";
 
     jsmn_init(&p);
-    js = "\"x\": \"va";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r == JSMN_ERROR_PART && tok[0].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "x"));
-    check(p.toknext == 1);
-
-    jsmn_init(&p);
-    char js_slash[9] = "\"x\": \"va\\";
-    r = jsmn_parse(&p, js_slash, sizeof(js_slash), tok, 10);
-    check(r == JSMN_ERROR_PART);
-
-    jsmn_init(&p);
-    char js_unicode[10] = "\"x\": \"va\\u";
-    r = jsmn_parse(&p, js_unicode, sizeof(js_unicode), tok, 10);
-    check(r == JSMN_ERROR_PART);
-
-    js = "\"x\": \"valu";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r == JSMN_ERROR_PART && tok[0].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "x"));
-    check(p.toknext == 1);
-
-    js = "\"x\": \"value\"";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "x"));
-    check(TOKEN_STRING(js, tok[1], "value"));
-
-    js = "\"x\": \"value\", \"y\": \"value y\"";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_STRING
-	  && tok[1].type == JSMN_STRING && tok[2].type == JSMN_STRING
-	  && tok[3].type == JSMN_STRING);
-    check(TOKEN_STRING(js, tok[0], "x"));
-    check(TOKEN_STRING(js, tok[1], "value"));
-    check(TOKEN_STRING(js, tok[2], "y"));
-    check(TOKEN_STRING(js, tok[3], "value y"));
-
+    for (i = 1; i <= (int)strlen(js); i++) {
+	r = jsmn_parse(&p, js, i, tok, sizeof(tok) / sizeof(tok[0]));
+	if (i == (int)strlen(js)) {
+	    check(r == 5);
+	    check(tokeq(js, tok, 5,
+			JSMN_OBJECT, -1, -1, 2,
+			JSMN_STRING, "x", 1,
+			JSMN_STRING, "va\\\\ue", 0,
+			JSMN_STRING, "y", 1, JSMN_STRING, "value y", 0));
+	} else {
+	    check(r == JSMN_ERROR_PART);
+	}
+    }
     return 0;
 }
 
 RPM_GNUC_CONST
-int test_unquoted_keys()
+int test_partial_array(void)
 {
-#ifndef JSMN_STRICT
+#ifdef JSMN_STRICT
     int r;
+    int i;
     jsmn_parser p;
     jsmntok_t tok[10];
-    const char *js;
+    const char *js = "[ 1, true, [123, \"hello\"]]";
 
     jsmn_init(&p);
-    js = "key1: \"value\"\nkey2 : 123";
-
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_PRIMITIVE
-	  && tok[1].type == JSMN_STRING && tok[2].type == JSMN_PRIMITIVE
-	  && tok[3].type == JSMN_PRIMITIVE);
-    check(TOKEN_STRING(js, tok[0], "key1"));
-    check(TOKEN_STRING(js, tok[1], "value"));
-    check(TOKEN_STRING(js, tok[2], "key2"));
-    check(TOKEN_STRING(js, tok[3], "123"));
+    for (i = 1; i <= strlen(js); i++) {
+	r = jsmn_parse(&p, js, i, tok, sizeof(tok) / sizeof(tok[0]));
+	if (i == strlen(js)) {
+	    check(r == 6);
+	    check(tokeq(js, tok, 6,
+			JSMN_ARRAY, -1, -1, 3,
+			JSMN_PRIMITIVE, "1",
+			JSMN_PRIMITIVE, "true",
+			JSMN_ARRAY, -1, -1, 2,
+			JSMN_PRIMITIVE, "123", JSMN_STRING, "hello", 0));
+	} else {
+	    check(r == JSMN_ERROR_PART);
+	}
+    }
 #endif
     return 0;
 }
 
-int test_partial_array()
-{
-    int r;
-    jsmn_parser p;
-    jsmntok_t tok[10];
-    const char *js;
-
-    jsmn_init(&p);
-    js = "  [ 1, true, ";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r == JSMN_ERROR_PART && tok[0].type == JSMN_ARRAY
-	  && tok[1].type == JSMN_PRIMITIVE
-	  && tok[2].type == JSMN_PRIMITIVE);
-
-    js = "  [ 1, true, [123, \"hello";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r == JSMN_ERROR_PART && tok[0].type == JSMN_ARRAY
-	  && tok[1].type == JSMN_PRIMITIVE && tok[2].type == JSMN_PRIMITIVE
-	  && tok[3].type == JSMN_ARRAY && tok[4].type == JSMN_PRIMITIVE);
-
-    js = "  [ 1, true, [123, \"hello\"]";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r == JSMN_ERROR_PART && tok[0].type == JSMN_ARRAY
-	  && tok[1].type == JSMN_PRIMITIVE && tok[2].type == JSMN_PRIMITIVE
-	  && tok[3].type == JSMN_ARRAY && tok[4].type == JSMN_PRIMITIVE
-	  && tok[5].type == JSMN_STRING);
-    /* check child nodes of the 2nd array */
-    check(tok[3].size == 2);
-
-    js = "  [ 1, true, [123, \"hello\"]]";
-    r = jsmn_parse(&p, js, strlen(js), tok, 10);
-    check(r >= 0 && tok[0].type == JSMN_ARRAY
-	  && tok[1].type == JSMN_PRIMITIVE && tok[2].type == JSMN_PRIMITIVE
-	  && tok[3].type == JSMN_ARRAY && tok[4].type == JSMN_PRIMITIVE
-	  && tok[5].type == JSMN_STRING);
-    check(tok[3].size == 2);
-    check(tok[0].size == 3);
-    return 0;
-}
-
-int test_array_nomem()
+int test_array_nomem(void)
 {
     int i;
     int r;
@@ -336,44 +332,38 @@ int test_array_nomem()
 
 	r = jsmn_parse(&p, js, strlen(js), toklarge, 10);
 	check(r >= 0);
-
-	check(toklarge[0].type == JSMN_ARRAY && toklarge[0].size == 3);
-	check(toklarge[3].type == JSMN_ARRAY && toklarge[3].size == 2);
+	check(tokeq(js, toklarge, 4,
+		    JSMN_ARRAY, -1, -1, 3,
+		    JSMN_PRIMITIVE, "1",
+		    JSMN_PRIMITIVE, "true",
+		    JSMN_ARRAY, -1, -1, 2,
+		    JSMN_PRIMITIVE, "123", JSMN_STRING, "hello", 0));
     }
     return 0;
 }
 
-int test_objects_arrays()
+int test_unquoted_keys(void)
 {
+#ifndef JSMN_STRICT
     int r;
     jsmn_parser p;
-    jsmntok_t tokens[10];
+    jsmntok_t tok[10];
     const char *js;
 
-    js = "[10}";
     jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
+    js = "key1: \"value\"\nkey2 : 123";
 
-    js = "[10]";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
+    r = jsmn_parse(&p, js, strlen(js), tok, 10);
     check(r >= 0);
-
-    js = "{\"a\": 1]";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\": 1}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
+    check(tokeq(js, tok, 4,
+		JSMN_PRIMITIVE, "key1",
+		JSMN_STRING, "value", 0,
+		JSMN_PRIMITIVE, "key2", JSMN_PRIMITIVE, "123"));
+#endif
     return 0;
 }
 
-int test_issue_22()
+int test_issue_22(void)
 {
     int r;
     jsmn_parser p;
@@ -391,70 +381,18 @@ int test_issue_22()
     jsmn_init(&p);
     r = jsmn_parse(&p, js, strlen(js), tokens, 128);
     check(r >= 0);
-#if 0
-    for (i = 1; tokens[i].end < tokens[0].end; i++) {
-	if (tokens[i].type == JSMN_STRING
-	    || tokens[i].type == JSMN_PRIMITIVE) {
-	    printf("%.*s\n", tokens[i].end - tokens[i].start,
-		   js + tokens[i].start);
-	} else if (tokens[i].type == JSMN_ARRAY) {
-	    printf("[%d elems]\n", tokens[i].size);
-	} else if (tokens[i].type == JSMN_OBJECT) {
-	    printf("{%d elems}\n", tokens[i].size);
-	} else {
-	    TOKEN_PRINT(tokens[i]);
-	}
-    }
-#endif
     return 0;
 }
 
-int test_unicode_characters()
+int test_issue_27(void)
 {
-    jsmn_parser p;
-    jsmntok_t tokens[10];
-    const char *js;
-
-    int r;
-    js = "{\"a\":\"\\uAbcD\"}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
-    js = "{\"a\":\"str\\u0000\"}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
-    js = "{\"a\":\"\\uFFFFstr\"}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
-    js = "{\"a\":\"str\\uFFGFstr\"}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\":\"str\\u@FfF\"}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\":[\"\\u028\"]}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\":[\"\\u0280\"]}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r >= 0);
-
+    const char *js =
+	"{ \"name\" : \"Jack\", \"age\" : 27 } { \"name\" : \"Anna\", ";
+    check(parse(js, JSMN_ERROR_PART, 8));
     return 0;
 }
 
-int test_input_length()
+int test_input_length(void)
 {
     const char *js;
     int r;
@@ -466,14 +404,13 @@ int test_input_length()
     jsmn_init(&p);
     r = jsmn_parse(&p, js, 8, tokens, 10);
     check(r == 3);
-    check(TOKEN_STRING(js, tokens[0], "{\"a\": 0}"));
-    check(TOKEN_STRING(js, tokens[1], "a"));
-    check(TOKEN_STRING(js, tokens[2], "0"));
-
+    check(tokeq(js, tokens, 3,
+		JSMN_OBJECT, -1, -1, 1,
+		JSMN_STRING, "a", 1, JSMN_PRIMITIVE, "0"));
     return 0;
 }
 
-int test_count()
+int test_count(void)
 {
     jsmn_parser p;
     const char *js;
@@ -521,112 +458,44 @@ int test_count()
     return 0;
 }
 
-int test_keyvalue()
+
+int test_nonstrict(void)
 {
+#ifndef JSMN_STRICT
     const char *js;
-    int r;
-    jsmn_parser p;
-    jsmntok_t tokens[10];
-
-    js = "{\"a\": 0, \"b\": \"c\"}";
-
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == 5);
-    check(tokens[0].size == 2);	/* two keys */
-    check(tokens[1].size == 1 && tokens[3].size == 1);	/* one value per key */
-    check(tokens[2].size == 0 && tokens[4].size == 0);	/* values have zero size */
-
-    js = "{\"a\"\n0}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\", 0}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\": {2}}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-    js = "{\"a\": {2: 3}}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-
-
-    js = "{\"a\": {\"a\": 2 3}}";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == JSMN_ERROR_INVAL);
-    return 0;
-}
-
-/** A huge redefinition of everything to include jsmn in non-script mode */
-#define jsmn_init jsmn_init_nonstrict
-#define jsmn_parse jsmn_parse_nonstrict
-#define jsmn_parser jsmn_parser_nonstrict
-#define jsmn_alloc_token jsmn_alloc_token_nonstrict
-#define jsmn_fill_token jsmn_fill_token_nonstrict
-#define jsmn_parse_primitive jsmn_parse_primitive_nonstrict
-#define jsmn_parse_string jsmn_parse_string_nonstrict
-#define jsmntype_t jsmntype_nonstrict_t
-#define jsmnerr_t jsmnerr_nonstrict_t
-#define jsmntok_t jsmntok_nonstrict_t
-#define JSMN_PRIMITIVE JSMN_PRIMITIVE_NONSTRICT
-#define JSMN_OBJECT JSMN_OBJECT_NONSTRICT
-#define JSMN_ARRAY JSMN_ARRAY_NONSTRICT
-#define JSMN_STRING JSMN_STRING_NONSTRICT
-#define JSMN_ERROR_NOMEM JSMN_ERROR_NOMEM_NONSTRICT
-#define JSMN_ERROR_INVAL JSMN_ERROR_INVAL_NONSTRICT
-#define JSMN_ERROR_PART JSMN_ERROR_PART_NONSTRICT
-#undef __JSMN_H_
-#undef JSMN_STRICT
-#include "jsmn.c"
-
-int test_nonstrict()
-{
-    const char *js;
-    int r;
-    jsmn_parser p;
-    jsmntok_t tokens[10];
-
     js = "a: 0garbage";
-
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, 4, tokens, 10);
-    check(r == 2);
-    check(TOKEN_STRING(js, tokens[0], "a"));
-    check(TOKEN_STRING(js, tokens[1], "0"));
+    check(parse(js, 2, 2,
+		JSMN_PRIMITIVE, "a", JSMN_PRIMITIVE, "0garbage"));
 
     js = "Day : 26\nMonth : Sep\n\nYear: 12";
-    jsmn_init(&p);
-    r = jsmn_parse(&p, js, strlen(js), tokens, 10);
-    check(r == 6);
+    check(parse(js, 6, 6,
+		JSMN_PRIMITIVE, "Day",
+		JSMN_PRIMITIVE, "26",
+		JSMN_PRIMITIVE, "Month",
+		JSMN_PRIMITIVE, "Sep",
+		JSMN_PRIMITIVE, "Year", JSMN_PRIMITIVE, "12"));
+#endif
     return 0;
 }
 
-int main()
+int main(void)
 {
-    test(test_empty, "general test for a empty JSON objects/arrays");
-    test(test_simple, "general test for a simple JSON string");
+    test(test_empty, "test for a empty JSON objects/arrays");
+    test(test_object, "test for a JSON objects");
+    test(test_array, "test for a JSON arrays");
     test(test_primitive, "test primitive JSON data types");
     test(test_string, "test string JSON data types");
+
     test(test_partial_string, "test partial JSON string parsing");
     test(test_partial_array, "test partial array reading");
     test(test_array_nomem,
 	 "test array reading with a smaller number of tokens");
     test(test_unquoted_keys, "test unquoted keys (like in JavaScript)");
-    test(test_objects_arrays, "test objects and arrays");
-    test(test_unicode_characters, "test unicode characters");
     test(test_input_length, "test strings that are not null-terminated");
     test(test_issue_22, "test issue #22");
+    test(test_issue_27, "test issue #27");
     test(test_count, "test tokens count estimation");
     test(test_nonstrict, "test for non-strict mode");
-    test(test_keyvalue, "test for keys/values");
     printf("\nPASSED: %d\nFAILED: %d\n", test_passed, test_failed);
-    return 0;
+    return (test_failed > 0);
 }

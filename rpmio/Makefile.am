@@ -15,8 +15,8 @@ EXTRA_DIST = librpmio.vers \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
-	lookup3.c jsmn.c tjsmn.c tjson.c yajl.c testit.sh \
-	microjson.c duktape.c duktape.h duk.c mongoc-counters.defs
+	lookup3.c tjsmn.c tjson.c yajl.c testit.sh \
+	microjson.c mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
@@ -127,8 +127,8 @@ noinst_HEADERS = \
 	ar.h bcon.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	blake2.h blake2-impl.h blake2-rpm.h blake2-kat.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
-	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongoc.h \
-	radiogatun.h \
+	groestl.h hamsi.h jh.h jsmn.h keccak.h lane.h luffa.h md2.h md6.h \
+	duktape.h mongoc.h radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	pcrs.h poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
 	rpmcdsa.h rpmct.h rpmcudf.h rpmcvs.h rpmdate.h rpmdav.h rpmdir.h \
@@ -167,6 +167,7 @@ librpmio_la_SOURCES = \
 	glob.c \
 	gzdio.c \
 	iosm.c \
+	jsmn.c \
 	lsyck.c \
 	macro.c \
 	mire.c \
@@ -238,7 +239,8 @@ librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmio/librpmio.vers
 endif
-librpmio_la_LIBADD = -lm
+# XXX FIXME: error: inlining failed in call to always_inline ‘__signbit’
+librpmio_la_LIBADD = duktape.o -lm
 if ENABLE_BUILD_INTLIBDEP
 librpmio_la_LIBADD += \
 	$(top_builddir)/misc/librpmmisc.la

@@ -117,6 +117,31 @@
 #ifndef DUKTAPE_H_INCLUDED
 #define DUKTAPE_H_INCLUDED
 
+#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#define DUK_GNUC_PRINTF( format_idx, arg_idx )  \
+  __attribute__((__format__ (__printf__, format_idx, arg_idx)))
+#define DUK_GNUC_SCANF( format_idx, arg_idx )   \
+  __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
+#define DUK_GNUC_FORMAT( arg_idx )              \
+  __attribute__((__format_arg__ (arg_idx)))
+#define DUK_GNUC_NORETURN                       \
+  __attribute__((__noreturn__))
+#define DUK_GNUC_CONST                          \
+  __attribute__((__const__))
+#define DUK_GNUC_UNUSED                         \
+  __attribute__((__unused__))
+#define DUK_GNUC_NO_INSTRUMENT                  \
+  __attribute__((__no_instrument_function__))
+#else   /* !__GNUC__ */
+#define DUK_GNUC_PRINTF( format_idx, arg_idx )
+#define DUK_GNUC_SCANF( format_idx, arg_idx )
+#define DUK_GNUC_FORMAT( arg_idx )
+#define DUK_GNUC_NORETURN
+#define DUK_GNUC_CONST
+#define DUK_GNUC_UNUSED
+#define DUK_GNUC_NO_INSTRUMENT
+#endif  /* !__GNUC__ */
+
 #define DUK_SINGLE_FILE
 
 /* External duk_config.h provides platform/compiler/OS dependent
@@ -4497,8 +4522,10 @@ DUK_EXTERNAL_DECL void duk_put_number_list(duk_context *ctx, duk_idx_t obj_index
  */
 DUK_EXTERNAL_DECL void duk_get_var(duk_context *ctx);
 DUK_EXTERNAL_DECL void duk_put_var(duk_context *ctx);
-DUK_EXTERNAL_DECL duk_bool_t duk_del_var(duk_context *ctx);
-DUK_EXTERNAL_DECL duk_bool_t duk_has_var(duk_context *ctx);
+DUK_EXTERNAL_DECL duk_bool_t duk_del_var(duk_context *ctx)
+	DUK_GNUC_NORETURN;
+DUK_EXTERNAL_DECL duk_bool_t duk_has_var(duk_context *ctx)
+	DUK_GNUC_NORETURN;
 
 /*
  *  Object operations
@@ -4721,9 +4748,12 @@ DUK_EXTERNAL_DECL void duk_debugger_attach(duk_context *ctx,
                                            duk_debug_read_flush_function read_flush_cb,
                                            duk_debug_write_flush_function write_flush_cb,
                                            duk_debug_detached_function detached_cb,
-                                           void *udata);
-DUK_EXTERNAL_DECL void duk_debugger_detach(duk_context *ctx);
-DUK_EXTERNAL_DECL void duk_debugger_cooperate(duk_context *ctx);
+                                           void *udata)
+	DUK_GNUC_NORETURN;
+DUK_EXTERNAL_DECL void duk_debugger_detach(duk_context *ctx)
+	DUK_GNUC_NORETURN;
+DUK_EXTERNAL_DECL void duk_debugger_cooperate(duk_context *ctx)
+	DUK_GNUC_CONST;
 
 /*
  *  Date provider related constants

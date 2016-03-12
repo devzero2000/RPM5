@@ -23254,14 +23254,12 @@ DUK_EXTERNAL duk_bool_t duk_del_var(duk_context *ctx) {
 	DUK_ASSERT_CTX_VALID(ctx);
 
 	DUK_ERROR((duk_hthread *) ctx, DUK_ERR_UNIMPLEMENTED_ERROR, DUK_STR_UNIMPLEMENTED);
-	return 0;
 }
 
 DUK_EXTERNAL duk_bool_t duk_has_var(duk_context *ctx) {
 	DUK_ASSERT_CTX_VALID(ctx);
 
 	DUK_ERROR((duk_hthread *) ctx, DUK_ERR_UNIMPLEMENTED_ERROR, DUK_STR_UNIMPLEMENTED);
-	return 0;
 }
 #line 1 "duk_bi_array.c"
 /*
