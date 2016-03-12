@@ -20,14 +20,14 @@ EXTRA_DIST = librpmio.vers \
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
-noinst_PROGRAMS = tjsmn
+noinst_PROGRAMS = tjsmn duk
 
 EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
-	dumpasn1 lookup3 trel twitter github tmicrojson duk
+	dumpasn1 lookup3 trel twitter github tmicrojson
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp tgfs
 if WITH_LIBGIT2
@@ -629,7 +629,7 @@ tmicrojson_CFLAGS = $(CFLAGS) -DMICROJSON_TEST
 tmicrojson_LDADD = $(RPMIO_LDADD_COMMON)
 
 # XXX FIXME: error: inlining failed in call to always_inline ‘__signbit’
-duktape.o: duktape.c
+duktape.o: duktape.c duktape.h
 	$(COMPILE) $(duk_CFLAGS) -c -o $@ $<
 
 duk_SOURCES = duk.c
