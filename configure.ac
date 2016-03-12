@@ -3145,7 +3145,8 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
     js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
-    tests/Makefile tests/macros tests/bson/Makefile tests/mongoc/Makefile
+    tests/Makefile tests/macros
+    tests/bson/Makefile tests/mongoc/Makefile tests/yajl/Makefile
 ])
 
 dnl # final step: generate output

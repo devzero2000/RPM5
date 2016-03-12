@@ -1,0 +1,9 @@
+.deps
+.depend
+.dirstamp
+.libs
+Makefile
+Makefile.in
+*.gcda
+*.gcno
+yajl_test

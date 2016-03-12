@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: yajl: add test cases.
+    - jbj: yajl: split (amalgamated) yajl cleanly from mongo-c-driver.
     - jbj: mongoc: update to mongoc-1.3.2.
     - jbj: bson: update to libbson-1.3.3.
     - jbj: rpmdb: fix: use DB_MULTIVERSION/DB_TXN_SNAPSHOT isolation.

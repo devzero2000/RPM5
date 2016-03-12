@@ -32,6 +32,7 @@
 #include <sys/syscall.h>
 #endif
 
+#include <yajl.h>
 #include <bson.h>
 
 #include "debug.h"
@@ -40,9 +41,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 #endif
-
-/*==============================================================*/
-#include "yajl.c"
 
 /*==============================================================*/
 /* --- b64_ntop.h */

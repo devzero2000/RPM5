@@ -325,36 +325,6 @@
 #endif
 
 
-#ifndef	DYING
-/* XXX delete these when bson.c => 1.3.3 */
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_if_fail(test) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return; \
-      } \
-   } while (0)
-#else
-#  define bson_return_if_fail(test)
-#endif
-
-
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_val_if_fail(test, val) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return (val); \
-      } \
-   } while (0)
-#else
-#  define bson_return_val_if_fail(test, val)
-#endif
-#endif
-
 #if defined(_MSC_VER)
 #  define BSON_INLINE __inline
 #else

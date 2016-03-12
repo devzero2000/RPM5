@@ -139,7 +139,7 @@ noinst_HEADERS = \
 	rpmodbc.h rpmperl.h rpmpgp.h rpmpython.h rpmruby.h rpmsed.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsw.h rpmsx.h rpmsyck.h \
 	rpmtcl.h rpmtpm.h rpmurl.h rpmutil.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
-	set.h tar.h ugid.h rpmio-stub.h
+	set.h tar.h ugid.h yajl.h rpmio-stub.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
@@ -231,6 +231,7 @@ librpmio_la_SOURCES = \
 	ugid.c \
 	url.c \
 	xzdio.c \
+	yajl.c \
 	yarn.c
 
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
