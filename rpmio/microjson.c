@@ -1,3 +1,9 @@
+***************************************************************************/
+/* The strptime prototype is not provided unless explicitly requested.
+ * We also need to set the value high enough to signal inclusion of
+ * newer features (like clock_gettime).  See the POSIX spec for more info:
+ * http://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html#tag_15_02_01_02 */
+#define _XOPEN_SOURCE 600
 #include "system.h"
 
 #include <stdarg.h>
@@ -19,9 +25,11 @@
  */
 /*==============================================================*/
 /* --- mjson.h */
-/* Structures for JSON parsing using only fixed-extent memory */
-
-#define NITEMS(x) (int)(sizeof(x)/sizeof(x[0]))
+/* Structures for JSON parsing using only fixed-extent memory
+ *
+ * This file is Copyright (c) 2014 by Eric S. Raymond.
+ * BSD terms apply: see the file COPYING in the distribution root for details.
+ */
 
 typedef enum {t_integer, t_uinteger, t_real,
 	      t_string, t_boolean, t_character,
@@ -207,16 +215,11 @@ If you initialize the offset fields with the correct offsetof calls,
 everything will work. Strings are supported but all string storage
 has to be inline in the struct.
 
+PERMISSIONS
+   This file is Copyright (c) 2014 by Eric S. Raymond
+   SPDX-License-Identifier: BSD-2-clause
+
 ***************************************************************************/
-/* The strptime prototype is not provided unless explicitly requested.
- * We also need to set the value high enough to signal inclusion of
- * newer features (like clock_gettime).  See the POSIX spec for more info:
- * http://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html#tag_15_02_01_02 */
-#if 0
-#define _XOPEN_SOURCE 600
-#endif
-
-
 
 #ifdef MICROJSON_DEBUG_ENABLE
 static int debuglevel = 0;
@@ -923,8 +926,12 @@ const /*@observer@*/ char *json_error_string(int err)
 /*==============================================================*/
 /* --- test_microjson.c */
 
-#ifdef	MICROJSON_TEST
-/* test_mjson.c - unit test for JSON parsing into fixed-extent structures */
+#ifdef  MICROJSON_TEST
+/* test_mjson.c - unit test for JSON parsing into fixed-extent structures
+ *
+ * This file is Copyright (c) 2010 by the GPSD project
+ * BSD terms apply: see the file COPYING in the distribution root for details.
+ */
 
 /*
  * Many of these structures and examples were dissected out of the GPSD code.
@@ -1310,7 +1317,6 @@ static int libgps_json_unpack(const char *buf,
 	return status;
     }
 #undef STARTSWITH
-    return -1;
 }
 
 /*@+compdef@*/
@@ -1740,4 +1746,4 @@ int main(int argc, char *argv[])
 }
 
 /* end */
-#endif	/* MICROJSON_MAIN */
+#endif  /* MICROJSON_MAIN */

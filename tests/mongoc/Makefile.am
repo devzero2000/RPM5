@@ -217,11 +217,12 @@ check: test # abicheck
 TEST_ARGS = -f -p
 
 test: $(TEST_PROGS) test_certs
-	@ for TEST_PROG in $(TEST_PROGS) ; do \
+	@-for TEST_PROG in $(TEST_PROGS) ; do \
 		./$$TEST_PROG $(TEST_ARGS) -F test.log; \
 	done
 
 DISTCLEANFILES += \
+	test.log \
 	test-results.json \
 	trust_dir/ca.db.serial \
 	trust_dir/done \

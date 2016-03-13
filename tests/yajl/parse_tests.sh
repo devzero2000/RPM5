@@ -15,14 +15,17 @@ fi
 
 testBin=$(pwd)/yajl_test
 
+srcdir=`dirname $0`
+
 ${ECHO} "using test binary: $testBin"
+${ECHO} "using test cases: $srcdir/cases"
 
 testBinShort=`basename $testBin`
 
 testsSucceeded=0
 testsTotal=0
 
-for file in cases/*.json ; do
+for file in ${srcdir}/cases/*.json ; do
   allowComments=""
   allowGarbage=""
   allowMultiple=""
@@ -53,18 +56,18 @@ for file in cases/*.json ; do
   # ${ECHO} -n "$testBinShort $allowPartials$allowComments$allowGarbage$allowMultiple-b $iter < $fileShort > ${fileShort}.test : "
   # parse with a read buffer size ranging from 1-31 to stress stream parsing
   while [ $iter -lt 32  ] && [ $success = "SUCCESS" ] ; do
-    $testBin $allowPartials $allowComments $allowGarbage $allowMultiple -b $iter < $file > ${file}.test  2>&1
-    diff ${DIFF_FLAGS} ${file}.gold ${file}.test > ${file}.out
+    $testBin $allowPartials $allowComments $allowGarbage $allowMultiple -b $iter < $file > ${fileShort}.test  2>&1
+    diff ${DIFF_FLAGS} ${file}.gold ${fileShort}.test > ${fileShort}.out
     if [ $? -eq 0 ] ; then
       if [ $iter -eq 31 ] ; then testsSucceeded=$(( $testsSucceeded + 1 )) ; fi
     else
       success="FAILURE"
       iter=32
       ${ECHO}
-      cat ${file}.out
+      cat ${fileShort}.out
     fi
     iter=$(( iter + 1 ))
-    rm ${file}.test ${file}.out
+    rm ${fileShort}.test ${fileShort}.out
   done
 
   ${ECHO} $success

@@ -3,8 +3,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 DISTCLEANFILES =
 EXTRA_DIST = \
-	parse_tests.sh
-	cases/*
+	$(srcdir)/parse_tests.sh \
+	$(srcdir)/cases/*.json \
+	$(srcdir)/cases/*.gold
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -34,4 +35,4 @@ TEST_PROGS = yajl_test
 check:	test
 
 test: $(TEST_PROGS)
-	@sh parse_tests.sh
+	@sh $(srcdir)/parse_tests.sh

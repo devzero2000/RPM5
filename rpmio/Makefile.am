@@ -15,7 +15,7 @@ EXTRA_DIST = librpmio.vers \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
-	lookup3.c tjsmn.c tjson.c yajl.c testit.sh \
+	lookup3.c duktape.c tjsmn.c tjson.c yajl.c testit.sh \
 	microjson.c mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
