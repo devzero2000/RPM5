@@ -1023,6 +1023,10 @@ assert(dbi->dbi_ecflags == 0);
     xx = cvtdberr(dbi, "dbenv->set_event_notify", xx, _debug);
 
  /* 4.1: dbenv->set_flags(???) */
+    if (eflags & DB_MULTIVERSION) {
+	xx = dbenv->set_flags(dbenv, DB_MULTIVERSION, 1);
+	xx = cvtdberr(dbi, "dbenv->set_flags(DB_MULTIVERSION)", xx, _debug);
+    }
 
  /* dbenv->set_paniccall(???) */
 
@@ -1432,17 +1436,21 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
 {
     DB * db = (DB *) dbi->dbi_db;
     DBC * dbcursor = NULL;
-    int flags;
+    int flags = 0;
     int rc;
 
    /* XXX DB_WRITECURSOR cannot be used with sunrpc dbenv. */
     assert(db != NULL);
-    if ((dbiflags & DB_WRITECURSOR) &&
-	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
-    {
-	flags = DB_WRITECURSOR;
+    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY)) {
+	flags |= DB_WRITECURSOR;
     } else
-	flags = 0;
+    if (dbi->dbi_eflags & DB_INIT_TXN) {
+#define	FMASK	(DB_READ_UNCOMMITTED|DB_READ_COMMITTED)
+	flags |= (dbi->dbi_oflags & FMASK);
+#undef	FMASK
+	if (dbi->dbi_oflags & DB_MULTIVERSION)
+	    flags |= DB_TXN_SNAPSHOT;
+    }
 
     rc = db->cursor(db, txnid, &dbcursor, flags);
     rc = cvtdberr(dbi, "db->cursor", rc, _debug);
