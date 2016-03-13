@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: autofu: make distcheck w/o cruft.
     - jbj: syck: repair the Ragel generation, don't distribute unused cruft.
     - jbj: autofu: resurrect "make distcheck".
     - jbj: jsmn: update to latest checkout 572ace5, add to librpmio.

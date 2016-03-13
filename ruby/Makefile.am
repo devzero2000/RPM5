@@ -21,20 +21,20 @@ AM_CPPFLAGS = -I. \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_RUBY_CPPFLAGS@
 
-EXTRA_DIST =
-#	$(srcdir)/ruby/Makefile.* \
-#	$(srcdir)/ruby/*.[ch] \
-#	$(srcdir)/ruby/*.rb \
-#	$(srcdir)/ruby/test/core \
-#	$(srcdir)/ruby/test/Rakefile \
-#	$(srcdir)/ruby/test/fixtures/barsource1 \
-#	$(srcdir)/ruby/test/fixtures/Foo-1.0 \
-#	$(srcdir)/ruby/test/fixtures/foosource1 \
-#	$(srcdir)/ruby/test/fixtures/foosource1.tar \
-#	$(srcdir)/ruby/test/fixtures/macros \
-#	$(srcdir)/ruby/test/fixtures/mock.spec \
-#	$(srcdir)/ruby/test/unit/*.rb \
-#	$(srcdir)/ruby/tscripts/*.rb
+EXTRA_DIST = \
+	$(srcdir)/Makefile.* \
+	$(srcdir)/*.[ch] \
+	$(srcdir)/*.rb \
+	$(srcdir)/test/core \
+	$(srcdir)/test/Rakefile \
+	$(srcdir)/test/fixtures/barsource1 \
+	$(srcdir)/test/fixtures/Foo-1.0 \
+	$(srcdir)/test/fixtures/foosource1 \
+	$(srcdir)/test/fixtures/foosource1.tar \
+	$(srcdir)/test/fixtures/macros \
+	$(srcdir)/test/fixtures/mock.spec \
+	$(srcdir)/test/unit/*.rb \
+	$(srcdir)/tscripts/*.rb
 
 EXTRA_PROGRAMS =
 

@@ -4,11 +4,14 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = minimal.c \
-	src \
-	tscripts \
-	words \
-	legacy.cudf legacy-sol.cudf
+EXTRA_DIST = 
+#	$(srcdir)/Makefile.* \
+#	$(srcdir)/*.[ch] \
+#	$(srcdir)/legacy.cudf \
+#	$(srcdir)/legacy-sol.cudf \
+#	$(srcdir)/rpmjsfile.msg \
+#	$(srcdir)/v8.cc \
+#	$(srcdir)/tscripts/*.js
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \

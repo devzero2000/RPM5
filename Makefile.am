@@ -17,7 +17,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
         --without-lua \
         --with-tcl \
         --without-sqlite \
-        --without-syck \
+        --with-syck \
         --with-readline \
         --without-augeas \
         --with-beecrypt=internal \
@@ -66,6 +66,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
         --with-valgrind \
+        --enable-openmp \
         --enable-build-pic \
         --enable-build-versionscript \
         --enable-build-warnings \
@@ -76,30 +77,95 @@ LINT = @__SPLINT@
 MCCABE = @__PMCCABE@
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
-	autodeps autogen.sh \
-	syck js \
-	lua \
-	ruby \
-	macros \
-	perl \
-	pubkeys/JBJ-GPG-KEY \
-	rpm.magic rpmqv.c rpmqv.cc \
-	python \
-	tests/arbitrarytag-1.0-1.src.rpm \
-	tests/cudf-test-1-0.src.rpm \
-	tests/devtool-sanity-1.0-1.src.rpm \
-	tests/dir2symlink-1-1.src.rpm \
-	tests/edos-test-1-0.src.rpm \
-	tests/probes-test-1-0.src.rpm \
-	tests/simplestRPMv3-1.0-2.aix5.3.noarch.rpm \
-	tests/triggers-D-1.0-1.src.rpm \
-	tests/triggers-DP-1.0-1.src.rpm \
-	tests/triggers-F-1.0-1.src.rpm \
-	tests/triggers-FP-1.0-1.src.rpm \
-	tests/triggers-N-1.0-1.src.rpm \
-	tests/triggers-NA-1.0-1.src.rpm \
-	tests/triggers-P-1.0-1.src.rpm
+EXTRA_DIST = \
+	CHANGES \
+	CREDITS \
+	Doxyheader \
+	INSTALL \
+	INSTALL.developer \
+	cpuinfo.yaml \
+	rpm.magic \
+	rpmqv.c \
+	rpmqv.cc \
+	$(srcdir)/autogen.sh \
+	$(srcdir)/autodeps/none \
+	$(srcdir)/autodeps/*.prov \
+	$(srcdir)/autodeps/*.req \
+	$(srcdir)/js/Makefile.* \
+	$(srcdir)/js/legacy.cudf \
+	$(srcdir)/js/legacy-sol.cudf \
+	$(srcdir)/js/rpmjsfile.msg \
+	$(srcdir)/js/v8.cc \
+	$(srcdir)/js/*.[ch] \
+	$(srcdir)/js/tscripts/*.js \
+	$(srcdir)/lua/COPYRIGHT \
+	$(srcdir)/lua/HISTORY \
+	$(srcdir)/lua/Makefile.* \
+	$(srcdir)/lua/*.[ch] \
+	$(srcdir)/lua/lua.hpp \
+	$(srcdir)/lua/chkconfig/*.[ch] \
+	$(srcdir)/lua/local/*.[ch] \
+	$(srcdir)/lua/local/*.lua \
+	$(srcdir)/lua/shadow/*.[ch] \
+	$(srcdir)/lua/socket/*.[ch] \
+	$(srcdir)/lua/socket/*.lua \
+	$(srcdir)/lua/tests/Makefile.* \
+	$(srcdir)/lua/tests/*.lua \
+	$(srcdir)/lua/tests/libs/Makefile.* \
+	$(srcdir)/lua/tests/libs/*.[ch] \
+	$(srcdir)/lua/tests/ltests/*.[ch] \
+	$(srcdir)/macros/*.in \
+	$(srcdir)/perl/Makefile.* \
+	$(srcdir)/perl/MANIFEST \
+	$(srcdir)/perl/META.yml \
+	$(srcdir)/perl/README \
+	$(srcdir)/perl/typemap \
+	$(srcdir)/perl/rpmxs.[ch] \
+	$(srcdir)/perl/*.pm \
+	$(srcdir)/perl/*.xs \
+	$(srcdir)/perl/*.hdr \
+	$(srcdir)/perl/*.rpm \
+	$(srcdir)/perl/*.spec \
+	$(srcdir)/perl/RPM/*.pm \
+	$(srcdir)/perl/t/*.t \
+	$(srcdir)/perl/t/gnupg/passphrase \
+	$(srcdir)/perl/t/gnupg/random_seed \
+	$(srcdir)/perl/t/gnupg/*.gpg \
+	$(srcdir)/pubkeys/JBJ-GPG-KEY \
+	$(srcdir)/python/ChangeLog \
+	$(srcdir)/python/.cppcheck.supp \
+	$(srcdir)/python/rpm/__init__.py \
+	$(srcdir)/python/rpm/transaction.py \
+	$(srcdir)/python/*.[ch] \
+	$(srcdir)/tests/arbitrarytag-1.0-1.src.rpm \
+	$(srcdir)/tests/cudf-test-1-0.src.rpm \
+	$(srcdir)/tests/devtool-sanity-1.0-1.src.rpm \
+	$(srcdir)/tests/dir2symlink-1-1.src.rpm \
+	$(srcdir)/tests/edos-test-1-0.src.rpm \
+	$(srcdir)/tests/probes-test-1-0.src.rpm \
+	$(srcdir)/tests/simplestRPMv3-1.0-2.aix5.3.noarch.rpm \
+	$(srcdir)/tests/triggers-D-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-DP-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-F-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-FP-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-N-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-NA-1.0-1.src.rpm \
+	$(srcdir)/tests/triggers-P-1.0-1.src.rpm
+
+#	$(srcdir)/ruby/Makefile.* \
+#	$(srcdir)/ruby/*.[ch] \
+#	$(srcdir)/ruby/*.rb \
+#	$(srcdir)/ruby/test/core \
+#	$(srcdir)/ruby/test/Rakefile \
+#	$(srcdir)/ruby/test/fixtures/barsource1 \
+#	$(srcdir)/ruby/test/fixtures/Foo-1.0 \
+#	$(srcdir)/ruby/test/fixtures/foosource1 \
+#	$(srcdir)/ruby/test/fixtures/foosource1.tar \
+#	$(srcdir)/ruby/test/fixtures/macros \
+#	$(srcdir)/ruby/test/fixtures/mock.spec \
+#	$(srcdir)/ruby/test/unit/*.rb \
+#	$(srcdir)/ruby/tscripts/*.rb \
+#
 
 SUBDIRS =
 if USE_NLS
@@ -219,6 +285,7 @@ SYNDIRS =	popt lua misc rpmio rpmdb lib build tests tools
 syntastic: .syntastic_c_config
 	for SYNDIR in $(SYNDIRS); do make -C $$SYNDIR $> ; done
 
+EXTRA_DIST += .cppcheck.supp
 #	--template="{file},{line},{severity},{id},{message}"
 #	--template=gcc
 CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \
@@ -363,11 +430,11 @@ tar:
 
 .PHONY: noconfig
 noconfig:
-	find . -name "Makefile" -exec rm {} \; 
+	find . -name "Makefile" -exec rm {} \;
 	rm -f *gz *rpm config.*
 
 .PHONY: archive
-archive: 
+archive:
 	@cvs -d `cat CVS/Root` diff 2>&1 > /dev/null || { \
 	    echo " " ; \
 	    echo "==> Please resolve differences between the repository and" ; \

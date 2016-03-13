@@ -7,8 +7,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-EXTRA_DIST = \
-	librpmmisc.vers alloca.c \
+EXTRA_DIST = librpmmisc.vers \
+	                alloca.c \
 	asprintf.c	basename.c	err.c		error.c		\
 	fakefork.c	getcwd.c	getdelim.c	getline.c	\
 	getmntent.c	getwd.c				memcmp.c	\
@@ -98,6 +98,7 @@ BUILT_SOURCES = .syntastic_c_config
 .syntastic_c_config: Makefile
 	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
+EXTRA_DIST += .cppcheck.supp
 #	--template="{file},{line},{severity},{id},{message}"
 #	--template=gcc
 CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \

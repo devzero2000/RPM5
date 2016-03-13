@@ -385,6 +385,7 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
+EXTRA_DIST += .cppcheck.supp
 #	--template="{file},{line},{severity},{id},{message}"
 #	--template=gcc
 CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \

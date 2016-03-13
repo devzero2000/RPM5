@@ -4,7 +4,11 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = system-py.h rpmdebug-py.c rpm/__init__.py rpm/transaction.py
+EXTRA_DIST = \
+	ChangeLog \
+	$(srcdir)/rpm/__init__.py \
+	$(srcdir)/rpm/transaction.py \
+	rpmdebug-py.c
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -23,17 +27,17 @@ AM_CPPFLAGS = -I. \
 	@WITH_ZLIB_CPPFLAGS@ \
 	-I@WITH_PYTHON_INCDIR@
 
-noinst_HEADERS = header-py.h \
+noinst_HEADERS = system-py.h header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
 	rpmfi-py.h rpmkeyring-py.h rpmmacro-py.h rpmmi-py.h \
-	rpmps-py.h rpmte-py.h rpmts-py.h \
+	rpmps-py.h rpmtd-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
 # XXX TODO: switch to _rpm.la _rpmb.la
 pkgpyexec_LTLIBRARIES = _rpmmodule.la _rpmbmodule.la
-pkgpyexec_SCRIPTS = rpm/__init__.py rpm/transaction.py
+pkgpyexec_SCRIPTS = $(srcdir)/rpm/__init__.py $(srcdir)/rpm/transaction.py
 
-_rpmmodule_la_CFLAGS = -fno-strict-aliasing
+#X _rpmmodule_la_CFLAGS = -fno-strict-aliasing
 _rpmmodule_la_LDFLAGS = -module -avoid-version -shared
 _rpmmodule_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
@@ -46,8 +50,8 @@ _rpmmodule_la_LIBADD = \
 _rpmmodule_la_SOURCES = \
 	rpmmodule.c header-py.c \
 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c\
-	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
-	rpmtd-py.c rpmte-py.c rpmts-py.c
+	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c \
+	rpmps-py.c rpmtd-py.c rpmte-py.c rpmts-py.c
 
 _rpmbmodule_la_LDFLAGS = -module -avoid-version -shared
 _rpmbmodule_la_LIBADD = \
@@ -60,6 +64,7 @@ _rpmbmodule_la_LIBADD = \
 _rpmbmodule_la_SOURCES = \
 	rpmbmodule.c spec-py.c
 
+EXTRA_DIST += .cppcheck.supp
 #	--std=posix
 #	--template="{file},{line},{severity},{id},{message}"
 #	--suppress=obsoleteFunctionsalloca
@@ -86,8 +91,9 @@ cppcheck:
 # rpmmodule.c header-py.c
 splint_srcs = \
  	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
-	rpmtd-py.c rpmte-py.c rpmts-py.c spec-py.c
+	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c \
+	rpmps-py.c rpmtd-py.c rpmte-py.c rpmts-py.c \
+	spec-py.c
 
 .PHONY:	lint
 lint:

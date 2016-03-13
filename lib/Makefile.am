@@ -151,6 +151,7 @@ BUILT_SOURCES += .syntastic_c_config
 .syntastic_c_config: Makefile
 	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
+EXTRA_DIST += .cppcheck.supp
 #	--template="{file},{line},{severity},{id},{message}"
 #	--template=gcc
 CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \

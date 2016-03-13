@@ -36,7 +36,7 @@ Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
 Neon            mandatory 0.27.0  0.30.0  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.35    http://www.pcre.org/
 Berkeley-DB [1] mandatory 6.1.23  6.1.23  http://www.oracle.com/database/berkeley-db.html
-Mozilla NSS     optional  3.11    3.22.1  http://www.mozilla.org/projects/security/pki/nss/
+Mozilla NSS     optional  3.11    3.23.0  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.2g  http://www.openssl.org/
 OpenSSL-FIPS[7] optional  2.0.5   2.0.9   http://www.openssl.org/
 LibTomCrypt     optional  1.17    1.17    http://www.libtom.org/

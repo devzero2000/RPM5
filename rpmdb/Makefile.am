@@ -30,7 +30,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 
-EXTRA_DIST = \
+EXTRA_DIST = librpmdb.vers \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \
 	logio_rec.c logio_auto.c logio_autop.c logio_auto.h
@@ -233,6 +233,7 @@ splint_SRCS = \
 rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
  
+EXTRA_DIST += .cppcheck.supp
 #	--std=posix
 #	--template="{file},{line},{severity},{id},{message}"
 #	--suppress=obsoleteFunctionsalloca
