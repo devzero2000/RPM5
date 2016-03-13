@@ -5,32 +5,33 @@ export LSAN_OPTIONS=exitcode=0:suppressions=$(shell pwd)/rpm.suppress:print_supp
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST =	\
+	fib.js \
 	genpgp.sh \
 	genssl.sh \
 	gpsee/gffi.js \
-	ref/.alldigests \
-	ref/DB_CONFIG \
-	ref/edos.manifest \
-	ref/edos.qa.1 \
-	ref/edos.qa.2 \
-	ref/filelists.xml \
-	ref/hkp \
-	ref/manifest \
-	ref/other.xml \
-	ref/popt.Kv \
-	ref/popt.Kv-beecrypt \
-	ref/popt.Kv-nss \
-	ref/popt.Kv-ssl \
-	ref/popt.xml \
-	ref/popt.yaml \
-	ref/primary.xml \
-	ref/querytags \
-	ref/repomd.xml \
-	ref/rpmdb.sql \
-	ref/showrc \
-	ref/sqldb-basic.out \
-	ref/sqldb-basic.sql \
-	ref/version \
+	$(srcdir)/ref/.alldigests \
+	$(srcdir)/ref/DB_CONFIG \
+	$(srcdir)/ref/edos.manifest \
+	$(srcdir)/ref/edos.qa.1 \
+	$(srcdir)/ref/edos.qa.2 \
+	$(srcdir)/ref/filelists.xml \
+	$(srcdir)/ref/hkp \
+	$(srcdir)/ref/manifest \
+	$(srcdir)/ref/other.xml \
+	$(srcdir)/ref/popt.Kv \
+	$(srcdir)/ref/popt.Kv-beecrypt \
+	$(srcdir)/ref/popt.Kv-nss \
+	$(srcdir)/ref/popt.Kv-ssl \
+	$(srcdir)/ref/popt.xml \
+	$(srcdir)/ref/popt.yaml \
+	$(srcdir)/ref/primary.xml \
+	$(srcdir)/ref/querytags \
+	$(srcdir)/ref/repomd.xml \
+	$(srcdir)/ref/rpmdb.sql \
+	$(srcdir)/ref/showrc \
+	$(srcdir)/ref/sqldb-basic.out \
+	$(srcdir)/ref/sqldb-basic.sql \
+	$(srcdir)/ref/version \
 	spew spew.conf \
 	tpgp.c tssl.c
 
@@ -40,7 +41,7 @@ noinst_PROGRAMS =
 
 EXTRA_PROGRAMS += tecdsa thkp tpgp trsa tssl
 
-SUBDIRS = . bson mongoc
+SUBDIRS = . bson mongoc yajl
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -216,17 +217,18 @@ genssl.h: genssl.sh
 .PHONY:	check-init
 check-init: macros
 	@echo "=== $@ ==="
+	@mkdir -p ref
 	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
-	@-diff -u tmp/version ref/version || cp tmp/version ref/version
+	@-diff -u tmp/version $(srcdir)/ref/version || cp tmp/version ref/version
 	@${rpm} -v --querytags	> tmp/querytags
-	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
+	@-diff -u tmp/querytags $(srcdir)/ref/querytags || cp tmp/querytags ref/querytags
 	@${rpm} -v --showrc | ${sed} -e "s,$(abs_top_builddir),..,g" > tmp/showrc
-	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
-#	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
-#	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+	@-diff -u tmp/showrc $(srcdir)/ref/showrc || cp tmp/showrc ref/showrc
+#	@${rpmdigest} --alldigests $(srcdir)/ref/[^C]* > tmp/.alldigests
+#	@-diff -u tmp/.alldigests $(srcdir)/ref/.alldigests || cp tmp/.alldigests ref/.alldigests
+	@-${mtree} -c -p $(srcdir)/ref | ${mtree} -p $(srcdir)/ref	# XXX mtime usecs need fixing
 
 RPMURI =	http://rpm5.org/files/rpm/
 POPTURI =	http://rpm5.org/files/popt/
@@ -242,17 +244,17 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@echo "=== $@ ==="
 	@${rm} -rf tmp/rpmdb
 	@${mkdir} -p tmp/rpmdb/log tmp/rpmdb/tmp
-	@${cp} ref/DB_CONFIG tmp/rpmdb
+	@${cp} $(srcdir)/ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
 	@[ -f tmp/ECDSA.pubpem ] && ${rpm} --import tmp/ECDSA.pubpem
 	@${echo} -n "--> default: HKP"
 	@${thkp} > tmp/hkp || :
-	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
+	@diff -u tmp/hkp $(srcdir)/ref/hkp || cp tmp/hkp ref/hkp
 	@${tpgp}
 	@${echo} -n "--> beecrypt: HKP"
-	@${thkp} --usecrypto bc > /dev/null || :
-	@${tpgp} --usecrypto bc
+	@-${thkp} --usecrypto bc > /dev/null || :
+	@-${tpgp} --usecrypto bc
 #	@${echo} -n "--> cdsa: HKP"
 #	@-${thkp} --usecrypto cdsa > /dev/null || :
 #	@-${tpgp} --usecrypto cdsa
@@ -270,7 +272,7 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@-${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
-	@diff -u tmp/popt.Kv ref/popt.Kv
+	@diff -u tmp/popt.Kv $(srcdir)/ref/popt.Kv
 	@-${rpm} -Kvv --usecrypto bc   $(POPTPKGS) > /dev/null 2>&1
 #	@-${rpm} -Kvv --usecrypto cdsa $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
@@ -311,9 +313,9 @@ check-ssl: tssl
 check-markup: $(POPTPKGS)
 	@echo "=== $@ ==="
 	@${rpm} -qp --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
-	@diff -u {tmp,ref}/popt.yaml
+	@diff -u {tmp,$(srcdir)/ref}/popt.yaml
 	@${rpm} -qp --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
-	@-diff -u {tmp,ref}/popt.xml
+	@-diff -u {tmp,$(srcdir)/ref}/popt.xml
 
 .PHONY: check-repo
 check-repo: $(POPTPKGS)
@@ -325,11 +327,11 @@ check-repo: $(POPTPKGS)
 	-${rpmrepo} --bzip2 .
 	-${rpmrepo} --xz .
 	${rpmrepo} --uncompressed .
-	@-diff -u repodata/primary.xml ref/primary.xml
-	@-diff -u repodata/filelists.xml ref/filelists.xml
-	@-diff -u repodata/other.xml ref/other.xml
+	@-diff -u repodata/primary.xml $(srcdir)/ref/primary.xml
+	@-diff -u repodata/filelists.xml $(srcdir)/ref/filelists.xml
+	@-diff -u repodata/other.xml $(srcdir)/ref/other.xml
 # XXX repomd.xml always differs because st->st_ctime is used.
-	@-diff -u repodata/repomd.xml ref/repomd.xml > /dev/null 2>&1
+	@-diff -u repodata/repomd.xml $(srcdir)/ref/repomd.xml > /dev/null 2>&1
 
 .PHONY:	check-macros
 check-macros:
@@ -384,10 +386,10 @@ endef
 check-build: $(BUILD_DIRS)
 	@echo "=== $@ ==="
 	@ls -1 */*.rpm | grep -v '^dir2symlink' | grep -v '^sql-test' > tmp/manifest
-	@diff -u {tmp,ref}/manifest || ${cp} {tmp,ref}/manifest
+	@diff -u {tmp,$(srcdir)/ref}/manifest || ${cp} {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
 	@${mkdir} -p tmp/cachedb/log tmp/cachedb/tmp
-	@${cp} ref/DB_CONFIG tmp/cachedb
+	@${cp} $(srcdir)/ref/DB_CONFIG tmp/cachedb
 	@${rpmsolver} --import tmp/DSA.pubpem
 	@${rpmsolver} --import tmp/RSA.pubpem
 	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolver} --import tmp/ECDSA.pubpem
@@ -398,26 +400,26 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -U -- edos-test/glass-1-*
 	@${rpm} -U -- +car +turbo edos-test/{engine-1-*,wheel-2-*,door-1-*,window-0-*}
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.1
-	@diff -u {tmp,ref}/edos.qa.1 || ${cp} {tmp,ref}/edos.qa.1
+	@diff -u {tmp,$(srcdir)/ref}/edos.qa.1 || ${cp} {tmp,ref}/edos.qa.1
 	@${rpm} -U -- edos-test/engine-2-* -turbo
 	@${rpm} -U -- edos-test/{wheel-3,tyre-1}-*
 	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.2
-	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
+	@diff -u {tmp,$(srcdir)/ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
 	@-${rpm} -e `${rpm} -qa | grep -v gpg-pubkey`
 
 check-depsolver:
 	@echo "=== $@ ==="
 	@rm -rf tmp/solveA
 	@${mkdir} -p tmp/solveA/log tmp/solveA/tmp
-	@${cp} ref/DB_CONFIG tmp/solveA
+	@${cp} $(srcdir)/ref/DB_CONFIG tmp/solveA
 	@${rpmsolverA} --import tmp/DSA.pubpem
 	@${rpmsolverA} --import tmp/RSA.pubpem
 	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolverA} --import tmp/ECDSA.pubpem
 	@${rpmsolverA} -i --justdb --nodeps edos-test/turbo-1* edos-test/wheel-2* edos-test/door-1*
 	@rm -rf tmp/solveB
 	@${mkdir} -p tmp/solveB/log tmp/solveB/tmp
-	@${cp} ref/DB_CONFIG tmp/solveB
+	@${cp} $(srcdir)/ref/DB_CONFIG tmp/solveB
 	@${rpmsolverB} --import tmp/DSA.pubpem
 	@${rpmsolverB} --import tmp/RSA.pubpem
 	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolverB} --import tmp/ECDSA.pubpem
@@ -449,7 +451,7 @@ check-ACID:
 	@echo "=== $@ ==="
 	@${db_upgrade} Packages > /dev/null 2>&1
 	@${db_checkpoint} -1	> /dev/null 2>&1
-	@${rpm} -U ref/edos.manifest
+	@${rpm} -U $(srcdir)/ref/edos.manifest
 	@${db_dump} Packages | ${db_load} Packages-NEW
 	@${db_verify} Packages-NEW > /dev/null 2>&1
 	@rm $(rpmdb)/Packages-NEW
@@ -470,8 +472,8 @@ check-ACID:
 
 check-install:
 	@echo "=== $@ ==="
-	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
-	${rpm} -U probes-test/probes-2*.rpm
+	@${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
+	@${rpm} -U probes-test/probes-2*.rpm
 
 # AL -- AsianLinux
 # XXX notyet
@@ -743,7 +745,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	@rm -f ${@D}/import
 	@echo "`${now}` ==> ${@D}: Creating ..." | tee -a ${@D}/import
 	@mkdir -p $@/log $@/tmp
-	@${cp} $(testdir)/ref/DB_CONFIG $@
+	@${cp} $(srcdir)/ref/DB_CONFIG $@
 	@echo "`${now}` <== ${@D}: Created." | tee -a ${@D}/import
 	@echo "`${now}` ==> ${@D}: Importing ..." | tee -a ${@D}/import
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
@@ -786,7 +788,7 @@ Install-%: %/solve
 	@${sudo} rm -rf $(<D)/ROOT
 	@cat -n $(<D)/todo | sort -R | cut -f2- > $(<D)/todo.random
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
-	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
+	@${cp} $(srcdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
 	@-mkdir -p $(<D)/ROOT/proc && sudo mount -o bind /proc $(<D)/ROOT/proc
 #	@-mkdir -p $(<D)/ROOT/sys  && ${sudo} mount -o bind /sys $(<D)/ROOT/sys 
 #	@-mkdir -p $(<D)/ROOT/dev/pts
@@ -830,7 +832,7 @@ Verify-%: %/solve
 	  [ -d $(<D)/VROOT/tmp/.private ] && ${sudo} $(chattr) -a $(<D)/VROOT/tmp/.private ; \
 	  ${sudo} rm -rf $(<D)/VROOT; \
 	  mkdir -p $(<D)/VROOT/var/lib/rpm/log $(<D)/VROOT/var/lib/rpm/tmp; \
-	  ${cp} $(testdir)/ref/DB_CONFIG $(<D)/VROOT/var/lib/rpm; \
+	  ${cp} $(srcdir)/ref/DB_CONFIG $(<D)/VROOT/var/lib/rpm; \
 	  echo "-----> " $$F; \
 	  ${sudo} ${rpm} -Uv --nofdigests --stats \
 	    -r $(testdir)/$(<D)/VROOT \
@@ -1119,7 +1121,7 @@ check-mongoc:
 	@rm -f tmp/mongoc.out
 	@make -C mongoc check >> tmp/mongoc.out 2>&1 || :
 
-tgfs =	${abs_top_builddir}/rpmio//tgfs
+tgfs =	${abs_top_builddir}/rpmio/tgfs
 gfsfn =	/tmp/gfsfn
 bsondump = /usr/bin/bsondump
 check-gfs: check-bson check-mongoc
@@ -1148,6 +1150,11 @@ check-gfs: check-bson check-mongoc
 	@echo "--> list"
 	@${tgfs} list		>> tmp/gfs.out 2>&1
 
+duk =	${abs_top_builddir}/rpmio/duk
+check-duk:
+	@echo "=== $@ ==="
+	@${duk} fib.js
+
 check-js:
 	@echo "=== $@ ==="
 	-../libtool --mode=execute vg ${rpm} -E '%{js:print("yadda-yadda")}'
@@ -1173,6 +1180,25 @@ fio:
 	-mkdir -p tmp/cp && ${cp} --rpmiodebug --davdebug -R $(FIOURI) tmp/cp
 	-diff -ru tmp/{wget,cp}
 
+ostamp:
+	@echo "=== $@ ==="
+	${rpm} -E "%{ostamp_publish $$(date --rfc-3339=ns | sha256sum | cut -f1 -d\ )}"
+
+P =	popt/popt-1.14-1.x86_64.rpm
+foo:
+	@echo "=== $@ ==="
+	$(rpm) -qp --qf '%10{name}\n' $(P)
+	$(rpm) -qp --qf '%-2.2{name}\n' $(P)
+	$(rpm) -qp --qf '%10.2{name}\n' $(P)
+	$(rpm) -qp --qf '%-0.10{#name}\n' $(P)
+	$(rpm) -qp --qf '%-0.20={name}\n' $(P)
+	$(rpm) -qp --qf '[%10{name}\t%{dirnames}\n]' $(P)
+	$(rpm) -qp --qf '%|name?{%{name}\n}:{}|' $(P)
+	$(rpm) -qp --qf '%{#dirnames}\n' $(P)
+	$(rpm) -qp --qf '%|dirnames?{TRUE}:{FALSE}|\n' $(P)
+	$(rpm) -qp --qf '%|dirnames?{TRUE}:{FALSE}|\n' $(P)
+	$(rpm) -qp --qf '%|dirnames=/lib/?{TRUE}:{FALSE}|\n' $(P)
+
 test:	check-init \
 	check-pubkeys \
 	check-markup \
@@ -1190,7 +1216,8 @@ test:	check-init \
 	check-dir2symlink \
 	check-lua \
 	check-git \
-	check-gfs
+	check-duk
+#	check-gfs
 #	check-convert
 #	check-repo
 
