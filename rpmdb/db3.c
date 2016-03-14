@@ -982,6 +982,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     /* XXX DB_RECOVER needs automagic */
     if (!(eflags & DB_INIT_TXN)) eflags &= ~DB_RECOVER;
 
+    /* XXX DB_MULTIVERSION requires transactions, needs W_OK to rpmdb/__db* */
+    if (getuid() != 0) eflags &= ~DB_MULTIVERSION;
+
     if (dbfile)
 	rpmlog(RPMLOG_DEBUG, D_("opening  db environment %s/%s %s\n"),
 		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
