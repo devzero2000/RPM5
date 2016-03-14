@@ -824,7 +824,7 @@ package or when debugging this package.
 )%{nil}
 -14: ostamp_send_back	1
 -14: ostamp_sender	jbj@rpm5.org
--14: ostamp_title	rpm-5.4.17
+-14: ostamp_title	rpm-5.4.16
 -14: ostamp_uri	http://www.originstamp.org
 -14: patch(b:p:P:REz:F:d:)	%{shrink:
 %define __patch_number  %{-P:%{-P*}}%{!-P:0} 
