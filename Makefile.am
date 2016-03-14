@@ -14,7 +14,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
 	--with-xz \
         --with-file \
         --with-path-magic=/usr/share/file/magic \
-        --without-lua \
+        --with-lua \
         --with-tcl \
         --without-sqlite \
         --with-syck \
