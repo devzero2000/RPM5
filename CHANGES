@@ -1,4 +1,7 @@
 5.4.15 -> 5.4.16:
+    - jbj: rpm.spec: rpmbuild can rebuild itself (+/- --with-versioned-paths).
+    - jbj: rpmdb: fix: disable DB_MULTIVERSION if non-root.
+    - jbj: distcheck: fix: clean up *.so after lua "make check".
     - jbj: distcheck: throw lua-5.3.2 onto the "make check" pyre.
     - jbj: lua: update to lua-5.3.2.
     - jbj: autofu: make distcheck w/o cruft.

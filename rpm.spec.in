@@ -6,13 +6,20 @@
 %define	with_xz			@WITH_XZ@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
-%{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
-%{!?_rpmhome:%global _rpmhome @USRLIBRPM@}
-
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
+
+# XXX override existing rpmbuild configuration
+#%%{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
+#%%{!?_rpmhome:%global _rpmhome @USRLIBRPM@}
+%global _usrlibrpm	%{__prefix}/lib/rpm*
+%global _rpmhome	%{__prefix}/lib/rpm*
+
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
+# XXX use helpers from just installed build root.
+%define	find_lang %(echo %{buildroot}%{_rpmhome})/find-lang.sh %{buildroot}
+%define	__check_files %(echo %{buildroot}%{_rpmhome})/check-files %{buildroot}
 
 Summary: The RPM package management system.
 Name: rpm
@@ -255,6 +262,8 @@ WITH_SELINUX="--without-selinux --without-sepol --without-semanage"
 WITH_NEON="--with-neon --without-libproxy --with-expat"
 %endif
 
+CFLAGS="${CFLAGS:- -O2}"; export CFLAGS
+
 %ifarch x86_64
 CFLAGS="$CFLAGS -DHAVE_VA_COPY -DVA_COPY=va_copy"; export CFLAGS
 %endif
@@ -313,7 +322,7 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
         --with-build-extlibdep \
         --with-build-maxextlibdep \
         --without-valgrind \
-        --disable-openmp \
+        --enable-openmp \
         --enable-build-pic \
         --enable-build-versionscript \
         --enable-build-warnings \
@@ -351,12 +360,12 @@ for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Packages \
 	Providename Provideversion Requirename Requireversion Triggername \
 	Filemd5s Pubkeys Sha1header Sigmd5 \
-	__db.001 __db.002 __db.003 __db.004 __db.005
+	__db.001 __db.002 __db.003 __db.004 __db.005 __db.006
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
 
-( cd $RPM_BUILD_ROOT/%{_rpmhome}
+( cd ${RPM_BUILD_ROOT}/usr/lib/rpm*
   tar xzf %{SOURCE1}
   # XXX assume ix86 platforms for the moment
    rm -rf ./alpha-linux
@@ -738,8 +747,13 @@ fi
 ###%{_rpmhome}/lib/librpmjsm.a
 ###%{_rpmhome}/lib/librpmjsm.la
 ###%{_rpmhome}/lib/librpmjsm.so
+%{_rpmhome}/include/*.h
+%{_rpmhome}/include/lua*.hpp
 
 %changelog
+* Tue Mar 15 2016 Jeff Johnson <jbj@rpm5.org> -5.4.16
+- improve uncoupling from rpmbuild configuration.
+
 * Thu Jun 02 2011 mdawkins <mattydaw@gmail.com> 5.4.2-0.20110602
 - new snapshot date 20110602 for release 5.4.2
 
