@@ -43,6 +43,10 @@ char copyright[] =
 
 #include "system.h"
 
+#if !defined(WITH_ACL)
+#undef HAVE_SYS_ACL_H
+#endif
+
 #if defined(HAVE_SYS_ACL_H)
 #include <sys/acl.h>
 #endif

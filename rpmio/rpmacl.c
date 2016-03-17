@@ -4,6 +4,11 @@
 
 #include "system.h"
 
+/* XXX permit building --without-acl */
+#if !defined(WITH_ACL)
+#undef	HAVE_SYS_ACL_H
+#endif
+
 #if defined(HAVE_SYS_ACL_H)
 #include <sys/acl.h>
 #endif
