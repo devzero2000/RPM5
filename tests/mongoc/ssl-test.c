@@ -1,14 +1,15 @@
-#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <bson.h>
+#include <mongoc.h>
 
+#ifdef	MONGOC_ENABLE_SSL
+#include "ssl-test.h"
 #ifdef MONGOC_ENABLE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
-
-#include "ssl-test.h"
+#endif
 
 #include "debug.h"
 
@@ -18,6 +19,7 @@
 
 #define LOCALHOST "127.0.0.1"
 
+#ifdef	MONGOC_ENABLE_SSL
 /** this function is meant to be run from ssl_test as a child thread
  *
  * It:

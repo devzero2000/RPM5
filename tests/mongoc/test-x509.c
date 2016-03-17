@@ -1,4 +1,3 @@
-#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <mongoc.h>
@@ -7,6 +6,7 @@
 
 #include "debug.h"
 
+#ifdef	MONGOC_ENABLE_SSL
 static void
 test_extract_subject (void)
 {

@@ -1,14 +1,19 @@
-#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
-#include <openssl/err.h>
 #include <mongoc.h>
 
+#ifdef	MONGOC_ENABLE_SSL
 #include "ssl-test.h"
+#ifdef	MONGOC_ENABLE_OPENSSL
+#include <openssl/err.h>
+#endif
+#endif
+
 #include "TestSuite.h"
 
 #include "debug.h"
 
+#ifdef	MONGOC_ENABLE_SSL
 #define TIMEOUT 10000 /* milliseconds */
 
 /** run as a child thread by test_mongoc_tls_hangup

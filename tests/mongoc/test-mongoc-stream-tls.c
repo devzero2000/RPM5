@@ -1,10 +1,14 @@
-#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
-#include <openssl/err.h>
 #include <mongoc.h>
 
+#ifdef	MONGOC_ENABLE_SSL
 #include "ssl-test.h"
+#ifdef	MONGOC_ENABLE_OPENSSL
+#include <openssl/err.h>
+#endif
+#endif
+
 #include "TestSuite.h"
 
 #include "debug.h"
@@ -22,6 +26,7 @@
 #define PEMFILE_REV TRUST_DIR "/keys/rev.mongodb.com.pem"
 #define PASSWORD "testpass"
 
+#ifdef	MONGOC_ENABLE_SSL
 static void
 test_mongoc_tls_no_certs (void)
 {
