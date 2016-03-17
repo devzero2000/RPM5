@@ -1,3 +1,4 @@
+#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <bson.h>
@@ -324,3 +325,4 @@ ssl_test (mongoc_ssl_opt_t  *client,
    mongoc_mutex_destroy(&data.cond_mutex);
    mongoc_cond_destroy(&data.cond);
 }
+#endif	/* MONGOC_ENABLE_SSL */

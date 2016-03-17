@@ -18,6 +18,7 @@ static char * gTestCAFile;
 static char * gTestPEMFileLocalhost;
 static bool use_pool;
 
+#ifdef	MONGOC_ENABLE_SSL
 static void
 test_replica_set_ssl_client(void)
 {
@@ -74,6 +75,7 @@ test_replica_set_ssl_client(void)
    ha_replica_set_shutdown(replica_set);
    ha_replica_set_destroy(replica_set);
 }
+#endif	/* MONGOC_ENABLE_SSL */
 
 
 static void
@@ -106,10 +108,14 @@ main (int   argc,   /* IN */
    gTestPEMFileLocalhost = bson_strdup_printf("%s/" PEMFILE_LOCALHOST, cwd);
 
    use_pool = false;
+#ifdef	MONGOC_ENABLE_SSL
    run_test("/ReplicaSet/single/ssl/client", &test_replica_set_ssl_client);
+#endif	/* MONGOC_ENABLE_SSL */
 
    use_pool = true;
+#ifdef	MONGOC_ENABLE_SSL
    run_test("/ReplicaSet/pool/ssl/client", &test_replica_set_ssl_client);
+#endif	/* MONGOC_ENABLE_SSL */
 
    bson_free(gTestCAFile);
    bson_free(gTestPEMFileLocalhost);

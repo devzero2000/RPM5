@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: mongoc: fix: permit building --without-openssl.
+    - jbj: snapshot: rpm-5.4.16-0.20160315.src.rpm.
     - jbj: rpm.spec: rpmbuild can rebuild itself (+/- --with-versioned-paths).
     - jbj: rpmdb: fix: disable DB_MULTIVERSION if non-root.
     - jbj: distcheck: fix: clean up *.so after lua "make check".

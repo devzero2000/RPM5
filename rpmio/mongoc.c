@@ -27590,7 +27590,7 @@ _mongoc_scram_step (mongoc_scram_t *scram,
    return true;
 }
 
-#endif
+#endif	/* MONGOC_ENABLE_CRYPTO */
 
 /*==============================================================*/
 /* --- mongoc-secure-transport.c */

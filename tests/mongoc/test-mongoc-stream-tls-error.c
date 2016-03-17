@@ -1,3 +1,4 @@
+#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <openssl/err.h>
@@ -334,3 +335,4 @@ test_stream_tls_error_install (TestSuite *suite)
    TestSuite_Add (suite, "/TLS/handshake_stall",
                   test_mongoc_tls_handshake_stall);
 }
+#endif	/* MONGOC_ENABLE_SSL */

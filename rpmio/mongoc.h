@@ -21,6 +21,7 @@
  * limitations under the License.
  */
 
+#include <stddef.h>
 #include <bson.h>
 
 #ifdef _WIN32
@@ -43,9 +44,11 @@
 #include <sasl/saslutil.h>
 #endif
 
+#ifdef	WITH_OPENSSL
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#endif
 
 #ifdef __linux__
 # include <sched.h>
@@ -503,10 +506,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_SECURE_TRANSPORT is set from configure to determine if we are
  * compiled with Native SSL support on Darwin
  */
-#define MONGOC_ENABLE_SECURE_TRANSPORT 0
-
-#if MONGOC_ENABLE_SECURE_TRANSPORT != 1
-#  undef MONGOC_ENABLE_SECURE_TRANSPORT
+#if defined(__APPLE__)
+#define MONGOC_ENABLE_SECURE_TRANSPORT 1
+#else
+# undef MONGOC_ENABLE_SECURE_TRANSPORT
 #endif
 
 
@@ -514,10 +517,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_COMMON_CRYPTO is set from configure to determine if we are
  * compiled with Native Crypto support on Darwin
  */
-#define MONGOC_ENABLE_COMMON_CRYPTO 0
-
-#if MONGOC_ENABLE_COMMON_CRYPTO != 1
-#  undef MONGOC_ENABLE_COMMON_CRYPTO
+#if defined(__APPLE__)
+#define MONGOC_ENABLE_COMMON_CRYPTO 1
+#else
+# undef MONGOC_ENABLE_COMMON_CRYPTO
 #endif
 
 
@@ -525,10 +528,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_OPENSSL is set from configure to determine if we are
  * compiled with OpenSSL support.
  */
+#if defined(WITH_OPENSSL)
 #define MONGOC_ENABLE_OPENSSL 1
-
-#if MONGOC_ENABLE_OPENSSL != 1
-#  undef MONGOC_ENABLE_OPENSSL
+#else
+# undef MONGOC_ENABLE_OPENSSL
 #endif
 
 
@@ -536,10 +539,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_LIBCRYPTO is set from configure to determine if we are
  * compiled with OpenSSL support.
  */
+#if defined(WITH_OPENSSL)
 #define MONGOC_ENABLE_LIBCRYPTO 1
-
-#if MONGOC_ENABLE_LIBCRYPTO != 1
-#  undef MONGOC_ENABLE_LIBCRYPTO
+#else
+# undef MONGOC_ENABLE_LIBCRYPTO
 #endif
 
 
@@ -547,10 +550,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_SSL is set from configure to determine if we are
  * compiled with any SSL support.
  */
+#if defined(WITH_OPENSSL)
 #define MONGOC_ENABLE_SSL 1
-
-#if MONGOC_ENABLE_SSL != 1
-#  undef MONGOC_ENABLE_SSL
+#else
+# undef MONGOC_ENABLE_SSL
 #endif
 
 
@@ -558,10 +561,10 @@ BSON_END_DECLS
  * MONGOC_ENABLE_CRYPTO is set from configure to determine if we are
  * compiled with any crypto support.
  */
+#if defined(MONGOC_ENABLE_OPENSSL) || defined(MONGOC_ENABLE_COMMON_CRYPTO)
 #define MONGOC_ENABLE_CRYPTO 1
-
-#if MONGOC_ENABLE_CRYPTO != 1
-#  undef MONGOC_ENABLE_CRYPTO
+#else
+# undef MONGOC_ENABLE_CRYPTO
 #endif
 
 
@@ -569,9 +572,9 @@ BSON_END_DECLS
  * MONGOC_ENABLE_SASL is set from configure to determine if we are
  * compiled with SASL support.
  */
+#if defined(HAVE_LIBSASL2)
 #define MONGOC_ENABLE_SASL 1
-
-#if MONGOC_ENABLE_SASL != 1
+#else
 #  undef MONGOC_ENABLE_SASL
 #endif
 
@@ -581,9 +584,9 @@ BSON_END_DECLS
  * have SASL and its version is new enough to use sasl_client_done (),
  * which supersedes sasl_done ().
  */
+#if defined(HAVE_LIBSASL2)
 #define MONGOC_HAVE_SASL_CLIENT_DONE 1
-
-#if MONGOC_HAVE_SASL_CLIENT_DONE != 1
+#else
 #  undef MONGOC_HAVE_SASL_CLIENT_DONE
 #endif
 
@@ -4525,16 +4528,17 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- mongoc-crypto-private.h */
 
-#ifdef MONGOC_ENABLE_CRYPTO
-
 BSON_BEGIN_DECLS
 
 #ifdef MONGOC_ENABLE_LIBCRYPTO
 #define MONGOC_CRYPTO_TYPE 1
 #elif defined(MONGOC_ENABLE_COMMON_CRYPTO)
 #define MONGOC_CRYPTO_TYPE 2
+#else
+#define MONGOC_CRYPTO_TYPE -1
 #endif
 
+#ifdef MONGOC_ENABLE_CRYPTO
 typedef struct _mongoc_crypto_t mongoc_crypto_t;
 
 typedef enum
@@ -4865,10 +4869,6 @@ BSON_END_DECLS
 /* --- mongoc-stream-tls-openssl-bio-private.h */
 
 #ifdef MONGOC_ENABLE_OPENSSL
-
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
 BSON_BEGIN_DECLS
 

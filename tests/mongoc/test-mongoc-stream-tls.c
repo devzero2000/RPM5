@@ -1,3 +1,4 @@
+#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <openssl/err.h>
@@ -258,3 +259,5 @@ test_stream_tls_install (TestSuite *suite)
 #endif
    TestSuite_Add (suite, "/TLS/wild", test_mongoc_tls_wild);
 }
+
+#endif	/* MONGOC_ENABLE_SSL */

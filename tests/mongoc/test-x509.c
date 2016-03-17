@@ -1,3 +1,4 @@
+#ifdef	MONGOC_ENABLE_SSL
 #include "system.h"
 
 #include <mongoc.h>
@@ -22,3 +23,4 @@ test_x509_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/SSL/extract_subject", test_extract_subject);
 }
+#endif	/* MONGOC_ENABLE_SSL */
