@@ -379,7 +379,7 @@ static int rpmltcVerify(pgpDig dig)
     unsigned char sig[4096];	/* XXX big enuf */
     unsigned long siglen = sizeof(sig);
     unsigned int dlen;			/* XXX DSA */
-#if defined(LTC_LTC_PKCS_1_V1_5)
+#if defined(USE_LTC_LTC_PKCS_1_V1_5)
     int _padding = LTC_LTC_PKCS_1_V1_5;	/* XXX RSA */
 #else
     int _padding = LTC_PKCS_1_V1_5;	/* XXX RSA */
@@ -448,7 +448,7 @@ static int rpmltcSign(pgpDig dig)
     unsigned char sig[2048];
     unsigned long siglen = sizeof(sig);
     unsigned int dlen;			/* XXX DSA */
-#if defined(LTC_LTC_PKCS_1_V1_5)
+#if defined(USE_LTC_LTC_PKCS_1_V1_5)
     int _padding = LTC_LTC_PKCS_1_V1_5;	/* XXX RSA */
 #else
     int _padding = LTC_PKCS_1_V1_5;	/* XXX RSA */

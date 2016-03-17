@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: ltc: fix: retrofit a #define for LTC_LTC_PKCS_1_V1_5 enum detection.
     - jbj: neon: fix: permit --with-ssl=gnutls.
     - jbj: neon: upgrade to 0.30.1.
     - jbj: mongoc: fix: permit building --without-openssl.

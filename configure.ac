@@ -1910,6 +1910,9 @@ RPM_CHECK_LIB(
       if test -d ${includedir}/tommath; then
         CPPFLAGS="$CPPFLAGS -I${includedir}/tommath"
       fi
+      AC_CHECK_DECL([LTC_PKCS_1_V1_5],
+        [ AC_DEFINE(USE_LTC_LTC_PKCS_1_V1_5, 1, [Define for older LibTomCrypt])
+	], [])
       LIBS="$LIBS -ltommath"
     ], [])
 
