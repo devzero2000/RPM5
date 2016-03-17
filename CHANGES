@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: neon: fix: permit --with-ssl=gnutls.
+    - jbj: neon: upgrade to 0.30.1.
     - jbj: mongoc: fix: permit building --without-openssl.
     - jbj: snapshot: rpm-5.4.16-0.20160315.src.rpm.
     - jbj: rpm.spec: rpmbuild can rebuild itself (+/- --with-versioned-paths).
