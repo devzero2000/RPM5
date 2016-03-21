@@ -530,7 +530,7 @@ tget_SOURCES = tget.c
 tget_LDADD = $(RPMIO_LDADD_COMMON)
 
 tgfs_SOURCES = tgfs.c
-tgfs_LDADD = $(RPMIO_LDADD_COMMON)
+tgfs_LDADD = $(RPMIO_LDADD_COMMON) -lrt
 
 tgit_SOURCES = tgit.c
 tgit_LDADD = $(RPMIO_LDADD_COMMON)
