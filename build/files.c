@@ -1545,12 +1545,15 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	he->append = 0;
 
 	/* XXX Hash instead of 64b->32b truncate to prevent aliasing. */
-	{   ino_t _ino = flp->fl_ino;
+	{
 	/* don't use hash here, as hash collisions which happen on large packages
-	   cause bus errors in rpmbuild
+	   cause bus errors in rpmbuild */
+#ifdef	DYING	/* XXX WTF: hashing ino_t from stat(2) _SHOULD_ work?!? */
+	    ino_t _ino = flp->fl_ino;
 	    ui32 = hashFunctionString(0, &_ino, sizeof(_ino));
-	*/
+#else
 	    ui32 = fileid + 1;
+#endif
 	}
 	he->tag = RPMTAG_FILEINODES;
 	he->t = RPM_UINT32_TYPE;
