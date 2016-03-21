@@ -91,15 +91,6 @@ int parseDescription(Spec spec)
 	goto exit;
     }
 
-    /* Lose the inheirited %description (if present). */
-    if (spec->packages->header != pkg->header) {
-	he->tag = RPMTAG_DESCRIPTION;
-	xx = headerGet(pkg->header, he, 0);
-	he->p.ptr = _free(he->p.ptr);
-	if (xx && he->t == RPM_STRING_TYPE)
-	    xx = headerDel(pkg->header, he, 0);
-    }
-    
     t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
     
     iob = rpmiobNew(0);
@@ -126,22 +117,30 @@ int parseDescription(Spec spec)
 	}
     }
     
+    /* Add (or replace if inherited from *.src.rpm) the description string. */
     iob = rpmiobRTrim(iob);
-    if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 #if defined(SUPPORT_I18NSTRING_TYPE)
+    if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	const char * s = rpmiobStr(iob);
 	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION, s, lang);
-#else
-	if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
-	    he->tag = RPMTAG_DESCRIPTION;
-	    he->t = RPM_STRING_TYPE;
-	    he->p.str = rpmiobStr(iob);
-	    he->c = 1;
-	    xx = headerPut(pkg->header, he, 0);
-	}
-#endif
     }
-    
+#else
+    if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
+	/* Lose the inheirited %description (if present). */
+	he->tag = RPMTAG_DESCRIPTION;
+	xx = headerGet(pkg->header, he, 0);
+	he->p.ptr = _free(he->p.ptr);
+	if (xx && he->t == RPM_STRING_TYPE)
+		xx = headerDel(pkg->header, he, 0);
+
+	he->tag = RPMTAG_DESCRIPTION;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = rpmiobStr(iob);
+	he->c = 1;
+	xx = headerPut(pkg->header, he, 0);
+    }
+#endif
+
 exit:
     iob = rpmiobFree(iob);
     argv = _free(argv);

@@ -28,7 +28,9 @@ extern int _spec_debug;
 /*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
 #define	POPT_NOLANG		-1012
+#endif
 
 #define	POPT_REBUILD		0x4220
 #define	POPT_RECOMPILE		0x4320
@@ -52,10 +54,12 @@ struct rpmBuildArguments_s         rpmBTArgs;
 /*@unchecked@*/
 int _rpmbuildFlags = 3;
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
 /*@-exportlocal@*/
 /*@unchecked@*/
 int noLang = 0;
 /*@=exportlocal@*/
+#endif
 
 /**
  */
@@ -92,7 +96,9 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	}
 	break;
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
     case POPT_NOLANG: rba->noLang = 1; break;
+#endif
 
     case RPMCLI_POPT_NODIGEST:
 	rba->qva_flags |= VERIFY_DIGEST;
@@ -206,8 +212,10 @@ struct poptOption rpmBuildPoptTable[] = {
  { "specdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_spec_debug, -1,
 	N_("Debug Spec objects"), NULL},
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
 	N_("do not accept i18n msgstr's from specfile"), NULL},
+#endif
  { "rmsource", '\0', POPT_BIT_SET, &rpmBTArgs.buildAmount, RPMBUILD_RMSOURCE,
 	N_("remove sources when done"), NULL},
  { "rmspec", '\0', POPT_BIT_SET, &rpmBTArgs.buildAmount, RPMBUILD_RMSPEC,

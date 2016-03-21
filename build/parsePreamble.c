@@ -30,8 +30,10 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_DISTEPOCH,
     RPMTAG_LICENSE,
     RPMTAG_GROUP,		/* XXX permissive. */
+#if !defined(SUPPORT_I18NSTRING_TYPE)	/* XXX RPM_VENDOR_PLD */
     RPMTAG_SUMMARY,		/* XXX permissive. */
     RPMTAG_DESCRIPTION,		/* XXX permissive. */
+#endif
     RPMTAG_PACKAGER,
     RPMTAG_DISTRIBUTION,
     RPMTAG_DISTURL,
@@ -560,9 +562,11 @@ if (multiToken) { \
     return RPMRC_FAIL; \
 }
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
 /*@-redecl@*/
 extern int noLang;
 /*@=redecl@*/
+#endif
 
 static rpmRC tagValidate(Spec spec, rpmTag tag, const char * value)
 	/*@*/
@@ -708,19 +712,20 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    he->p.str = field;
 	    he->c = 1;
 	    xx = headerPut(pkg->header, he, 0);
-	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+	} else
 #if defined(SUPPORT_I18NSTRING_TYPE)
+	if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
-#else
-	    if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
-		he->tag = tag;
-		he->t = RPM_STRING_TYPE;
-		he->p.str = field;
-		he->c = 1;
-		xx = headerPut(pkg->header, he, 0);
-	    }
-#endif
 	}
+#else
+	if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
+	    he->tag = tag;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = field;
+	    he->c = 1;
+	    xx = headerPut(pkg->header, he, 0);
+	}
+#endif
 	break;
     /* XXX silently ignore BuildRoot: */
     case RPMTAG_BUILDROOT:

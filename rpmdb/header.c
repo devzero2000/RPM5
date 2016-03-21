@@ -467,7 +467,8 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
 #if !defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-assert(0);
+	he->t = RPM_STRING_TYPE;
+	/*@fallthrough@*/
 #endif
     case RPM_STRING_TYPE:
 	if (he->p.str)
@@ -1511,7 +1512,9 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	break;
 #if !defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-assert(0);
+	he->t = RPM_STRING_TYPE;
+	he->p.str = (char *) entry->data;
+	break;
 #endif
     case RPM_STRING_TYPE:
 	if (count == 1) {
