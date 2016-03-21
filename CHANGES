@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: mongo: fix: add #include <stdarg.h>.
     - jbj: system.h: undef SUPPORT_I18NSTRING_TYPE, no RPM_I18NSTRING_TYPE.
     - jbj: i18n: update PO files (Translation Project).
     - jbj: i18n: add zh_CN.po (Translation Project).
