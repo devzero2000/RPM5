@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM5.org\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-21 14:38-0400\n"
+"POT-Creation-Date: 2016-03-21 18:26-0400\n"
 "PO-Revision-Date: 2013-11-20 10:04+0000\n"
 "Last-Translator: Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/rpm5/language/"
@@ -865,136 +865,136 @@ msgstr "ligne %d: ERREUR d'analyse %%fichiers: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "ligne %d: Seconde liste de %%files\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:283
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "L'architecture est exclus: %s\n"
 
-#: build/parsePreamble.c:285
+#: build/parsePreamble.c:287
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "L'architecture n'est pas inclus: %s\n"
 
-#: build/parsePreamble.c:289
+#: build/parsePreamble.c:291
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Le système d'exploitation est exclus: %s\n"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Le système d'exploitation n'est pas inclus: %s\n"
 
-#: build/parsePreamble.c:318
+#: build/parsePreamble.c:320
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "le champ %s doit être présent dans le paquet: %s\n"
 
-#: build/parsePreamble.c:350
+#: build/parsePreamble.c:352
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Doubles entrées %s dans le paquet: %s\n"
 
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:446
 msgid "No icon file in sources\n"
 msgstr "Pas de fichier d'icone dans les sources\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "URL de l'icône invalide: %s\n"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:482
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Incapable d'ouvrir le fichier d'icône %s: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:491
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Incapable de lire le fichier d'icône %s: %s\n"
 
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr "Le fichier d'icône %s est trop gros (maxi %d bytes)\n"
 
-#: build/parsePreamble.c:558
+#: build/parsePreamble.c:560
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "ligne %d: Balise n'ayant besoin que d'un seul jeton: %s\n"
 
-#: build/parsePreamble.c:587
+#: build/parsePreamble.c:591
 #, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr "ligne %d: Valeur de la balise(\"%s\") invalide %s: %s\n"
 
-#: build/parsePreamble.c:628
+#: build/parsePreamble.c:632
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "ligne %d: Balise mal composée: %s\n"
 
-#: build/parsePreamble.c:636
+#: build/parsePreamble.c:640
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "ligne %d: Balise vide: %s\n"
 
-#: build/parsePreamble.c:675 build/parsePreamble.c:682 build/parseReqs.c:170
+#: build/parsePreamble.c:679 build/parsePreamble.c:686 build/parseReqs.c:170
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "ligne %d: Caractère illégal '-' dans %s: %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:740
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot ne peut pas être \"/\": %s\n"
 
-#: build/parsePreamble.c:753
+#: build/parsePreamble.c:758
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "ligne %d: les préfixes ne doivent pas se commencer par \"/\": %s\n"
 
-#: build/parsePreamble.c:761
+#: build/parsePreamble.c:766
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "ligne %d: les préfixes ne doivent pas se terminer par \"/\": %s\n"
 
-#: build/parsePreamble.c:773
+#: build/parsePreamble.c:778
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "ligne %d: Docdir doit débuter par '/': %s\n"
 
-#: build/parsePreamble.c:787
+#: build/parsePreamble.c:792
 #, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "ligne %d: %s prend une valeur entière: %s\n"
 
-#: build/parsePreamble.c:833 build/parsePreamble.c:844
+#: build/parsePreamble.c:838 build/parsePreamble.c:849
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "ligne %d: mauvais %s: qualificateurs: %s\n"
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:894
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "ligne %d: mauvais format BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:907
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr "ligne %d: Seuls les sous-paquets \"noarch\" sont supportés: %s\n"
 
-#: build/parsePreamble.c:1030
+#: build/parsePreamble.c:1035
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Syntaxe ancienne non supportée: %s\n"
 
-#: build/parsePreamble.c:1133
+#: build/parsePreamble.c:1138
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Mauvaise spécification de paquet: %s\n"
 
-#: build/parsePreamble.c:1183
+#: build/parsePreamble.c:1188
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "ligne %d: Balise inconnue: %s\n"
@@ -1186,187 +1186,187 @@ msgstr "déclaration %%include mal composée\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Aucune architecture compatible n'a été trouvée pour la construction\n"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:749
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Le paquet n'a pas de %%description: %s\n"
 
-#: build/poptBT.c:126
+#: build/poptBT.c:132
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "construit à travers %prep (dépaqueter les sources et appliquer les "
 "correctifs) à partir du <fichier_spec>"
 
-#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
-#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
-#: build/poptBT.c:152
+#: build/poptBT.c:133 build/poptBT.c:136 build/poptBT.c:139 build/poptBT.c:142
+#: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:155
+#: build/poptBT.c:158
 msgid "<specfile>"
 msgstr "<fichier_spec>"
 
-#: build/poptBT.c:129
+#: build/poptBT.c:135
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 "généré à partir de %build (%prep, puis compiler) du fichier <fichier_spec>"
 
-#: build/poptBT.c:132
+#: build/poptBT.c:138
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "généré à partir de %install (%prep, %build puis installer) du fichier "
 "<fichier_spec>"
 
-#: build/poptBT.c:135
+#: build/poptBT.c:141
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "vérifier la section %fichiers à partir du <fichier_spec>"
 
-#: build/poptBT.c:138
+#: build/poptBT.c:144
 msgid "build source and binary packages from <specfile>"
 msgstr "générer les paquets source et binaire à partir du <fichier_spec>"
 
-#: build/poptBT.c:141
+#: build/poptBT.c:147
 msgid "build binary package only from <specfile>"
 msgstr "générer le paquet binaire à partir du <fichier_spec>"
 
-#: build/poptBT.c:144
+#: build/poptBT.c:150
 msgid "build source package only from <specfile>"
 msgstr "générer le paquet source seulement à partir du <fichier_spec>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:154
 msgid "track versions of sources from <specfile>"
 msgstr "suivre les versions des sources à partir du <fichier_spec>"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:157
 msgid "fetch missing source and patch files"
 msgstr "chercher le fichier source manquant et les correctifs"
 
-#: build/poptBT.c:155
+#: build/poptBT.c:161
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "générer à travers %prep (dépaqueter les sources et appliquer les correctifs "
 "à partir de <tarball>"
 
-#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:162 build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
+#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:158
+#: build/poptBT.c:164
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "générer à travers %build (%prep puis compiler) à partir de <tarball>"
 
-#: build/poptBT.c:161
+#: build/poptBT.c:167
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "générer à travers %install (%prep, %build puis installer) à partir de "
 "<tarball>"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:170
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "vérifier la section des %fichiers à partir de <tarball>"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:173
 msgid "build source and binary packages from <tarball>"
 msgstr "générer les paquets sources et binaires à partir de <tarball>"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:176
 msgid "build binary package only from <tarball>"
 msgstr "générer les paquets binaires seulement à partir de <tarball>"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:179
 msgid "build source package only from <tarball>"
 msgstr "générer le paquet source seulement à partir de <tarball>"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:183
 msgid "build binary package from <source package>"
 msgstr "générer le paquet binaire seulement à partir de <paquet source>"
 
-#: build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187
 msgid "<source package>"
 msgstr "<paquet source>"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:186
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "générer à travers %install (%prep, %build puis intaller) à partir de <paquet "
 "source>"
 
-#: build/poptBT.c:184
+#: build/poptBT.c:190
 msgid "remove build tree when done"
 msgstr "enlever l'arborescence de génération lorsque complété"
 
-#: build/poptBT.c:186
+#: build/poptBT.c:192
 msgid "do not execute any stages of the build"
 msgstr "n'exécuter aucun des étages de la génération"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:194
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de génération"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:197
 msgid "disable automagic Provides: extraction"
 msgstr "désactiver automagique Fournit: extraction"
 
-#: build/poptBT.c:193
+#: build/poptBT.c:199
 msgid "disable automagic Requires: extraction"
 msgstr "désactiver automagique Requière: extraction"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:201
 msgid "disable tags forbidden by LSB"
 msgstr "désactiver les balise interdites par LSB"
 
-#: build/poptBT.c:198 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
+#: build/poptBT.c:204 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
 #: lib/poptQV.c:520
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier le(s) digest(s) du paquet"
 
-#: build/poptBT.c:200 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
+#: build/poptBT.c:206 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
 #: lib/poptQV.c:523
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier les en-têtes de la base de données lorsque récupérés"
 
-#: build/poptBT.c:202 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
+#: build/poptBT.c:208 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
 #: lib/poptQV.c:525
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la signature des paquets"
 
-#: build/poptBT.c:205
+#: build/poptBT.c:211
 msgid "Debug Package objects"
 msgstr "Déboguer les objets Paquet"
 
-#: build/poptBT.c:207
+#: build/poptBT.c:213
 msgid "Debug Spec objects"
 msgstr "Déboguer les objets Spec"
 
-#: build/poptBT.c:210
+#: build/poptBT.c:217
 msgid "do not accept i18n msgstr's from specfile"
 msgstr ""
 "ne pas accepter les chaîne msgstr i18N à partir du fichier de spécifications"
 
-#: build/poptBT.c:212
+#: build/poptBT.c:220
 msgid "remove sources when done"
 msgstr "enlever les sources lorsque complété"
 
-#: build/poptBT.c:214
+#: build/poptBT.c:222
 msgid "remove specfile when done"
 msgstr "enlever le fichier de spécifications lorsque complété"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "passer immédiatement à l'étape spécifiée (seulement pour c,i)"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:226
 msgid "generate PGP/GPG signature"
 msgstr "générer la signature PGP/GPG"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:228
 msgid "override target platform"
 msgstr "écraser la plate-forme cible"
 
-#: build/poptBT.c:220 lib/poptALL.c:453 lib/poptQV.c:375
+#: build/poptBT.c:228 lib/poptALL.c:453 lib/poptQV.c:375
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 

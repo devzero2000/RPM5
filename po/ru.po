@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-21 14:38-0400\n"
+"POT-Creation-Date: 2016-03-21 18:26-0400\n"
 "PO-Revision-Date: 2008-05-30 11:01+0300\n"
 "Last-Translator: Peter Astakhov <astakhovp@mail.ru>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
@@ -848,136 +848,136 @@ msgstr "строка %d: Ошибка разбора %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "строка %d: Второй список %%files\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:283
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Архитектура исключена: %s\n"
 
-#: build/parsePreamble.c:285
+#: build/parsePreamble.c:287
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Архитектура не включена: %s\n"
 
-#: build/parsePreamble.c:289
+#: build/parsePreamble.c:291
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "ОС исключена: %s\n"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "ОС не включена: %s\n"
 
-#: build/parsePreamble.c:318
+#: build/parsePreamble.c:320
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Поле %s обязано присутствовать в пакете: %s\n"
 
-#: build/parsePreamble.c:350
+#: build/parsePreamble.c:352
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Повторяющиеся записи %s в пакете: %s\n"
 
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:446
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:482
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Невозможно открыть пиктограмму %s: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:491
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Невозможно прочитать пиктограмму %s: %s\n"
 
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr "Значек %s очень велик (максимум %d байт)\n"
 
-#: build/parsePreamble.c:558
+#: build/parsePreamble.c:560
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "строка %d: Ярлык требует только один аргумент: %s\n"
 
-#: build/parsePreamble.c:587
+#: build/parsePreamble.c:591
 #, fuzzy, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr "строка %d: Неверный аргумент для %%setup %s\n"
 
-#: build/parsePreamble.c:628
+#: build/parsePreamble.c:632
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "строка %d: Неверный тэг: %s\n"
 
-#: build/parsePreamble.c:636
+#: build/parsePreamble.c:640
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "строка %d: Пустой тэг: %s\n"
 
-#: build/parsePreamble.c:675 build/parsePreamble.c:682 build/parseReqs.c:170
+#: build/parsePreamble.c:679 build/parsePreamble.c:686 build/parseReqs.c:170
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:740
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не может быть \"/\": %s\n"
 
-#: build/parsePreamble.c:753
+#: build/parsePreamble.c:758
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s\n"
 
-#: build/parsePreamble.c:761
+#: build/parsePreamble.c:766
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s\n"
 
-#: build/parsePreamble.c:773
+#: build/parsePreamble.c:778
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "строка %d: Docdir должен начинаться с '/': %s\n"
 
-#: build/parsePreamble.c:787
+#: build/parsePreamble.c:792
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "строка %d: Ярлык требует только один аргумент: %s\n"
 
-#: build/parsePreamble.c:833 build/parsePreamble.c:844
+#: build/parsePreamble.c:838 build/parsePreamble.c:849
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "строка %d: Неверное число %s: определяет: %s\n"
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:894
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:907
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1030
+#: build/parsePreamble.c:1035
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Устаревший синтаксис не поддерживается: %s\n"
 
-#: build/parsePreamble.c:1133
+#: build/parsePreamble.c:1138
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Неверная спецификация пакета: %s\n"
 
-#: build/parsePreamble.c:1183
+#: build/parsePreamble.c:1188
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "строка %d: Неизвестный тэг: %s\n"
@@ -1168,187 +1168,187 @@ msgstr "неверное объявление %%include\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Не найдены совместимые архитектуры для сборки.\n"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:749
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
 
-#: build/poptBT.c:126
+#: build/poptBT.c:132
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
 "спецификации>"
 
-#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
-#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
-#: build/poptBT.c:152
+#: build/poptBT.c:133 build/poptBT.c:136 build/poptBT.c:139 build/poptBT.c:142
+#: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:155
+#: build/poptBT.c:158
 msgid "<specfile>"
 msgstr "<файл спецификации>"
 
-#: build/poptBT.c:129
+#: build/poptBT.c:135
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 "выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
 
-#: build/poptBT.c:132
+#: build/poptBT.c:138
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка) из <файл "
 "спецификации>"
 
-#: build/poptBT.c:135
+#: build/poptBT.c:141
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "проверить раздел %files из <файл спецификации>"
 
-#: build/poptBT.c:138
+#: build/poptBT.c:144
 msgid "build source and binary packages from <specfile>"
 msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
 
-#: build/poptBT.c:141
+#: build/poptBT.c:147
 msgid "build binary package only from <specfile>"
 msgstr "собрать двоичный пакет по <файл спецификации>"
 
-#: build/poptBT.c:144
+#: build/poptBT.c:150
 msgid "build source package only from <specfile>"
 msgstr "собрать исходный пакет по <файлу спецификации>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:154
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "проверить раздел %files из <файл спецификации>"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:157
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:155
+#: build/poptBT.c:161
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
 "<архив tar>"
 
-#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:162 build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
+#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180
 msgid "<tarball>"
 msgstr "<архив tar>"
 
-#: build/poptBT.c:158
+#: build/poptBT.c:164
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
 
-#: build/poptBT.c:161
+#: build/poptBT.c:167
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:170
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "проверить секцию %files из <архив tar>"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:173
 msgid "build source and binary packages from <tarball>"
 msgstr "собрать исходный и двоичный пакеты из <архив tar>"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:176
 msgid "build binary package only from <tarball>"
 msgstr "собрать двоичный пакет из <архив tar>"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:179
 msgid "build source package only from <tarball>"
 msgstr "собрать исходный пакет из <архив tar>"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:183
 msgid "build binary package from <source package>"
 msgstr "собрать двоичный пакет из <исходный пакет>"
 
-#: build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187
 msgid "<source package>"
 msgstr "<исходный пакет>"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:186
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
 "пакет>"
 
-#: build/poptBT.c:184
+#: build/poptBT.c:190
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
 
-#: build/poptBT.c:186
+#: build/poptBT.c:192
 msgid "do not execute any stages of the build"
 msgstr "не выполнять никаких этапов сборки"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:194
 msgid "do not verify build dependencies"
 msgstr "не проверять зависимости пакета перед сборкой"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:197
 msgid "disable automagic Provides: extraction"
 msgstr ""
 
-#: build/poptBT.c:193
+#: build/poptBT.c:199
 msgid "disable automagic Requires: extraction"
 msgstr ""
 
-#: build/poptBT.c:195
+#: build/poptBT.c:201
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
+#: build/poptBT.c:204 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
 #: lib/poptQV.c:520
 msgid "don't verify package digest(s)"
 msgstr "не проверять дайджест пакета(ов)"
 
-#: build/poptBT.c:200 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
+#: build/poptBT.c:206 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
 #: lib/poptQV.c:523
 msgid "don't verify database header(s) when retrieved"
 msgstr "не проверять заголовки, извлекаемые из базы данных"
 
-#: build/poptBT.c:202 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
+#: build/poptBT.c:208 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
 #: lib/poptQV.c:525
 msgid "don't verify package signature(s)"
 msgstr "не проверять подпись(и) в пакете(ах)"
 
-#: build/poptBT.c:205
+#: build/poptBT.c:211
 msgid "Debug Package objects"
 msgstr ""
 
-#: build/poptBT.c:207
+#: build/poptBT.c:213
 msgid "Debug Spec objects"
 msgstr ""
 
-#: build/poptBT.c:210
+#: build/poptBT.c:217
 #, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
 msgstr "игнорировать строки i18N из файла спецификации"
 
-#: build/poptBT.c:212
+#: build/poptBT.c:220
 msgid "remove sources when done"
 msgstr "после завершения удалить исходники"
 
-#: build/poptBT.c:214
+#: build/poptBT.c:222
 msgid "remove specfile when done"
 msgstr "после завершения удалить файл спецификации"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "перейти непосредственно к указанному этапу (только для c,i)"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:226
 msgid "generate PGP/GPG signature"
 msgstr "генерировать PGP/GPG-подпись"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:228
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build/poptBT.c:220 lib/poptALL.c:453 lib/poptQV.c:375
+#: build/poptBT.c:228 lib/poptALL.c:453 lib/poptQV.c:375
 msgid "CPU-VENDOR-OS"
 msgstr ""
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-21 14:38-0400\n"
+"POT-Creation-Date: 2016-03-21 18:26-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -835,136 +835,136 @@ msgstr "%d 번째 행: %%files에서 오류가 발생했습니다: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "%d 번째 행: 두번째 %%files 목록\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:283
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "아키텍쳐가 제외됨: %s\n"
 
-#: build/parsePreamble.c:285
+#: build/parsePreamble.c:287
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "아키텍쳐가 포함되어 있지 않음: %s\n"
 
-#: build/parsePreamble.c:289
+#: build/parsePreamble.c:291
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "운영체제가 제외됨: %s\n"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "운영체제가 포함되어 있지 않음: %s\n"
 
-#: build/parsePreamble.c:318
+#: build/parsePreamble.c:320
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "패키지에 반드시 %s 항목(field)을 포함해야함: %s\n"
 
-#: build/parsePreamble.c:350
+#: build/parsePreamble.c:352
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "패키지에 %s 항목(entry)이 중복되어 있음: %s\n"
 
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:446
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "부적합한 %s 토큰: %s\n"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:482
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s 아이콘을 열 수 없음: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:491
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s 아이콘을 읽을 수 없음: %s\n"
 
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr ""
 
-#: build/parsePreamble.c:558
+#: build/parsePreamble.c:560
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 번째 행: 태그에 하나의 토큰만 있습니다: %s\n"
 
-#: build/parsePreamble.c:587
+#: build/parsePreamble.c:591
 #, fuzzy, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePreamble.c:628
+#: build/parsePreamble.c:632
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 번째 행: 올바르지 못한 태그입니다: %s\n"
 
-#: build/parsePreamble.c:636
+#: build/parsePreamble.c:640
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 번째 행: 태그가 비어있습니다: %s\n"
 
-#: build/parsePreamble.c:675 build/parsePreamble.c:682 build/parseReqs.c:170
+#: build/parsePreamble.c:679 build/parsePreamble.c:686 build/parseReqs.c:170
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 번째 행: %s에 부적합한 문자 '-' 가 있음: %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:740
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot를 \"/\" 로 지정할 수 없음: %s\n"
 
-#: build/parsePreamble.c:753
+#: build/parsePreamble.c:758
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "%d 번째 행: Prefixes는 절대 \"/\" 로 끝나서는 안됩니다: %s\n"
 
-#: build/parsePreamble.c:761
+#: build/parsePreamble.c:766
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 번째 행: Prefixes는 절대 \"/\" 로 끝나서는 안됩니다: %s\n"
 
-#: build/parsePreamble.c:773
+#: build/parsePreamble.c:778
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 번째 행: Docdir은 반드시 '/' 로 시작해야 합니다: %s\n"
 
-#: build/parsePreamble.c:787
+#: build/parsePreamble.c:792
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "%d 번째 행: 태그에 하나의 토큰만 있습니다: %s\n"
 
-#: build/parsePreamble.c:833 build/parsePreamble.c:844
+#: build/parsePreamble.c:838 build/parsePreamble.c:849
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 번째 행: 잘못된 %s: 수식자(qualifier): %s\n"
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:894
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 번째 행: 잘못된 BuildArchitecture 형식입니다: %s\n"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:907
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1030
+#: build/parsePreamble.c:1035
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1133
+#: build/parsePreamble.c:1138
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "잘못된 패키지 지정: %s\n"
 
-#: build/parsePreamble.c:1183
+#: build/parsePreamble.c:1188
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
@@ -1155,181 +1155,181 @@ msgstr "%%include 문이 올바르지 않습니다\n"
 msgid "No compatible architectures found for build\n"
 msgstr "패키지 제작에 호환하는 아키텍쳐를 찾을 수 없습니다\n"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:749
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "패키지에 %%description이 없음: %s\n"
 
-#: build/poptBT.c:126
+#: build/poptBT.c:132
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "<spec파일>의 %prep (소스를 풀고 패치를 적용하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
-#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
-#: build/poptBT.c:152
+#: build/poptBT.c:133 build/poptBT.c:136 build/poptBT.c:139 build/poptBT.c:142
+#: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:155
+#: build/poptBT.c:158
 msgid "<specfile>"
 msgstr "<spec파일>"
 
-#: build/poptBT.c:129
+#: build/poptBT.c:135
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:132
+#: build/poptBT.c:138
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "<spec파일>의 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:135
+#: build/poptBT.c:141
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "<spec파일>의 %files 항목(section)을 검사합니다"
 
-#: build/poptBT.c:138
+#: build/poptBT.c:144
 msgid "build source and binary packages from <specfile>"
 msgstr "<spec파일>로 소스와 바이너리 패키지를 제작합니다"
 
-#: build/poptBT.c:141
+#: build/poptBT.c:147
 msgid "build binary package only from <specfile>"
 msgstr "<spec파일>로 바이너리 패키지 만을 제작합니다"
 
-#: build/poptBT.c:144
+#: build/poptBT.c:150
 msgid "build source package only from <specfile>"
 msgstr "<spec파일>로 소스 패키지 만을 제작합니다"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:154
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "<spec파일>의 %files 항목(section)을 검사합니다"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:157
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:155
+#: build/poptBT.c:161
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "<tar파일>을 %prep (소스를 풀고 패치를 적용하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:162 build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
+#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180
 msgid "<tarball>"
 msgstr "<tar파일>"
 
-#: build/poptBT.c:158
+#: build/poptBT.c:164
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "<tar파일>을 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:161
+#: build/poptBT.c:167
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "<tar파일>을 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:170
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "<tar파일>의 %files 항목(section)을 검사합니다"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:173
 msgid "build source and binary packages from <tarball>"
 msgstr "<tar파일>로 소스와 바이너리 패키지를 제작합니다"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:176
 msgid "build binary package only from <tarball>"
 msgstr "<tar파일>로 바이너리 패키지 만을 제작합니다"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:179
 msgid "build source package only from <tarball>"
 msgstr "<tar파일>로 소스 패키지 만을 제작합니다"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:183
 msgid "build binary package from <source package>"
 msgstr "<소스 패키지>로 바이너리 패키지를 제작합니다"
 
-#: build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187
 msgid "<source package>"
 msgstr "<소스 패키지>"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:186
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "<소스 패키지>를 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
 
-#: build/poptBT.c:184
+#: build/poptBT.c:190
 msgid "remove build tree when done"
 msgstr "패키지 제작 후에 소스 파일을 풀고 작업한 디렉토리를 삭제합니다"
 
-#: build/poptBT.c:186
+#: build/poptBT.c:192
 msgid "do not execute any stages of the build"
 msgstr "패키지 제작의 어떠한 단계도 실행하지 않습니다"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:194
 msgid "do not verify build dependencies"
 msgstr "패키지 제작 의존성을 검사하지 않습니다"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:197
 msgid "disable automagic Provides: extraction"
 msgstr ""
 
-#: build/poptBT.c:193
+#: build/poptBT.c:199
 msgid "disable automagic Requires: extraction"
 msgstr ""
 
-#: build/poptBT.c:195
+#: build/poptBT.c:201
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
+#: build/poptBT.c:204 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
 #: lib/poptQV.c:520
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: build/poptBT.c:200 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
+#: build/poptBT.c:206 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
 #: lib/poptQV.c:523
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
-#: build/poptBT.c:202 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
+#: build/poptBT.c:208 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
 #: lib/poptQV.c:525
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "패키지의 서명을 검사합니다"
 
-#: build/poptBT.c:205
+#: build/poptBT.c:211
 msgid "Debug Package objects"
 msgstr ""
 
-#: build/poptBT.c:207
+#: build/poptBT.c:213
 msgid "Debug Spec objects"
 msgstr ""
 
-#: build/poptBT.c:210
+#: build/poptBT.c:217
 #, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
 msgstr "spec파일의 i18N msgstr을 사용(accept)하지 않습니다"
 
-#: build/poptBT.c:212
+#: build/poptBT.c:220
 msgid "remove sources when done"
 msgstr "패키지 제작 후에 소스 파일을 삭제합니다"
 
-#: build/poptBT.c:214
+#: build/poptBT.c:222
 msgid "remove specfile when done"
 msgstr "패키지 제작 후에 spec파일을 삭제합니다"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "지정된 단계로 바로 진행합니다 (c,i 에서만 사용 가능)"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:226
 msgid "generate PGP/GPG signature"
 msgstr "PGP/GPG 서명을 작성합니다"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:228
 msgid "override target platform"
 msgstr "목표대상(target) 플랫폼을 교체(override)합니다"
 
-#: build/poptBT.c:220 lib/poptALL.c:453 lib/poptQV.c:375
+#: build/poptBT.c:228 lib/poptALL.c:453 lib/poptQV.c:375
 msgid "CPU-VENDOR-OS"
 msgstr ""
 

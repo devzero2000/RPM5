@@ -114,7 +114,9 @@ finiproctitle(void)
 	}
 	free(environ);
 	environ = NULL;
+#ifdef	DYING	/* XXX mongoc test routines segfault on exit w valgrind */
 	free(title_progname_full);
+#endif
 	title_progname_full = NULL;
     }
 #endif

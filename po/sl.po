@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-21 14:38-0400\n"
+"POT-Creation-Date: 2016-03-21 18:26-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -851,136 +851,136 @@ msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:283
 #, fuzzy, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arhitektura je izkljuèena: %s"
 
-#: build/parsePreamble.c:285
+#: build/parsePreamble.c:287
 #, fuzzy, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arhitektura ni vkljuèena: %s"
 
-#: build/parsePreamble.c:289
+#: build/parsePreamble.c:291
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS ni vkljuèen: %s"
 
-#: build/parsePreamble.c:318
+#: build/parsePreamble.c:320
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "polje %s mora v paketu obstajati: %s"
 
-#: build/parsePreamble.c:350
+#: build/parsePreamble.c:352
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:446
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:482
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Ikone %s ni mo¾no odpreti: %s"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:491
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr ""
 
-#: build/parsePreamble.c:558
+#: build/parsePreamble.c:560
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parsePreamble.c:587
+#: build/parsePreamble.c:591
 #, fuzzy, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
-#: build/parsePreamble.c:628
+#: build/parsePreamble.c:632
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
-#: build/parsePreamble.c:636
+#: build/parsePreamble.c:640
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:675 build/parsePreamble.c:682 build/parseReqs.c:170
+#: build/parsePreamble.c:679 build/parsePreamble.c:686 build/parseReqs.c:170
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:740
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:753
+#: build/parsePreamble.c:758
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:761
+#: build/parsePreamble.c:766
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:773
+#: build/parsePreamble.c:778
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:787
+#: build/parsePreamble.c:792
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parsePreamble.c:833 build/parsePreamble.c:844
+#: build/parsePreamble.c:838 build/parsePreamble.c:849
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:894
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "vrstica %d: Napaèna oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:907
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1030
+#: build/parsePreamble.c:1035
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1133
+#: build/parsePreamble.c:1138
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Nepravilno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:1183
+#: build/parsePreamble.c:1188
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "vrstica %d: Neznana znaèka: %s"
@@ -1173,195 +1173,195 @@ msgstr "Deformiran stavek %%include"
 msgid "No compatible architectures found for build\n"
 msgstr "Arhitektura za izgradnjo ni prisotna"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:749
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "V paketu manjka %%description: %s"
 
-#: build/poptBT.c:126
+#: build/poptBT.c:132
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
 
-#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
-#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
-#: build/poptBT.c:152
+#: build/poptBT.c:133 build/poptBT.c:136 build/poptBT.c:139 build/poptBT.c:142
+#: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:155
+#: build/poptBT.c:158
 msgid "<specfile>"
 msgstr ""
 
-#: build/poptBT.c:129
+#: build/poptBT.c:135
 #, fuzzy
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "izgradnja prek stopnje %%prep iz datoteke s specifikacijami"
 
-#: build/poptBT.c:132
+#: build/poptBT.c:138
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "izgradnja prek stopnje %%install iz datoteke s specifikacijami"
 
-#: build/poptBT.c:135
+#: build/poptBT.c:141
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "preverjanje dela datoteke s specifikacijami %%files"
 
-#: build/poptBT.c:138
+#: build/poptBT.c:144
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "izgradi izvorni in binarni paket iz datoteke s specifikacijami"
 
-#: build/poptBT.c:141
+#: build/poptBT.c:147
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "izgradi binarni paket iz datoteke .spec"
 
-#: build/poptBT.c:144
+#: build/poptBT.c:150
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "izgradi izvorni paket iz datoteke .spec"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:154
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "preverjanje dela datoteke s specifikacijami %%files"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:157
 #, fuzzy
 msgid "fetch missing source and patch files"
 msgstr "odstrani izvorno kodo in datoteko spec"
 
-#: build/poptBT.c:155
+#: build/poptBT.c:161
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
 
-#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:162 build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
+#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180
 msgid "<tarball>"
 msgstr ""
 
-#: build/poptBT.c:158
+#: build/poptBT.c:164
 #, fuzzy
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "paket izgradi prek stopnje %%prep iz arhiva tar"
 
-#: build/poptBT.c:161
+#: build/poptBT.c:167
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "paket izgradi prek stopnje %%install iz arhiva tar"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:170
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "preverjanje dela %%files iz arhiva tar"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:173
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "iz arhiva tar izgradi izvorni in binarni paket"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:176
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "iz arhiva tar izgradi binarni paket"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:179
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "iz arhiva tar izgradi izvorni paket"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:183
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "binarni paket izgradi iz izvornega"
 
-#: build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187
 #, fuzzy
 msgid "<source package>"
 msgstr "ni paketov\n"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:186
 #, fuzzy
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "izgradnja prek stopnje %%install iz izvornega paketa"
 
-#: build/poptBT.c:184
+#: build/poptBT.c:190
 msgid "remove build tree when done"
 msgstr "po zakljuèku drevo imenikov v katerih smo pakete gradili odstrani"
 
-#: build/poptBT.c:186
+#: build/poptBT.c:192
 msgid "do not execute any stages of the build"
 msgstr "brez izvajanja katerekoli od stopenj izgradnje"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:194
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:197
 msgid "disable automagic Provides: extraction"
 msgstr ""
 
-#: build/poptBT.c:193
+#: build/poptBT.c:199
 msgid "disable automagic Requires: extraction"
 msgstr ""
 
-#: build/poptBT.c:195
+#: build/poptBT.c:201
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
+#: build/poptBT.c:204 lib/poptI.c:353 lib/poptQV.c:466 lib/poptQV.c:475
 #: lib/poptQV.c:520
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: build/poptBT.c:200 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
+#: build/poptBT.c:206 lib/poptI.c:355 lib/poptQV.c:469 lib/poptQV.c:477
 #: lib/poptQV.c:523
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: build/poptBT.c:202 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
+#: build/poptBT.c:208 lib/poptI.c:357 lib/poptQV.c:472 lib/poptQV.c:479
 #: lib/poptQV.c:525
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "preveri podpis paketa(-ov)"
 
-#: build/poptBT.c:205
+#: build/poptBT.c:211
 msgid "Debug Package objects"
 msgstr ""
 
-#: build/poptBT.c:207
+#: build/poptBT.c:213
 msgid "Debug Spec objects"
 msgstr ""
 
-#: build/poptBT.c:210
+#: build/poptBT.c:217
 #, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
 msgstr "brez sprejemanja internacionaliziranih katalogov iz datoteke spec"
 
-#: build/poptBT.c:212
+#: build/poptBT.c:220
 msgid "remove sources when done"
 msgstr "po zakljuèku naj se izvorna koda izbri¹e"
 
-#: build/poptBT.c:214
+#: build/poptBT.c:222
 msgid "remove specfile when done"
 msgstr "po zakljuèku odstrani datoteko s specifikacijami"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskok naravnost na doloèeno stopnjo (samo za c,i)"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:226
 msgid "generate PGP/GPG signature"
 msgstr "izdelava podpisa PGP/GPG"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:228
 msgid "override target platform"
 msgstr "brez upo¹tevanja strojnega okolja ciljnega sistema"
 
-#: build/poptBT.c:220 lib/poptALL.c:453 lib/poptQV.c:375
+#: build/poptBT.c:228 lib/poptALL.c:453 lib/poptQV.c:375
 msgid "CPU-VENDOR-OS"
 msgstr ""
 

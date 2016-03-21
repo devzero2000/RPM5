@@ -784,7 +784,7 @@ static inline const char *rcsid(const char *p) { \
 /**
  * Eliminate RPM_I18NSTRING_TYPE.
  */
-#define SUPPORT_I18NSTRING_TYPE	1
+#undef SUPPORT_I18NSTRING_TYPE
 
 /**
  * Eliminate signature/digest disablers.

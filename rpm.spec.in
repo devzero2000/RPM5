@@ -452,8 +452,8 @@ export QA_RPATHS=0x0009
 %check
 make -C tests clean test sudo=
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+##X %clean
+##X rm -rf $RPM_BUILD_ROOT
 
 %pre
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1

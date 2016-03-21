@@ -28,12 +28,14 @@ Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
+  GCC           optional  -       5.3.1     http://gcc.gnu.org/
+  LLVM          optional  -       3.7.0     http://llvm.org
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.22.1  http://www.perl.com/
 POPT            mandatory 1.15    1.17    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
 Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
-Neon            mandatory 0.27.0  0.30.0  http://www.webdav.org/neon/
+Neon            mandatory 0.27.0  0.30.1  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.35    http://www.pcre.org/
 Berkeley-DB [1] mandatory 6.1.23  6.1.23  http://www.oracle.com/database/berkeley-db.html
 Mozilla NSS     optional  3.11    3.23.0  http://www.mozilla.org/projects/security/pki/nss/
