@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -1196,7 +1196,7 @@ msgstr "n"
 msgid "No compatible architectures found for build\n"
 msgstr "No per n"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "no descrizione n"

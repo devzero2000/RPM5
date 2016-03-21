@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: Serbian <gnu@prevod.org>\n"
@@ -1158,7 +1158,7 @@ msgstr ""
 msgid "No compatible architectures found for build\n"
 msgstr "немој проверавати архитектуру пакета"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "пакет %s није наведен у %s"

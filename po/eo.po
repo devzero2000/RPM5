@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2011-10-11 02:15-0400\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -1169,7 +1169,7 @@ msgstr "misformita frazo %%include\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Neniuj kongruaj platformoj trovitaj por muntaĵo\n"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pako ne enhavas: %%description: %s\n"

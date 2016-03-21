@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2015-12-03 16:34+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -1208,7 +1208,7 @@ msgstr "vääränmuotoinen %%include-lause\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Rakentamista varten ei löydetty yhteensopivaa arkkitehtuuria\n"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketilla ei ole kuvausta %%description: %s\n"

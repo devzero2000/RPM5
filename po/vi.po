@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2012-09-18 08:03+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -1199,7 +1199,7 @@ msgstr "câu lệnh bao gồm (%%include) dạng sai\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Không tìm thấy kiến trúc tương thích để xây dựng\n"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Gói không có mô tả (%%description): %s\n"

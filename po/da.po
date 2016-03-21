@@ -85,7 +85,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-18 00:00-0400\n"
+"POT-Creation-Date: 2016-03-21 14:38-0400\n"
 "PO-Revision-Date: 2015-04-04 07:50+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -1245,7 +1245,7 @@ msgstr "forkert udført '%%include'-kommando\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Ingen kompatible arkitekturer, der kan bygges, fundet\n"
 
-#: build/parseSpec.c:749
+#: build/parseSpec.c:750
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakke har ingen %%description: %s\n"
