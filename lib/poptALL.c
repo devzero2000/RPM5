@@ -169,6 +169,9 @@ extern int _rpmts_stats;
 /*@unchecked@*/
 extern int _hdr_stats;
 
+static int _noplugins;
+static int _initdb;
+
 /*@unchecked@*/
 rpmQueryFlags rpmcliQueryFlags;
 
@@ -479,8 +482,12 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "hdrqfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdrqf_debug, -1,
 	NULL, NULL},
+ { "initdb", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_initdb, -1,
+	N_("Initialize database (no operation, compatibility)"), NULL},
  { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
 	N_("Display macros used"), NULL},
+ { "noplugins", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noplugins, -1,
+	N_("Disable plugin loading (no operation, compatibility)"), NULL},
  { "pkgiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pkgio_debug, -1,
 	NULL, NULL},
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
