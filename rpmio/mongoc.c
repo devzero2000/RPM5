@@ -306,7 +306,7 @@ _mongoc_buffer_append_from_stream (mongoc_buffer_t *buffer,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to read %"PRIu64" bytes from socket within %d milliseconds.",
+                      _("Failed to read %"PRIu64" bytes from socket within %d milliseconds."),
                       (uint64_t)size, (int)timeout_msec);
       RETURN (false);
    }
@@ -374,7 +374,7 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to buffer %u bytes within %d milliseconds.",
+                      _("Failed to buffer %u bytes within %d milliseconds."),
                       (unsigned)min_bytes, (int)timeout_msec);
       RETURN (-1);
    }
@@ -385,7 +385,7 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Could only buffer %u of %u bytes in %d milliseconds.",
+                      _("Could only buffer %u of %u bytes in %d milliseconds."),
                       (unsigned)buffer->len,
                       (unsigned)min_bytes,
                       (int)timeout_msec);
@@ -1793,7 +1793,7 @@ _mongoc_rpc_parse_error (mongoc_rpc_t *rpc,
       bson_set_error(error,
                      MONGOC_ERROR_PROTOCOL,
                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                     "Received rpc other than OP_REPLY.");
+                     _("Received rpc other than OP_REPLY."));
       RETURN(true);
    }
 
@@ -1805,7 +1805,7 @@ _mongoc_rpc_parse_error (mongoc_rpc_t *rpc,
          bson_set_error(error,
                         MONGOC_ERROR_QUERY,
                         MONGOC_ERROR_QUERY_FAILURE,
-                        "Unknown query failure.");
+                        _("Unknown query failure."));
       }
       RETURN(true);
    } else if (is_command) {
@@ -1823,7 +1823,7 @@ _mongoc_rpc_parse_error (mongoc_rpc_t *rpc,
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "Failed to decode document from the server.");
+                         _("Failed to decode document from the server."));
          RETURN (true);
       }
    }
@@ -1832,7 +1832,7 @@ _mongoc_rpc_parse_error (mongoc_rpc_t *rpc,
       bson_set_error(error,
                      MONGOC_ERROR_CURSOR,
                      MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                     "The cursor is invalid or has expired.");
+                     _("The cursor is invalid or has expired."));
       RETURN(true);
    }
 
@@ -2259,22 +2259,22 @@ mongoc_bulk_operation_execute (mongoc_bulk_operation_t *bulk,  /* IN */
       bson_set_error (error,
                       MONGOC_ERROR_COMMAND,
                       MONGOC_ERROR_COMMAND_INVALID_ARG,
-                      "mongoc_bulk_operation_execute() requires a client "
-                      "and one has not been set.");
+                      _("mongoc_bulk_operation_execute() requires a client "
+                      "and one has not been set."));
       RETURN (false);
    } else if (!bulk->database) {
       bson_set_error (error,
                       MONGOC_ERROR_COMMAND,
                       MONGOC_ERROR_COMMAND_INVALID_ARG,
-                      "mongoc_bulk_operation_execute() requires a database "
-                      "and one has not been set.");
+                      _("mongoc_bulk_operation_execute() requires a database "
+                      "and one has not been set."));
       RETURN (false);
    } else if (!bulk->collection) {
       bson_set_error (error,
                       MONGOC_ERROR_COMMAND,
                       MONGOC_ERROR_COMMAND_INVALID_ARG,
-                      "mongoc_bulk_operation_execute() requires a collection "
-                      "and one has not been set.");
+                      _("mongoc_bulk_operation_execute() requires a collection "
+                      "and one has not been set."));
       RETURN (false);
    }
 
@@ -2286,7 +2286,7 @@ mongoc_bulk_operation_execute (mongoc_bulk_operation_t *bulk,  /* IN */
       bson_set_error (error,
                       MONGOC_ERROR_COMMAND,
                       MONGOC_ERROR_COMMAND_INVALID_ARG,
-                      "Cannot do an empty bulk write");
+                      _("Cannot do an empty bulk write"));
       RETURN (false);
    }
 
@@ -2505,7 +2505,7 @@ mongoc_client_connect_tcp (const mongoc_uri_t       *uri,
       bson_set_error(error,
                      MONGOC_ERROR_STREAM,
                      MONGOC_ERROR_STREAM_NAME_RESOLUTION,
-                     "Failed to resolve %s",
+                     _("Failed to resolve %s"),
                      host->host);
       RETURN (NULL);
    }
@@ -2553,7 +2553,7 @@ mongoc_client_connect_tcp (const mongoc_uri_t       *uri,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_CONNECT,
-                      "Failed to connect to target host: %s",
+                      _("Failed to connect to target host: %s"),
                       host->host_and_port);
       freeaddrinfo (result);
       RETURN (NULL);
@@ -2592,7 +2592,7 @@ mongoc_client_connect_unix (const mongoc_uri_t       *uri,
    bson_set_error (error,
                    MONGOC_ERROR_STREAM,
                    MONGOC_ERROR_STREAM_CONNECT,
-                   "UNIX domain sockets not supported on win32.");
+                   _("UNIX domain sockets not supported on win32."));
    RETURN (NULL);
 #else
    struct sockaddr_un saddr;
@@ -2615,7 +2615,7 @@ mongoc_client_connect_unix (const mongoc_uri_t       *uri,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to create socket.");
+                      _("Failed to create socket."));
       RETURN (NULL);
    }
 
@@ -2627,7 +2627,7 @@ mongoc_client_connect_unix (const mongoc_uri_t       *uri,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_CONNECT,
-                      "Failed to connect to UNIX domain socket.");
+                      _("Failed to connect to UNIX domain socket."));
       RETURN (NULL);
    }
 
@@ -2679,7 +2679,7 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_NO_ACCEPTABLE_PEER,
-                      "SSL is not enabled in this build of mongo-c-driver.");
+                      _("SSL is not enabled in this build of mongo-c-driver."));
       return NULL;
    }
 #endif
@@ -2699,7 +2699,7 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_INVALID_TYPE,
-                      "Invalid address family: 0x%02x", host->family);
+                      _("Invalid address family: 0x%02x"), host->family);
       break;
    }
 
@@ -2716,7 +2716,7 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
             bson_set_error (error,
                             MONGOC_ERROR_STREAM,
                             MONGOC_ERROR_STREAM_SOCKET,
-                            "Failed initialize TLS state.");
+                            _("Failed initialize TLS state."));
             return NULL;
          }
 
@@ -2728,7 +2728,7 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
             bson_set_error (error,
                             MONGOC_ERROR_STREAM,
                             MONGOC_ERROR_STREAM_SOCKET,
-                            "Failed to handshake and validate TLS certificate.");
+                            _("Failed to handshake and validate TLS certificate."));
             mongoc_stream_destroy (base_stream);
             return NULL;
          }
@@ -2867,7 +2867,7 @@ _bson_to_error (const bson_t *b,
    bson_set_error(error,
                   MONGOC_ERROR_QUERY,
                   MONGOC_ERROR_QUERY_FAILURE,
-                  "An unknown error ocurred on the server.");
+                  _("An unknown error ocurred on the server."));
 }
 
 
@@ -2936,7 +2936,7 @@ _mongoc_client_recv_gle (mongoc_client_t        *client,
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Received message other than OP_REPLY.");
+                      _("Received message other than OP_REPLY."));
       GOTO (cleanup);
    }
 
@@ -4168,7 +4168,7 @@ mongoc_client_select_server (mongoc_client_t     *client,
       bson_set_error(error,
                      MONGOC_ERROR_SERVER_SELECTION,
                      MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                     "Cannot use read preferences with for_writes = true");
+                     _("Cannot use read preferences with for_writes = true"));
       return NULL;
    }
 
@@ -4603,7 +4603,7 @@ mongoc_cluster_run_command_internal (mongoc_cluster_t         *cluster,
       bson_set_error(error,
                      MONGOC_ERROR_CLIENT,
                      MONGOC_ERROR_CLIENT_IN_EXHAUST,
-                     "A cursor derived from this client is in exhaust.");
+                     _("A cursor derived from this client is in exhaust."));
       GOTO (done);
    }
 
@@ -4620,7 +4620,7 @@ mongoc_cluster_run_command_internal (mongoc_cluster_t         *cluster,
       /* add info about the command to writev_full's error message */
       _bson_error_message_printf (
          error,
-         "Failed to send \"%s\" command with database \"%s\": %s",
+         _("Failed to send \"%s\" command with database \"%s\": %s"),
          command_name, db_name, error->message);
 
       GOTO (done);
@@ -4652,7 +4652,7 @@ mongoc_cluster_run_command_internal (mongoc_cluster_t         *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_BSON,
                       MONGOC_ERROR_BSON_INVALID,
-                      "Failed to decode reply BSON document.");
+                      _("Failed to decode reply BSON document."));
       GOTO (done);
    }
 
@@ -4694,7 +4694,7 @@ done:
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Invalid reply from server.");
+                      _("Invalid reply from server."));
    }
 
    RETURN (ret);
@@ -5013,7 +5013,7 @@ _mongoc_cluster_auth_node_cr (mongoc_cluster_t      *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_GETNONCE,
-                      "Invalid reply from getnonce");
+                      _("Invalid reply from getnonce"));
       bson_destroy (&reply);
       RETURN (false);
    }
@@ -5253,7 +5253,7 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t *cluster,
          bson_set_error (error,
                          MONGOC_ERROR_CLIENT,
                          MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                         "Received invalid SASL reply from MongoDB server.");
+                         _("Received invalid SASL reply from MongoDB server."));
          goto failure;
       }
 
@@ -5263,7 +5263,7 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t *cluster,
          bson_set_error (error,
                          MONGOC_ERROR_CLIENT,
                          MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                         "SASL reply from MongoDB is too large.");
+                         _("SASL reply from MongoDB is too large."));
 
          bson_destroy (&reply);
          goto failure;
@@ -5341,7 +5341,7 @@ _mongoc_cluster_auth_node_plain (mongoc_cluster_t      *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "failed base64 encoding message");
+                      _("failed base64 encoding message"));
       return false;
    }
 
@@ -5388,8 +5388,8 @@ _mongoc_cluster_auth_node_x509 (mongoc_cluster_t      *cluster,
          bson_set_error (error,
                          MONGOC_ERROR_CLIENT,
                          MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                         "cannot determine username for "
-                         "X-509 authentication.");
+                         _("cannot determine username for "
+                         "X-509 authentication."));
          return false;
       }
 
@@ -5522,7 +5522,7 @@ _mongoc_cluster_auth_node_scram (mongoc_cluster_t      *cluster,
          bson_set_error (error,
                          MONGOC_ERROR_CLIENT,
                          MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                         "SCRAM reply from MongoDB is too large.");
+                         _("SCRAM reply from MongoDB is too large."));
          bson_destroy (&reply);
          goto failure;
       }
@@ -5595,7 +5595,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "The \"%s\" authentication mechanism requires libmongoc built with --enable-ssl",
+                      _("The \"%s\" authentication mechanism requires libmongoc built with --enable-ssl"),
                       mechanism);
 #endif
    } else if (0 == strcasecmp (mechanism, "SCRAM-SHA-1")) {
@@ -5605,7 +5605,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "The \"%s\" authentication mechanism requires libmongoc built with --enable-ssl",
+                      _("The \"%s\" authentication mechanism requires libmongoc built with --enable-ssl"),
                       mechanism);
 #endif
    } else if (0 == strcasecmp (mechanism, "GSSAPI")) {
@@ -5615,7 +5615,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "The \"%s\" authentication mechanism requires libmongoc built with --enable-sasl",
+                      _("The \"%s\" authentication mechanism requires libmongoc built with --enable-sasl"),
                       mechanism);
 #endif
    } else if (0 == strcasecmp (mechanism, "PLAIN")) {
@@ -5624,7 +5624,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "Unknown authentication mechanism \"%s\".",
+                      _("Unknown authentication mechanism \"%s\"."),
                       mechanism);
    }
 
@@ -5801,7 +5801,7 @@ node_not_found (mongoc_server_description_t *sd,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_NOT_ESTABLISHED,
-                      "Could not find node %s",
+                      _("Could not find node %s"),
                       sd->host.host_and_port);
    }
 }
@@ -5820,7 +5820,7 @@ stream_not_found (mongoc_server_description_t *sd,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_NOT_ESTABLISHED,
-                      "Could not find stream for node %s",
+                      _("Could not find stream for node %s"),
                       sd->host.host_and_port);
    }
 }
@@ -5961,7 +5961,7 @@ mongoc_cluster_fetch_stream_single (mongoc_cluster_t *cluster,
          bson_set_error (error,
                          MONGOC_ERROR_STREAM,
                          MONGOC_ERROR_STREAM_CONNECT,
-                         "Failed to connect to target host: '%s'",
+                         _("Failed to connect to target host: '%s'"),
                          sd->host.host_and_port);
          return NULL;
       }
@@ -6540,7 +6540,7 @@ _mongoc_cluster_check_interval (mongoc_cluster_t *cluster,
       if (mongoc_stream_check_closed (stream)) {
          mongoc_cluster_disconnect_node (cluster, server_id);
          bson_set_error (error, MONGOC_ERROR_STREAM, MONGOC_ERROR_STREAM_SOCKET,
-                         "Stream is closed");
+                         _("Stream is closed"));
          return false;
       }
    }
@@ -6635,7 +6635,7 @@ mongoc_cluster_sendv_to_server (mongoc_cluster_t              *cluster,
       bson_set_error(error,
                      MONGOC_ERROR_CLIENT,
                      MONGOC_ERROR_CLIENT_IN_EXHAUST,
-                     "A cursor derived from this client is in exhaust.");
+                     _("A cursor derived from this client is in exhaust."));
       RETURN(false);
    }
 
@@ -6669,8 +6669,8 @@ mongoc_cluster_sendv_to_server (mongoc_cluster_t              *cluster,
          bson_set_error(error,
                         MONGOC_ERROR_CLIENT,
                         MONGOC_ERROR_CLIENT_TOO_BIG,
-                        "Attempted to send an RPC larger than the "
-                        "max allowed message size. Was %u, allowed %u.",
+                        _("Attempted to send an RPC larger than the "
+                        "max allowed message size. Was %u, allowed %u."),
                         rpcs[i].header.msg_len,
                         max_msg_size);
          RETURN(false);
@@ -6804,7 +6804,7 @@ mongoc_cluster_try_recv (mongoc_cluster_t       *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Corrupt or malicious reply received.");
+                      _("Corrupt or malicious reply received."));
       mongoc_cluster_disconnect_node(cluster, server_id);
       mongoc_counter_protocol_ingress_error_inc ();
       RETURN (false);
@@ -6828,7 +6828,7 @@ mongoc_cluster_try_recv (mongoc_cluster_t       *cluster,
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Failed to decode reply from server.");
+                      _("Failed to decode reply from server."));
       mongoc_cluster_disconnect_node (cluster, server_id);
       mongoc_counter_protocol_ingress_error_inc ();
       RETURN (false);
@@ -7184,7 +7184,7 @@ mongoc_collection_aggregate (mongoc_collection_t       *collection, /* IN */
          bson_set_error (&cursor->error,
                MONGOC_ERROR_COMMAND,
                MONGOC_ERROR_COMMAND_INVALID_ARG,
-               "Failed to append \"pipeline\" to create command.");
+               _("Failed to append \"pipeline\" to create command."));
          GOTO (done);
       }
    } else {
@@ -7217,7 +7217,7 @@ mongoc_collection_aggregate (mongoc_collection_t       *collection, /* IN */
                bson_set_error (&cursor->error,
                      MONGOC_ERROR_COMMAND,
                      MONGOC_ERROR_COMMAND_INVALID_ARG,
-                     "Failed to append \"batchSize\" or \"cursor\" to create command.");
+                     _("Failed to append \"batchSize\" or \"cursor\" to create command."));
                GOTO (done);
             }
          }
@@ -7231,7 +7231,7 @@ mongoc_collection_aggregate (mongoc_collection_t       *collection, /* IN */
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_PROTOCOL_BAD_WIRE_VERSION,
-                         "The selected server does not support readConcern");
+                         _("The selected server does not support readConcern"));
          GOTO (done);
       }
 
@@ -7503,7 +7503,7 @@ mongoc_collection_count_with_opts (mongoc_collection_t       *collection,  /* IN
          bson_set_error (error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_PROTOCOL_BAD_WIRE_VERSION,
-                         "The selected server does not support readConcern");
+                         _("The selected server does not support readConcern"));
          bson_destroy (&cmd);
          mongoc_server_stream_cleanup (server_stream);
          RETURN (-1);
@@ -7709,7 +7709,7 @@ _mongoc_collection_create_index_legacy (mongoc_collection_t      *collection,
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "Cannot generate index name from invalid `keys` argument"
+                         _("Cannot generate index name from invalid `keys` argument")
                          );
          bson_destroy (&insert);
          return false;
@@ -7807,7 +7807,7 @@ mongoc_collection_create_index (mongoc_collection_t      *collection,
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "Cannot generate index name from invalid `keys` argument"
+                         _("Cannot generate index name from invalid `keys` argument")
                          );
          bson_destroy (&cmd);
          return false;
@@ -8066,8 +8066,8 @@ mongoc_collection_insert_bulk (mongoc_collection_t           *collection,
             bson_set_error (error,
                             MONGOC_ERROR_BSON,
                             MONGOC_ERROR_BSON_INVALID,
-                            "A document was corrupt or contained "
-                            "invalid characters . or $");
+                            _("A document was corrupt or contained "
+                            "invalid characters . or $"));
             RETURN (false);
          }
       }
@@ -8159,8 +8159,8 @@ mongoc_collection_insert (mongoc_collection_t          *collection,
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "A document was corrupt or contained "
-                         "invalid characters . or $");
+                         _("A document was corrupt or contained "
+                         "invalid characters . or $"));
          RETURN (false);
       }
    }
@@ -8246,8 +8246,8 @@ mongoc_collection_update (mongoc_collection_t          *collection,
       bson_set_error (error,
                       MONGOC_ERROR_BSON,
                       MONGOC_ERROR_BSON_INVALID,
-                      "update document is corrupt or contains "
-                      "invalid keys including $ or .");
+                      _("update document is corrupt or contains "
+                      "invalid keys including $ or ."));
       return false;
    } else {
       flags = (uint32_t)flags & ~MONGOC_UPDATE_NO_VALIDATE;
@@ -8320,7 +8320,7 @@ mongoc_collection_save (mongoc_collection_t          *collection,
       bson_set_error (error,
             MONGOC_ERROR_COMMAND,
             MONGOC_ERROR_COMMAND_INVALID_ARG,
-            "Failed to append bson to create update.");
+            _("Failed to append bson to create update."));
       bson_destroy (&selector);
       return NULL;
    }
@@ -8696,7 +8696,7 @@ mongoc_collection_validate (mongoc_collection_t *collection, /* IN */
       bson_set_error (error,
                       MONGOC_ERROR_BSON,
                       MONGOC_ERROR_BSON_INVALID,
-                      "'full' must be a boolean value.");
+                      _("'full' must be a boolean value."));
       return false;
    }
 
@@ -8756,7 +8756,7 @@ mongoc_collection_rename (mongoc_collection_t *collection,
       bson_set_error (error,
                       MONGOC_ERROR_NAMESPACE,
                       MONGOC_ERROR_NAMESPACE_INVALID,
-                      "\"%s\" is an invalid collection name.",
+                      _("\"%s\" is an invalid collection name."),
                       new_name);
       return false;
    }
@@ -8835,7 +8835,7 @@ mongoc_collection_stats (mongoc_collection_t *collection,
       bson_set_error (error,
                       MONGOC_ERROR_BSON,
                       MONGOC_ERROR_BSON_INVALID,
-                      "'scale' must be an int32 value.");
+                      _("'scale' must be an int32 value."));
       return false;
    }
 
@@ -8964,7 +8964,7 @@ mongoc_collection_find_and_modify_with_opts (mongoc_collection_t                
          bson_set_error (error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_COMMAND_INVALID_ARG,
-                         "The write concern is invalid.");
+                         _("The write concern is invalid."));
          bson_destroy (&command);
          mongoc_server_stream_cleanup (server_stream);
          RETURN (false);
@@ -8993,7 +8993,7 @@ mongoc_collection_find_and_modify_with_opts (mongoc_collection_t                
             errmsg = bson_iter_utf8 (&inner, NULL);
          }
       }
-      bson_set_error (error, MONGOC_ERROR_WRITE_CONCERN, code, "Write Concern error: %s", errmsg);
+      bson_set_error (error, MONGOC_ERROR_WRITE_CONCERN, code, _("Write Concern error: %s"), errmsg);
    }
    if (reply) {
       bson_copy_to (&reply_local, reply);
@@ -9821,7 +9821,7 @@ _mongoc_cursor_new (mongoc_client_t           *client,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "Cannot specify MONGOC_QUERY_EXHAUST and set a limit.");
+                      _("Cannot specify MONGOC_QUERY_EXHAUST and set a limit."));
       MARK_FAILED (cursor);
       GOTO (finish);
    }
@@ -9832,7 +9832,7 @@ _mongoc_cursor_new (mongoc_client_t           *client,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "Cannot specify MONGOC_QUERY_EXHAUST with sharded cluster.");
+                      _("Cannot specify MONGOC_QUERY_EXHAUST with sharded cluster."));
       MARK_FAILED (cursor);
       GOTO (finish);
    }
@@ -9846,7 +9846,7 @@ _mongoc_cursor_new (mongoc_client_t           *client,
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_CURSOR,
                          MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                         "$explain must be a boolean.");
+                         _("$explain must be a boolean."));
          MARK_FAILED (cursor);
          GOTO (finish);
       }
@@ -9857,7 +9857,7 @@ _mongoc_cursor_new (mongoc_client_t           *client,
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_CURSOR,
                          MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                         "$snapshot must be a boolean.");
+                         _("$snapshot must be a boolean."));
          MARK_FAILED (cursor);
          GOTO (finish);
       }
@@ -9883,8 +9883,8 @@ _mongoc_cursor_new (mongoc_client_t           *client,
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_CURSOR,
                          MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                         "Cannot mix top-level query with dollar keys such "
-                         "as $orderby. Use {$query: {},...} instead.");
+                         _("Cannot mix top-level query with dollar keys such "
+                         "as $orderby. Use {$query: {},...} instead."));
          MARK_FAILED (cursor);
          GOTO (finish);
       }
@@ -10050,7 +10050,7 @@ _mongoc_cursor_initial_query (mongoc_cursor_t *cursor)
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_PROTOCOL_BAD_WIRE_VERSION,
-                         "The selected server does not support readConcern");
+                         _("The selected server does not support readConcern"));
       } else {
          b = _mongoc_cursor_op_query (cursor, server_stream);
       }
@@ -10259,7 +10259,7 @@ _mongoc_cursor_op_query (mongoc_cursor_t        *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Invalid opcode. Expected %d, got %d.",
+                      _("Invalid opcode. Expected %d, got %d."),
                       MONGOC_OPCODE_REPLY, cursor->rpc.header.opcode);
       GOTO (failure);
    }
@@ -10268,7 +10268,7 @@ _mongoc_cursor_op_query (mongoc_cursor_t        *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Invalid response_to for query. Expected %d, got %d.",
+                      _("Invalid response_to for query. Expected %d, got %d."),
                       request_id, cursor->rpc.header.response_to);
       GOTO (failure);
    }
@@ -10372,7 +10372,7 @@ _invalid_field (const char      *query_field,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "empty string is not a valid query operator");
+                      _("empty string is not a valid query operator"));
       return true;
    }
 
@@ -10595,7 +10595,7 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "No valid cursor was provided.");
+                      _("No valid cursor was provided."));
       GOTO (failure);
    }
 
@@ -10721,7 +10721,7 @@ _mongoc_cursor_op_getmore (mongoc_cursor_t        *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Invalid opcode. Expected %d, got %d.",
+                      _("Invalid opcode. Expected %d, got %d."),
                       MONGOC_OPCODE_REPLY, cursor->rpc.header.opcode);
       GOTO (done);
    }
@@ -10730,7 +10730,7 @@ _mongoc_cursor_op_getmore (mongoc_cursor_t        *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                      "Invalid response_to for getmore. Expected %d, got %d.",
+                      _("Invalid response_to for getmore. Expected %d, got %d."),
                       request_id, cursor->rpc.header.response_to);
       GOTO (done);
    }
@@ -10830,7 +10830,7 @@ mongoc_cursor_next (mongoc_cursor_t  *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_CLIENT_IN_EXHAUST,
-                      "Another cursor derived from this client is in exhaust.");
+                      _("Another cursor derived from this client is in exhaust."));
       RETURN (false);
    }
 
@@ -10881,7 +10881,7 @@ _mongoc_cursor_next (mongoc_cursor_t  *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "Cannot advance a completed or failed cursor.");
+                      _("Cannot advance a completed or failed cursor."));
       RETURN (false);
    }
 
@@ -11339,7 +11339,7 @@ _mongoc_cursor_cursorid_refresh_from_command (mongoc_cursor_t *cursor,
          bson_set_error (&cursor->error,
                          MONGOC_ERROR_PROTOCOL,
                          MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                         "Invalid reply to %s command.",
+                         _("Invalid reply to %s command."),
                          _mongoc_get_command_name (command));
       }
 
@@ -11575,7 +11575,7 @@ _mongoc_cursor_cursorid_init_with_reply (mongoc_cursor_t *cursor,
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_CURSOR,
                       MONGOC_ERROR_CURSOR_INVALID_CURSOR,
-                      "Couldn't parse cursor document");
+                      _("Couldn't parse cursor document"));
    }
 }
 
@@ -12371,7 +12371,7 @@ _mongoc_database_find_collections_legacy (mongoc_database_t *database,
          bson_set_error (error,
                          MONGOC_ERROR_NAMESPACE,
                          MONGOC_ERROR_NAMESPACE_INVALID_FILTER_TYPE,
-                         "On legacy servers, a filter on name can only be a string.");
+                         _("On legacy servers, a filter on name can only be a string."));
          bson_free (ctx);
          goto cleanup_filter;
       }
@@ -12529,7 +12529,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
       bson_set_error (error,
                       MONGOC_ERROR_NAMESPACE,
                       MONGOC_ERROR_NAMESPACE_INVALID,
-                      "The namespace \"%s\" is invalid.",
+                      _("The namespace \"%s\" is invalid."),
                       name);
       return NULL;
    }
@@ -12540,7 +12540,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The argument \"capped\" must be a boolean.");
+                            _("The argument \"capped\" must be a boolean."));
             return NULL;
          }
          capped = bson_iter_bool (&iter);
@@ -12551,7 +12551,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
          bson_set_error (error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_COMMAND_INVALID_ARG,
-                         "The argument \"autoIndexId\" must be a boolean.");
+                         _("The argument \"autoIndexId\" must be a boolean."));
          return NULL;
       }
 
@@ -12561,14 +12561,14 @@ mongoc_database_create_collection (mongoc_database_t *database,
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The argument \"size\" must be an integer.");
+                            _("The argument \"size\" must be an integer."));
             return NULL;
          }
          if (!capped) {
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The \"size\" parameter requires {\"capped\": true}");
+                            _("The \"size\" parameter requires {\"capped\": true}"));
             return NULL;
          }
       }
@@ -12579,14 +12579,14 @@ mongoc_database_create_collection (mongoc_database_t *database,
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The argument \"max\" must be an integer.");
+                            _("The argument \"max\" must be an integer."));
             return NULL;
          }
          if (!capped) {
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The \"max\" parameter requires {\"capped\": true}");
+                            _("The \"max\" parameter requires {\"capped\": true}"));
             return NULL;
          }
       }
@@ -12596,7 +12596,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "The \"storage\" parameter must be a document");
+                            _("The \"storage\" parameter must be a document"));
 
             return NULL;
          }
@@ -12606,7 +12606,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
                bson_set_error (error,
                                MONGOC_ERROR_COMMAND,
                                MONGOC_ERROR_COMMAND_INVALID_ARG,
-                               "The \"wiredtiger\" option must take a document argument with a \"configString\" field");
+                               _("The \"wiredtiger\" option must take a document argument with a \"configString\" field"));
                return NULL;
             }
 
@@ -12615,14 +12615,14 @@ mongoc_database_create_collection (mongoc_database_t *database,
                   bson_set_error (error,
                                   MONGOC_ERROR_COMMAND,
                                   MONGOC_ERROR_COMMAND_INVALID_ARG,
-                                  "The \"configString\" parameter must be a string");
+                                  _("The \"configString\" parameter must be a string"));
                   return NULL;
                }
             } else {
                bson_set_error (error,
                                MONGOC_ERROR_COMMAND,
                                MONGOC_ERROR_COMMAND_INVALID_ARG,
-                               "The \"wiredtiger\" option must take a document argument with a \"configString\" field");
+                               _("The \"wiredtiger\" option must take a document argument with a \"configString\" field"));
                return NULL;
             }
          }
@@ -12639,7 +12639,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
          bson_set_error (error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_COMMAND_INVALID_ARG,
-                         "The argument \"options\" is corrupt or invalid.");
+                         _("The argument \"options\" is corrupt or invalid."));
          bson_destroy (&cmd);
          return NULL;
       }
@@ -12649,7 +12649,7 @@ mongoc_database_create_collection (mongoc_database_t *database,
             bson_set_error (error,
                             MONGOC_ERROR_COMMAND,
                             MONGOC_ERROR_COMMAND_INVALID_ARG,
-                            "Failed to append \"options\" to create command.");
+                            _("Failed to append \"options\" to create command."));
             bson_destroy (&cmd);
             return NULL;
          }
@@ -13008,7 +13008,7 @@ mongoc_gridfs_remove_by_filename (mongoc_gridfs_t *gridfs,
       bson_set_error (error,
                       MONGOC_ERROR_GRIDFS,
                       MONGOC_ERROR_GRIDFS_INVALID_FILENAME,
-                      "A non-NULL filename must be specified.");
+                      _("A non-NULL filename must be specified."));
       return false;
    }
 
@@ -13847,7 +13847,7 @@ _mongoc_gridfs_file_refresh_page (mongoc_gridfs_file_t *file)
                bson_set_error (&file->error,
                                MONGOC_ERROR_GRIDFS,
                                MONGOC_ERROR_GRIDFS_CHUNK_MISSING,
-                               "missing chunk number %" PRId32,
+                               _("missing chunk number %" PRId32),
                                file->n);
                RETURN (0);
             }
@@ -15030,7 +15030,7 @@ _mongoc_matcher_parse_compare (bson_iter_t  *iter,  /* IN */
          bson_set_error (error,
                          MONGOC_ERROR_MATCHER,
                          MONGOC_ERROR_MATCHER_INVALID,
-                         "Document contains no operations.");
+                         _("Document contains no operations."));
          return NULL;
       }
 
@@ -15074,7 +15074,7 @@ _mongoc_matcher_parse_compare (bson_iter_t  *iter,  /* IN */
          bson_set_error (error,
                          MONGOC_ERROR_MATCHER,
                          MONGOC_ERROR_MATCHER_INVALID,
-                         "Invalid operator \"%s\"",
+                         _("Invalid operator \"%s\""),
                          key);
          return NULL;
       }
@@ -15125,7 +15125,7 @@ _mongoc_matcher_parse (bson_iter_t  *iter,  /* IN */
          bson_set_error (error,
                          MONGOC_ERROR_MATCHER,
                          MONGOC_ERROR_MATCHER_INVALID,
-                         "Invalid value for operator \"%s\"",
+                         _("Invalid value for operator \"%s\""),
                          key);
          return NULL;
       }
@@ -15145,7 +15145,7 @@ _mongoc_matcher_parse (bson_iter_t  *iter,  /* IN */
    bson_set_error (error,
                    MONGOC_ERROR_MATCHER,
                    MONGOC_ERROR_MATCHER_INVALID,
-                   "Invalid operator \"%s\"",
+                   _("Invalid operator \"%s\""),
                    key);
 
    return NULL;
@@ -15194,7 +15194,7 @@ _mongoc_matcher_parse_logical (mongoc_matcher_opcode_t  opcode,  /* IN */
       bson_set_error (error,
                       MONGOC_ERROR_MATCHER,
                       MONGOC_ERROR_MATCHER_INVALID,
-                      "Invalid logical operator.");
+                      _("Invalid logical operator."));
       return NULL;
    }
 
@@ -15207,7 +15207,7 @@ _mongoc_matcher_parse_logical (mongoc_matcher_opcode_t  opcode,  /* IN */
          bson_set_error (error,
                          MONGOC_ERROR_MATCHER,
                          MONGOC_ERROR_MATCHER_INVALID,
-                         "Expected document in value.");
+                         _("Expected document in value."));
          return NULL;
       }
 
@@ -15232,7 +15232,7 @@ _mongoc_matcher_parse_logical (mongoc_matcher_opcode_t  opcode,  /* IN */
          bson_set_error (error,
                          MONGOC_ERROR_MATCHER,
                          MONGOC_ERROR_MATCHER_INVALID,
-                         "Expected document in value.");
+                         _("Expected document in value."));
          return NULL;
       }
 
@@ -17111,26 +17111,26 @@ _mongoc_sasl_is_failure (int           status,
          bson_set_error (error,
                          MONGOC_ERROR_SASL,
                          status,
-                         "SASL Failrue: insufficient memory.");
+                         _("SASL Failure: insufficient memory."));
          break;
       case SASL_NOMECH:
          bson_set_error (error,
                          MONGOC_ERROR_SASL,
                          status,
-                         "SASL Failure: failure to negotiate mechanism");
+                         _("SASL Failure: failure to negotiate mechanism"));
          break;
       case SASL_BADPARAM:
          bson_set_error (error,
                          MONGOC_ERROR_SASL,
                          status,
-                         "Bad parameter supplied. Please file a bug "
-                         "with mongo-c-driver.");
+                         _("Bad parameter supplied. Please file a bug "
+                         "with mongo-c-driver."));
          break;
       default:
          bson_set_error (error,
                          MONGOC_ERROR_SASL,
                          status,
-                         "SASL Failure: (%d): %s",
+                         _("SASL Failure: (%d): %s"),
                          status,
                          sasl_errstring (status, NULL, NULL));
          break;
@@ -17186,7 +17186,7 @@ _mongoc_sasl_start (mongoc_sasl_t      *sasl,
       bson_set_error (error,
                       MONGOC_ERROR_SASL,
                       SASL_NOMECH,
-                      "SASL Failure: invalid mechanism \"%s\"",
+                      _("SASL Failure: invalid mechanism \"%s\""),
                       mechanism);
       return false;
    }
@@ -17228,7 +17228,7 @@ _mongoc_sasl_step (mongoc_sasl_t *sasl,
       bson_set_error (error,
                       MONGOC_ERROR_SASL,
                       SASL_NOTDONE,
-                      "SASL Failure: maximum steps detected");
+                      _("SASL Failure: maximum steps detected"));
       return false;
    }
 
@@ -17236,7 +17236,7 @@ _mongoc_sasl_step (mongoc_sasl_t *sasl,
       bson_set_error (error,
                       MONGOC_ERROR_SASL,
                       MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                      "SASL Failure: no payload provided from server.");
+                      _("SASL Failure: no payload provided from server."));
       return false;
    }
 
@@ -19337,7 +19337,7 @@ _mongoc_stream_writev_full (mongoc_stream_t *stream,
          errstr = bson_strerror_r(errno, buf, sizeof(buf));
 
          bson_set_error (error, MONGOC_ERROR_STREAM, MONGOC_ERROR_STREAM_SOCKET,
-                         "Failure during socket delivery: %s (%d)", errstr, errno);
+                         _("Failure during socket delivery: %s (%d)"), errstr, errno);
       }
 
       RETURN(false);
@@ -19345,7 +19345,7 @@ _mongoc_stream_writev_full (mongoc_stream_t *stream,
 
    if (r != (ssize_t)total_bytes) {
       bson_set_error (error, MONGOC_ERROR_STREAM, MONGOC_ERROR_STREAM_SOCKET,
-                      "Failure to send all requested bytes (only sent: %" PRIu64 "/%" PRId64 " in %dms) during socket delivery",
+                      _("Failure to send all requested bytes (only sent: %" PRIu64 "/%" PRId64 " in %dms) during socket delivery"),
                       (uint64_t) r, (int64_t)total_bytes, timeout_msec);
 
       RETURN(false);
@@ -22447,7 +22447,7 @@ _mongoc_write_command_delete_legacy (mongoc_write_command_t       *command,
       bson_set_error (error,
                       MONGOC_ERROR_COLLECTION,
                       MONGOC_ERROR_COLLECTION_DELETE_FAILED,
-                      "Cannot do an empty delete.");
+                      _("Cannot do an empty delete."));
       result->failed = true;
       EXIT;
    }
@@ -22554,8 +22554,8 @@ too_large_error (bson_error_t *error,
    const int code = 2;
 
    bson_set_error (error, MONGOC_ERROR_BSON, code,
-                   "Document %u is too large for the cluster. "
-                   "Document is %u bytes, max is %d.",
+                   _("Document %u is too large for the cluster. "
+                   "Document is %u bytes, max is %d."),
                    idx, len, max_bson_size);
 
    if (err_doc) {
@@ -22623,7 +22623,7 @@ _mongoc_write_command_insert_legacy (mongoc_write_command_t       *command,
       bson_set_error (error,
                       MONGOC_ERROR_COLLECTION,
                       MONGOC_ERROR_COLLECTION_INSERT_FAILED,
-                      "Cannot do an empty insert.");
+                      _("Cannot do an empty insert."));
       result->failed = true;
       EXIT;
    }
@@ -22777,7 +22777,7 @@ _empty_error (mongoc_write_command_t *command,
    bson_set_error (error,
                    MONGOC_ERROR_COLLECTION,
                    codes[command->type],
-                   "Cannot do an empty %s",
+                   _("Cannot do an empty %s"),
                    gCommandNames[command->type]);
 }
 
@@ -22860,8 +22860,8 @@ _mongoc_write_command_update_legacy (mongoc_write_command_t       *command,
             bson_set_error (error,
                             MONGOC_ERROR_BSON,
                             MONGOC_ERROR_BSON_INVALID,
-                            "update document is corrupt or contains "
-                            "invalid keys including $ or .");
+                            _("update document is corrupt or contains "
+                            "invalid keys including $ or ."));
             EXIT;
          }
       } else {
@@ -22869,7 +22869,7 @@ _mongoc_write_command_update_legacy (mongoc_write_command_t       *command,
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "updates is malformed.");
+                         _("updates is malformed."));
          EXIT;
       }
    }
@@ -23046,7 +23046,7 @@ _mongoc_write_command(mongoc_write_command_t       *command,
          bson_set_error (error,
                          MONGOC_ERROR_COMMAND,
                          MONGOC_ERROR_COMMAND_INVALID_ARG,
-                         "Cannot set bypassDocumentValidation for unacknowledged writes");
+                         _("Cannot set bypassDocumentValidation for unacknowledged writes"));
          EXIT;
       }
       gLegacyWriteOps[command->type] (command, client, server_stream, database,
@@ -23179,7 +23179,7 @@ _mongoc_write_command_execute (mongoc_write_command_t       *command,       /* I
       bson_set_error (&result->error,
                       MONGOC_ERROR_COMMAND,
                       MONGOC_ERROR_COMMAND_INVALID_ARG,
-                      "The write concern is invalid.");
+                      _("The write concern is invalid."));
       result->failed = true;
       EXIT;
    }
@@ -23646,7 +23646,7 @@ _set_error_from_response (bson_t *bson_array,
    n_keys = bson_count_keys (bson_array);
    if (n_keys > 1) {
       bson_string_append_printf (compound_err,
-                                 "Multiple %s errors: ",
+                                 _("Multiple %s errors: "),
                                  error_type);
    }
 
@@ -24738,7 +24738,7 @@ mongoc_async_cmd_tls_setup (mongoc_stream_t *stream,
       } else {
          bson_set_error (error, MONGOC_ERROR_STREAM,
                          MONGOC_ERROR_STREAM_SOCKET,
-                         "Failed to verify TLS cert.");
+                         _("Failed to verify TLS cert."));
          return -1;
       }
    } else if (mongoc_stream_tls_should_retry (tls_stream)) {
@@ -24746,7 +24746,7 @@ mongoc_async_cmd_tls_setup (mongoc_stream_t *stream,
    } else {
       bson_set_error (error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to initialize TLS state.");
+                      _("Failed to initialize TLS state."));
       return -1;
    }
 
@@ -24936,7 +24936,7 @@ _mongoc_async_cmd_phase_send (mongoc_async_cmd_t *acmd)
    if (bytes < 0) {
       bson_set_error (&acmd->error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to write rpc bytes.");
+                      _("Failed to write rpc bytes."));
       return MONGOC_ASYNC_CMD_ERROR;
    }
 
@@ -24973,14 +24973,14 @@ _mongoc_async_cmd_phase_recv_len (mongoc_async_cmd_t *acmd)
    if (bytes < 0) {
       bson_set_error (&acmd->error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to receive length header from server.");
+                      _("Failed to receive length header from server."));
       return MONGOC_ASYNC_CMD_ERROR;
    }
 
    if (bytes == 0) {
       bson_set_error (&acmd->error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Server closed connection.");
+                      _("Server closed connection."));
       return MONGOC_ASYNC_CMD_ERROR;
    }
 
@@ -24993,7 +24993,7 @@ _mongoc_async_cmd_phase_recv_len (mongoc_async_cmd_t *acmd)
       if ((msg_len < 16) || (msg_len > MONGOC_DEFAULT_MAX_MSG_SIZE)) {
          bson_set_error (&acmd->error, MONGOC_ERROR_PROTOCOL,
                          MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                         "Invalid reply from server.");
+                         _("Invalid reply from server."));
          return MONGOC_ASYNC_CMD_ERROR;
       }
 
@@ -25017,14 +25017,14 @@ _mongoc_async_cmd_phase_recv_rpc (mongoc_async_cmd_t *acmd)
    if (bytes < 0) {
       bson_set_error (&acmd->error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to receive rpc bytes from server.");
+                      _("Failed to receive rpc bytes from server."));
       return MONGOC_ASYNC_CMD_ERROR;
    }
 
    if (bytes == 0) {
       bson_set_error (&acmd->error, MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Server closed connection.");
+                      _("Server closed connection."));
       return MONGOC_ASYNC_CMD_ERROR;
    }
 
@@ -25036,7 +25036,7 @@ _mongoc_async_cmd_phase_recv_rpc (mongoc_async_cmd_t *acmd)
          bson_set_error (&acmd->error,
                          MONGOC_ERROR_PROTOCOL,
                          MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                         "Invalid reply from server.");
+                         _("Invalid reply from server."));
          return MONGOC_ASYNC_CMD_ERROR;
       }
 
@@ -25046,7 +25046,7 @@ _mongoc_async_cmd_phase_recv_rpc (mongoc_async_cmd_t *acmd)
          bson_set_error (&acmd->error,
                          MONGOC_ERROR_PROTOCOL,
                          MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                         "Invalid reply from server.");
+                         _("Invalid reply from server."));
          return MONGOC_ASYNC_CMD_ERROR;
       }
 
@@ -25054,7 +25054,7 @@ _mongoc_async_cmd_phase_recv_rpc (mongoc_async_cmd_t *acmd)
          bson_set_error (&acmd->error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,
-                         "Failed to decode reply BSON document.");
+                         _("Failed to decode reply BSON document."));
          return MONGOC_ASYNC_CMD_ERROR;
       }
 
@@ -26942,7 +26942,7 @@ _mongoc_scram_start (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: could not generate a cryptographically secure nonce in sasl step 1");
+                      _("SCRAM Failure: could not generate a cryptographically secure nonce in sasl step 1"));
       goto FAIL;
    }
 
@@ -26954,7 +26954,7 @@ _mongoc_scram_start (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: could not encode nonce");
+                      _("SCRAM Failure: could not encode nonce"));
       goto FAIL;
    }
 
@@ -27023,7 +27023,7 @@ BUFFER_AUTH:
    bson_set_error (error,
                    MONGOC_ERROR_SCRAM,
                    MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                   "SCRAM Failure: could not buffer auth message in sasl step1");
+                   _("SCRAM Failure: could not buffer auth message in sasl step1"));
 
    goto FAIL;
 
@@ -27031,7 +27031,7 @@ BUFFER:
    bson_set_error (error,
                    MONGOC_ERROR_SCRAM,
                    MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                   "SCRAM Failure: could not buffer sasl step1");
+                   _("SCRAM Failure: could not buffer sasl step1"));
 
    goto FAIL;
 
@@ -27223,7 +27223,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
          bson_set_error (error,
                          MONGOC_ERROR_SCRAM,
                          MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                         "SCRAM Failure: unknown key (%c) in sasl step 2",
+                         _("SCRAM Failure: unknown key (%c) in sasl step 2"),
                          *ptr);
          goto FAIL;
          break;
@@ -27235,7 +27235,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
          bson_set_error (error,
                          MONGOC_ERROR_SCRAM,
                          MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                         "SCRAM Failure: invalid parse state in sasl step 2");
+                         _("SCRAM Failure: invalid parse state in sasl step 2"));
 
          goto FAIL;
       }
@@ -27265,7 +27265,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: no r param in sasl step 2");
+                      _("SCRAM Failure: no r param in sasl step 2"));
 
       goto FAIL;
    }
@@ -27274,7 +27274,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: no s param in sasl step 2");
+                      _("SCRAM Failure: no s param in sasl step 2"));
 
       goto FAIL;
    }
@@ -27283,7 +27283,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: no i param in sasl step 2");
+                      _("SCRAM Failure: no i param in sasl step 2"));
 
       goto FAIL;
    }
@@ -27294,7 +27294,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: client nonce not repeated in sasl step 2");
+                      _("SCRAM Failure: client nonce not repeated in sasl step 2"));
    }
 
    *outbuflen = 0;
@@ -27327,7 +27327,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: unable to decode salt in sasl step2");
+                      _("SCRAM Failure: unable to decode salt in sasl step2"));
       goto FAIL;
    }
 
@@ -27335,7 +27335,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: invalid salt length of %d in sasl step2",
+                      _("SCRAM Failure: invalid salt length of %d in sasl step2"),
                       decoded_salt_len);
       goto FAIL;
    }
@@ -27348,7 +27348,7 @@ _mongoc_scram_step2 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: unable to parse iterations in sasl step2");
+                      _("SCRAM Failure: unable to parse iterations in sasl step2"));
       goto FAIL;
    }
 
@@ -27364,7 +27364,7 @@ BUFFER_AUTH:
    bson_set_error (error,
                    MONGOC_ERROR_SCRAM,
                    MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                   "SCRAM Failure: could not buffer auth message in sasl step2");
+                   _("SCRAM Failure: could not buffer auth message in sasl step2"));
 
    goto FAIL;
 
@@ -27372,7 +27372,7 @@ BUFFER:
    bson_set_error (error,
                    MONGOC_ERROR_SCRAM,
                    MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                   "SCRAM Failure: could not buffer sasl step2");
+                   _("SCRAM Failure: could not buffer sasl step2"));
 
    goto FAIL;
 
@@ -27472,7 +27472,7 @@ _mongoc_scram_step3 (mongoc_scram_t *scram,
          bson_set_error (error,
                          MONGOC_ERROR_SCRAM,
                          MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                         "SCRAM Failure: unknown key (%c) in sasl step 3",
+                         _("SCRAM Failure: unknown key (%c) in sasl step 3"),
                          *ptr);
          goto FAIL;
          break;
@@ -27484,7 +27484,7 @@ _mongoc_scram_step3 (mongoc_scram_t *scram,
          bson_set_error (error,
                          MONGOC_ERROR_SCRAM,
                          MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                         "SCRAM Failure: invalid parse state in sasl step 3");
+                         _("SCRAM Failure: invalid parse state in sasl step 3"));
          goto FAIL;
       }
 
@@ -27515,7 +27515,7 @@ _mongoc_scram_step3 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: authentication failure in sasl step 3 : %s",
+                      _("SCRAM Failure: authentication failure in sasl step 3 : %s"),
                       val_e);
       goto FAIL;
    }
@@ -27524,7 +27524,7 @@ _mongoc_scram_step3 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: no v param in sasl step 3");
+                      _("SCRAM Failure: no v param in sasl step 3"));
       goto FAIL;
    }
 
@@ -27532,7 +27532,7 @@ _mongoc_scram_step3 (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_PROTOCOL_ERROR,
-                      "SCRAM Failure: could not verify server signature in sasl step 3");
+                      _("SCRAM Failure: could not verify server signature in sasl step 3"));
       goto FAIL;
    }
 
@@ -27582,7 +27582,7 @@ _mongoc_scram_step (mongoc_scram_t *scram,
       bson_set_error (error,
                       MONGOC_ERROR_SCRAM,
                       MONGOC_ERROR_SCRAM_NOT_DONE,
-                      "SCRAM Failure: maximum steps detected");
+                      _("SCRAM Failure: maximum steps detected"));
       return false;
       break;
    }
@@ -30313,8 +30313,8 @@ mongoc_topology_select (mongoc_topology_t         *topology,
                bson_set_error(error,
                               MONGOC_ERROR_SERVER_SELECTION,
                               MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                              "No suitable servers found: "
-                              "`minheartbeatfrequencyms` not reached yet");
+                              _("No suitable servers found: "
+                              "`minheartbeatfrequencyms` not reached yet"));
                goto FAIL;
             }
 
@@ -30345,14 +30345,14 @@ mongoc_topology_select (mongoc_topology_t         *topology,
                   bson_set_error(error,
                                  MONGOC_ERROR_SERVER_SELECTION,
                                  MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                                 "No suitable servers found "
-                                 "(`serverselectiontryonce` set): %s", scanner_error.message);
+                                 _("No suitable servers found "
+                                 "(`serverselectiontryonce` set): %s"), scanner_error.message);
                } else {
                   bson_set_error(error,
                                  MONGOC_ERROR_SERVER_SELECTION,
                                  MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                                 "No suitable servers found "
-                                 "(`serverselectiontryonce` set)");
+                                 _("No suitable servers found "
+                                 "(`serverselectiontryonce` set)"));
                }
                goto FAIL;
             }
@@ -30364,8 +30364,8 @@ mongoc_topology_select (mongoc_topology_t         *topology,
                bson_set_error(error,
                               MONGOC_ERROR_SERVER_SELECTION,
                               MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                              "No suitable servers found: "
-                              "`serverselectiontimeoutms` timed out");
+                              _("No suitable servers found: "
+                              "`serverselectiontimeoutms` timed out"));
                goto FAIL;
             }
          }
@@ -30398,13 +30398,13 @@ mongoc_topology_select (mongoc_topology_t         *topology,
             bson_set_error(error,
                            MONGOC_ERROR_SERVER_SELECTION,
                            MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                           "Timed out trying to select a server");
+                           _("Timed out trying to select a server"));
             goto FAIL;
          } else if (r) {
             bson_set_error(error,
                            MONGOC_ERROR_SERVER_SELECTION,
                            MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                           "Unknown error '%d' received while waiting on thread condition",
+                           _("Unknown error '%d' received while waiting on thread condition"),
                            r);
             goto FAIL;
          }
@@ -30415,7 +30415,7 @@ mongoc_topology_select (mongoc_topology_t         *topology,
             bson_set_error(error,
                            MONGOC_ERROR_SERVER_SELECTION,
                            MONGOC_ERROR_SERVER_SELECTION_FAILURE,
-                           "Timed out trying to select a server");
+                           _("Timed out trying to select a server"));
             goto FAIL;
          }
       } else {
@@ -31352,7 +31352,7 @@ mongoc_topology_description_server_by_id (mongoc_topology_description_t *descrip
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_NOT_ESTABLISHED,
-                      "Could not find description for node %u", id);
+                      _("Could not find description for node %u"), id);
    }
 
    return sd;
@@ -31841,7 +31841,7 @@ _mongoc_topology_description_update_rs_from_primary (mongoc_topology_description
       if (_mongoc_topology_description_later_election (topology, server)) {
          bson_set_error (&error,
                          MONGOC_ERROR_STREAM, MONGOC_ERROR_STREAM_CONNECT,
-                         "member's setVersion or electionId is stale");
+                         _("member's setVersion or electionId is stale"));
          mongoc_topology_description_invalidate_server (topology, server->id,
                                                         &error);
          _update_rs_type (topology);
@@ -32459,7 +32459,7 @@ mongoc_topology_scanner_ismaster_handler (mongoc_async_cmd_result_t async_status
       bson_set_error (&node->last_error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_STREAM_CONNECT,
-                      "%s calling ismaster on \'%s\'",
+                      _("%s calling ismaster on \'%s\'"),
                       message,
                       node->host.host_and_port);
    } else {
@@ -32517,7 +32517,7 @@ mongoc_topology_scanner_node_connect_tcp (mongoc_topology_scanner_node_t *node,
          bson_set_error (error,
                          MONGOC_ERROR_STREAM,
                          MONGOC_ERROR_STREAM_NAME_RESOLUTION,
-                         "Failed to resolve '%s'",
+                         _("Failed to resolve '%s'"),
                          host->host);
          RETURN (NULL);
       }
@@ -32549,7 +32549,7 @@ mongoc_topology_scanner_node_connect_tcp (mongoc_topology_scanner_node_t *node,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_CONNECT,
-                      "Failed to connect to target host: '%s'",
+                      _("Failed to connect to target host: '%s'"),
                       host->host_and_port);
       freeaddrinfo (node->dns_results);
       node->dns_results = NULL;
@@ -32569,7 +32569,7 @@ mongoc_topology_scanner_node_connect_unix (mongoc_topology_scanner_node_t *node,
    bson_set_error (error,
                    MONGOC_ERROR_STREAM,
                    MONGOC_ERROR_STREAM_CONNECT,
-                   "UNIX domain sockets not supported on win32.");
+                   _("UNIX domain sockets not supported on win32."));
    RETURN (NULL);
 #else
    struct sockaddr_un saddr;
@@ -32592,7 +32592,7 @@ mongoc_topology_scanner_node_connect_unix (mongoc_topology_scanner_node_t *node,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to create socket.");
+                      _("Failed to create socket."));
       RETURN (NULL);
    }
 
@@ -32608,7 +32608,7 @@ mongoc_topology_scanner_node_connect_unix (mongoc_topology_scanner_node_t *node,
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_CONNECT,
-                      "Failed to connect to UNIX domain socket: %s",
+                      _("Failed to connect to UNIX domain socket: %s"),
                       errstr);
       mongoc_socket_destroy (sock);
       RETURN (NULL);

@@ -244,9 +244,9 @@ assert(mid_doubleValue != NULL);
 
     jclass C = env->FindClass("bsh/Interpreter");
 if (C == NULL) {
-fprintf(stderr, "*** %s: bsh/Interpreter not found.\n", __FUNCTION__);
-fprintf(stderr, "*** Install Apache bsh-2.0b6.jar from\n\
-	https://github.com/beanshell/beanshell\n");
+fprintf(stderr, _("*** %s: bsh/Interpreter not found.\n"), __FUNCTION__);
+fprintf(stderr, _("*** Install bsh-2.0b6.jar from Apache Extras at\n\
+	https://github.com/beanshell/beanshell\n"));
 assert(C != NULL);	// XXX "missing bsh-2.0b4.jar BeanShell"
 }
     jni->C = (void *) C;

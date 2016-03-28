@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2016-03-21 18:26-0400\n"
+"POT-Creation-Date: 2016-03-28 17:41-0400\n"
 "PO-Revision-Date: 2015-09-26 00:06+0800\n"
 "Last-Translator: zwpwjwtz <zwpwjwtz@126.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -39,37 +39,37 @@ msgstr "组建依赖软件包时失败"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "无法打开 spec 文件 %s：%s\n"
 
-#: build.c:166
+#: build.c:222
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "从 %s 读取 spec 文件失败\n"
 
-#: build.c:180
+#: build.c:236
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "重命名 %s 为 %s 时失败：%m\n"
 
-#: build.c:221
+#: build.c:277
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s 失败：%m\n"
 
-#: build.c:226
+#: build.c:281
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "文件 %s 不是常规文件。\n"
 
-#: build.c:235
+#: build.c:289
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "文件 %s 不像是 spec 文件。\n"
 
-#: build.c:322
+#: build.c:372
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "构建目标平台：%s\n"
 
-#: build.c:337 build/spec.c:999
+#: build.c:387 build/spec.c:999
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    目标平台：%s\n"
@@ -276,35 +276,35 @@ msgstr "--pipe 创建一个管道失败：%m\n"
 msgid "exec failed\n"
 msgstr "执行失败\n"
 
-#: rpmqv.c:868
+#: rpmqv.c:869
 msgid "no packages files given for rebuild"
 msgstr "没有指定要重建的软件包名称"
 
-#: rpmqv.c:968
+#: rpmqv.c:970
 msgid "no spec files given for build"
 msgstr "没有指定用于组建的规格文件名称"
 
-#: rpmqv.c:970
+#: rpmqv.c:972
 msgid "no tar files given for build"
 msgstr "没有指定用于组建的打包文件名称"
 
-#: rpmqv.c:996
+#: rpmqv.c:998
 msgid "no packages given for erase"
 msgstr "未给出要擦除的软件包"
 
-#: rpmqv.c:1037
+#: rpmqv.c:1039
 msgid "no packages given for install"
 msgstr "未给出要安装的软件包"
 
-#: rpmqv.c:1057
+#: rpmqv.c:1059
 msgid "no arguments given for query"
 msgstr "未给出要查询的参数"
 
-#: rpmqv.c:1076
+#: rpmqv.c:1078
 msgid "no arguments given for verify"
 msgstr "未给出要检验的参数"
 
-#: rpmqv.c:1096
+#: rpmqv.c:1098
 msgid "no arguments given"
 msgstr "没有指定参数"
 
@@ -1334,7 +1334,7 @@ msgstr "产生 PGP/GPG 签名"
 msgid "override target platform"
 msgstr "重载目标平台"
 
-#: build/poptBT.c:228 lib/poptALL.c:453 lib/poptQV.c:375
+#: build/poptBT.c:228 lib/poptALL.c:456 lib/poptQV.c:375
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
@@ -1596,201 +1596,210 @@ msgstr "回环：\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失败，剩下 %d 个元素\n"
 
-#: lib/poptALL.c:198 rpmio/poptIO.c:383
+#: lib/poptALL.c:201 rpmio/poptIO.c:383
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:385
+#: lib/poptALL.c:388
 msgid "Add packages to resolve dependencies"
 msgstr "添加要解析依赖的包"
 
-#: lib/poptALL.c:388
+#: lib/poptALL.c:391
 msgid "Use anaconda \"presentation order\""
 msgstr "使用 anaconda “演示文稿顺序”"
 
-#: lib/poptALL.c:391
+#: lib/poptALL.c:394
 msgid "Print dependency loops as warning"
 msgstr "打印循环的依赖关系作为警告"
 
-#: lib/poptALL.c:394
+#: lib/poptALL.c:397
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "不提供依赖关系解决方案的建议"
 
-#: lib/poptALL.c:397
+#: lib/poptALL.c:400
 msgid "Do not check added package conflicts"
 msgstr "不检查已加入软件包间冲突"
 
-#: lib/poptALL.c:400
+#: lib/poptALL.c:403
 msgid "Ignore added package requires on symlink targets"
 msgstr "忽略已加入软件包对于符号链接目标需求"
 
-#: lib/poptALL.c:403
+#: lib/poptALL.c:406
 msgid "Ignore added package obsoletes"
 msgstr "忽略已加入软件包的淘汰名称"
 
-#: lib/poptALL.c:406
+#: lib/poptALL.c:409
 msgid "Ignore added package requires on file parent directory"
 msgstr "忽略已加入软件包对于上层目录文件的需求"
 
-#: lib/poptALL.c:409
+#: lib/poptALL.c:412
 msgid "Do not check added package requires"
 msgstr "不检查已加入软件包的需求"
 
-#: lib/poptALL.c:412
+#: lib/poptALL.c:415
 msgid "Ignore added package upgrades"
 msgstr "忽略已加入软件包的升级"
 
-#: lib/poptALL.c:425 rpmio/poptIO.c:575
+#: lib/poptALL.c:428 rpmio/poptIO.c:575
 msgid "Debug generic operations"
 msgstr "调试一般操作"
 
-#: lib/poptALL.c:428
+#: lib/poptALL.c:431
 msgid "Predefine MACRO with value EXPR"
 msgstr "预先以 EXPR 值定义 MACRO"
 
-#: lib/poptALL.c:429 lib/poptALL.c:433 rpmio/poptIO.c:580
+#: lib/poptALL.c:432 lib/poptALL.c:436 rpmio/poptIO.c:580
 msgid "'MACRO EXPR'"
 msgstr "“MACRO EXPR”"
 
-#: lib/poptALL.c:432 rpmio/poptIO.c:579
+#: lib/poptALL.c:435 rpmio/poptIO.c:579
 msgid "Define MACRO with value EXPR"
 msgstr "以 EXPR 值定义 MACRO"
 
-#: lib/poptALL.c:435 rpmio/poptIO.c:582
+#: lib/poptALL.c:438 rpmio/poptIO.c:582
 msgid "Undefine MACRO"
 msgstr "未定义 MACRO"
 
-#: lib/poptALL.c:436 rpmio/poptIO.c:583
+#: lib/poptALL.c:439 rpmio/poptIO.c:583
 msgid "'MACRO'"
 msgstr "“MACRO”"
 
-#: lib/poptALL.c:438 rpmio/poptIO.c:585
+#: lib/poptALL.c:441 rpmio/poptIO.c:585
 msgid "Print macro expansion of EXPR"
 msgstr "打印 EXPR 的宏扩展"
 
-#: lib/poptALL.c:439 rpmio/poptIO.c:586
+#: lib/poptALL.c:442 rpmio/poptIO.c:586
 msgid "'EXPR'"
 msgstr "“EXPR”"
 
-#: lib/poptALL.c:441 rpmio/poptIO.c:589
+#: lib/poptALL.c:444 rpmio/poptIO.c:589
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "读取 <File:...> 以代替缺省文件"
 
-#: lib/poptALL.c:442 lib/poptALL.c:446 lib/poptALL.c:450 rpmio/poptIO.c:590
+#: lib/poptALL.c:445 lib/poptALL.c:449 lib/poptALL.c:453 rpmio/poptIO.c:590
 #: rpmio/poptIO.c:594 rpmio/poptIO.c:598
 msgid "<FILE:...>"
 msgstr "<FILE:…>"
 
-#: lib/poptALL.c:445 rpmio/poptIO.c:593
+#: lib/poptALL.c:448 rpmio/poptIO.c:593
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "读取 <File:...> 以代替缺省 RPM Lua 文件"
 
-#: lib/poptALL.c:449 rpmio/poptIO.c:597
+#: lib/poptALL.c:452 rpmio/poptIO.c:597
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "读取 <File:...> 以代替缺省 POPT 文件"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:456
 msgid "Specify target platform"
 msgstr "指定目标平台"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:459
 msgid "Don't verify package digest(s)"
 msgstr "不校验软件包摘要"
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:461
 msgid "Don't verify database header(s) when retrieved"
 msgstr "取回时不验证数据库头部"
 
-#: lib/poptALL.c:460
+#: lib/poptALL.c:463
 msgid "Don't verify package signature(s)"
 msgstr "不校验软件包签名"
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:466
 msgid "Display known query tags"
 msgstr "显示已知的查找标记"
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:468
 msgid "Display macro and configuration values"
 msgstr "显示宏与组配值"
 
-#: lib/poptALL.c:467 rpmio/poptIO.c:613
+#: lib/poptALL.c:470 rpmio/poptIO.c:613
 msgid "Print the version"
 msgstr "打印版本信息"
 
-#: lib/poptALL.c:473
+#: lib/poptALL.c:476
 msgid "Debug file FingerPrintS"
 msgstr "调试文件指纹"
 
-#: lib/poptALL.c:475
+#: lib/poptALL.c:478
 msgid "Debug payload File State Machine"
 msgstr "调试负载文件状态机制"
 
-#: lib/poptALL.c:477
+#: lib/poptALL.c:480
 msgid "Use threads for File State Machine"
 msgstr "使用线程作为文件状态机制"
 
-#: lib/poptALL.c:483
+#: lib/poptALL.c:486
+msgid "Initialize database (no operation, compatibility)"
+msgstr ""
+
+#: lib/poptALL.c:488
 msgid "Display macros used"
 msgstr "显示已用宏"
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:490
+msgid "Disable plugin loading (no operation, compatibility)"
+msgstr ""
+
+#: lib/poptALL.c:494
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr "显示 OpenPGP (RFC 2440/4880) 解析"
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:496
 msgid "Debug Package State Machine"
 msgstr "调试软件包状态机制"
 
-#: lib/poptALL.c:491
+#: lib/poptALL.c:498
 msgid "Use threads for Package State Machine"
 msgstr "使用线程于软件包状态机制"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:500
 msgid "Debug rpmds Dependency Set"
 msgstr "调试 rpmds 依赖关系集合"
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:502
 msgid "Debug rpmfc File Classifier"
 msgstr "调试 rpmfc 文件分类器"
 
-#: lib/poptALL.c:497
+#: lib/poptALL.c:504
 msgid "Debug rpmfi File Info"
 msgstr "调试 rpmfi 文件"
 
-#: lib/poptALL.c:499
+#: lib/poptALL.c:506
 msgid "Debug rpmgi Generalized Iterator"
 msgstr "调试 rpmgi 一般化迭代器"
 
-#: lib/poptALL.c:501
+#: lib/poptALL.c:508
 msgid "Debug rpmmi Match Iterator"
 msgstr "调试 rpmmi 匹配迭代器"
 
-#: lib/poptALL.c:503
+#: lib/poptALL.c:510
 msgid "Debug rpmns Name Space"
 msgstr "调试 rpmns 命名空间"
 
-#: lib/poptALL.c:505
+#: lib/poptALL.c:512
 msgid "Debug rpmps Problem Set"
 msgstr "调试 rpmps 问题设置"
 
-#: lib/poptALL.c:507
+#: lib/poptALL.c:514
 msgid "Debug rpmte Transaction Element"
 msgstr "调试 rpmts 事务集"
 
-#: lib/poptALL.c:509
+#: lib/poptALL.c:516
 msgid "Debug rpmts Transaction Set"
 msgstr "调试 rpmts 事务集"
 
-#: lib/poptALL.c:511
+#: lib/poptALL.c:518
 msgid "Debug rpmwf Wrapper Format"
 msgstr "调试 rpmwf 包装格式"
 
-#: lib/poptALL.c:513 rpmio/poptIO.c:737
+#: lib/poptALL.c:520 rpmio/poptIO.c:737
 msgid "Display operation statistics"
 msgstr "显示作业统计"
 
-#: lib/poptALL.c:831 rpmio/poptIO.c:927 rpmio/rpmsql.c:5412 rpmio/rpmtpm.c:152
+#: lib/poptALL.c:838 rpmio/poptIO.c:927 rpmio/rpmct.c:816 rpmio/rpmdate.c:105
+#: rpmio/rpmsed.c:290 rpmio/rpmsql.c:5412 rpmio/rpmtpm.c:152
 #: tools/rpmkey.c:1831
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -3084,7 +3093,7 @@ msgstr "无效的事务组件号码。\n"
 msgid "missing   %c %s"
 msgstr "遗漏   %c %s"
 
-#: lib/verify.c:509
+#: lib/verify.c:510
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "未满足的依赖关系 %s：\n"
@@ -3795,14 +3804,15 @@ msgstr "BASEURL"
 msgid "path to groupfile to include in metadata"
 msgstr "用于包含在元数据中的群组文件路径"
 
-#: rpmdb/rpmrepo.c:1718 rpmdb/rpmrepo.c:1736 rpmio/rpmsql.c:5235
-#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
-#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
-#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
-#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
-#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
-#: tools/spooktool.c:319 tools/spooktool.c:321 tools/spooktool.c:323
+#: rpmdb/rpmrepo.c:1718 rpmdb/rpmrepo.c:1736 rpmio/rpmdate.c:67
+#: rpmio/rpmsed.c:206 rpmio/rpmsql.c:5235 tools/rpmwget.c:1131
+#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
+#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
+#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
+#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
+#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:319
+#: tools/spooktool.c:321 tools/spooktool.c:323
 msgid "FILE"
 msgstr "FILE"
 
@@ -3842,7 +3852,7 @@ msgstr "在文件名中包含文件的校验和码，借助代理服务器"
 msgid "Repository options:"
 msgstr "版本库选项："
 
-#: rpmdb/rpmrepo.c:1771 tools/rpmmtree.c:3598
+#: rpmdb/rpmrepo.c:1771 rpmio/rpmct.c:779 tools/rpmmtree.c:3598
 msgid "Fts(3) traversal options:"
 msgstr "Fts(3) 遍历选项："
 
@@ -3850,15 +3860,17 @@ msgstr "Fts(3) 遍历选项："
 msgid "Available compressions:"
 msgstr "可用的压缩方法："
 
-#: rpmdb/rpmrepo.c:1777 tools/rpmdigest.c:893 tools/rpmmtree.c:3601
+#: rpmdb/rpmrepo.c:1777 rpmio/rpmct.c:782 tools/rpmdigest.c:893
+#: tools/rpmmtree.c:3601
 msgid "Available digests:"
 msgstr "可用摘要："
 
-#: rpmdb/rpmrepo.c:1780 rpmio/rpmgit.c:2663 rpmio/rpmsql.c:5272
-#: rpmio/rpmz.c:1833 rpmio/set.c:1516 tools/augtool.c:337 tools/cudftool.c:29
-#: tools/roto.c:4132 tools/rpmdigest.c:896 tools/rpmgrep.c:1381
-#: tools/rpmkey.c:1724 tools/rpmmtree.c:3604 tools/rpmwget.c:1433
-#: tools/semodule.c:132 tools/spooktool.c:335
+#: rpmdb/rpmrepo.c:1780 rpmio/rpmct.c:786 rpmio/rpmgit.c:2663
+#: rpmio/rpmsed.c:225 rpmio/rpmsql.c:5272 rpmio/rpmz.c:1833 rpmio/set.c:1516
+#: tools/augtool.c:337 tools/cudftool.c:29 tools/roto.c:4132
+#: tools/rpmdigest.c:896 tools/rpmgrep.c:1381 tools/rpmkey.c:1724
+#: tools/rpmmtree.c:3604 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:335
 msgid "Common options for all rpmio executables:"
 msgstr "用于所有 rpmio 可运行文件的共同选项："
 
@@ -3936,6 +3948,113 @@ msgstr "签名：不明 (%u)\n"
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "无法取得数据库 %s 的锁定，重试中…(%d)\n"
+
+#: rpmio/bcon.c:727
+#, c-format
+msgid "Invalid BSON document, possible memory coruption.\n"
+msgstr ""
+
+#: rpmio/bson.c:1327
+#, c-format
+msgid ""
+"%s(): invalid array detected. first element of array parameter is not "
+"\"0\".\n"
+msgstr ""
+
+#: rpmio/bson.c:4293
+#, fuzzy
+msgid "Unknown error"
+msgstr "不明的错误"
+
+#: rpmio/bson.c:7025 rpmio/bson.c:7696
+#, fuzzy, c-format
+msgid "Invalid read of %s in state %d"
+msgstr "无效日期%u"
+
+#: rpmio/bson.c:7029
+#, c-format
+msgid "Invalid read of %s without key in state %d"
+msgstr ""
+
+#: rpmio/bson.c:7037 rpmio/bson.c:7466 rpmio/bson.c:7473 rpmio/bson.c:7482
+#, c-format
+msgid "Invalid key %s.  Looking for values for %d"
+msgstr ""
+
+#: rpmio/bson.c:7219
+#, c-format
+msgid "Invalid special type for integer read %d"
+msgstr ""
+
+#: rpmio/bson.c:7224
+#, c-format
+msgid "Invalid state for integer read %d"
+msgstr ""
+
+#: rpmio/bson.c:7345
+#, fuzzy, c-format
+msgid "Could not parse \"%s\" as a date"
+msgstr "无法打开%s：%s\n"
+
+#: rpmio/bson.c:7367
+#, c-format
+msgid "Invalid input string %s, looking for %d"
+msgstr ""
+
+#: rpmio/bson.c:7371
+#, c-format
+msgid "Invalid state to look for string %d"
+msgstr ""
+
+#: rpmio/bson.c:7501
+msgid "Missing $binary after $type in BSON_TYPE_BINARY"
+msgstr ""
+
+#: rpmio/bson.c:7504
+msgid "Missing $type after $binary in BSON_TYPE_BINARY"
+msgstr ""
+
+#: rpmio/bson.c:7525
+msgid "Missing $regex after $options in BSON_TYPE_REGEX"
+msgstr ""
+
+#: rpmio/bson.c:7564
+msgid "Missing t after $timestamp in BSON_TYPE_TIMESTAMP"
+msgstr ""
+
+#: rpmio/bson.c:7570
+msgid "Missing i after $timestamp in BSON_TYPE_TIMESTAMP"
+msgstr ""
+
+#: rpmio/bson.c:7631
+#, fuzzy, c-format
+msgid "Unknown type %d"
+msgstr "未知的图标格式：%s\n"
+
+#: rpmio/bson.c:7656
+#, fuzzy, c-format
+msgid "Invalid state %d"
+msgstr "无效日期%u"
+
+#: rpmio/bson.c:7837
+#, fuzzy
+msgid "reader cb failed"
+msgstr "Fread 失败"
+
+#: rpmio/bson.c:8957
+#, c-format
+msgid "Failure to install BSON vtable, missing functions.\n"
+msgstr ""
+
+#: rpmio/bson.c:10099 rpmio/bson.c:10151 rpmio/bson.c:10189
+#, c-format
+msgid "No such reader type: %02x\n"
+msgstr ""
+
+#: rpmio/bson.c:10262
+#, fuzzy, c-format
+msgid "Reader type cannot be reset\n"
+msgstr "无法移除软件包“%s”\n"
 
 #: rpmio/iosm.c:1869
 #, c-format
@@ -4146,6 +4265,648 @@ msgstr " 编号 %d"
 #, c-format
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s：解析 正则表达式%s 时发生错误：%s\n"
+
+#: rpmio/mongoc.c:309
+#, c-format
+msgid "Failed to read %<PRIu64> bytes from socket within %d milliseconds."
+msgstr ""
+
+#: rpmio/mongoc.c:377
+#, c-format
+msgid "Failed to buffer %u bytes within %d milliseconds."
+msgstr ""
+
+#: rpmio/mongoc.c:388
+#, c-format
+msgid "Could only buffer %u of %u bytes in %d milliseconds."
+msgstr ""
+
+#: rpmio/mongoc.c:1796
+msgid "Received rpc other than OP_REPLY."
+msgstr ""
+
+#: rpmio/mongoc.c:1808
+#, fuzzy
+msgid "Unknown query failure."
+msgstr "未知文件类型"
+
+#: rpmio/mongoc.c:1826
+#, fuzzy
+msgid "Failed to decode document from the server."
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:1835
+msgid "The cursor is invalid or has expired."
+msgstr ""
+
+#: rpmio/mongoc.c:2262
+msgid ""
+"mongoc_bulk_operation_execute() requires a client and one has not been set."
+msgstr ""
+
+#: rpmio/mongoc.c:2269
+msgid ""
+"mongoc_bulk_operation_execute() requires a database and one has not been set."
+msgstr ""
+
+#: rpmio/mongoc.c:2276
+msgid ""
+"mongoc_bulk_operation_execute() requires a collection and one has not been "
+"set."
+msgstr ""
+
+#: rpmio/mongoc.c:2289
+msgid "Cannot do an empty bulk write"
+msgstr ""
+
+#: rpmio/mongoc.c:2508
+#, fuzzy, c-format
+msgid "Failed to resolve %s"
+msgstr "解析符号 %s 失败 : %s\n"
+
+#: rpmio/mongoc.c:2556
+#, fuzzy, c-format
+msgid "Failed to connect to target host: %s"
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:2595 rpmio/mongoc.c:32572
+msgid "UNIX domain sockets not supported on win32."
+msgstr ""
+
+#: rpmio/mongoc.c:2618 rpmio/mongoc.c:32595
+#, fuzzy
+msgid "Failed to create socket."
+msgstr "创建目录失败"
+
+#: rpmio/mongoc.c:2630
+#, fuzzy
+msgid "Failed to connect to UNIX domain socket."
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:2682
+msgid "SSL is not enabled in this build of mongo-c-driver."
+msgstr ""
+
+#: rpmio/mongoc.c:2702
+#, fuzzy, c-format
+msgid "Invalid address family: 0x%02x"
+msgstr "无效的 capability：%s\n"
+
+#: rpmio/mongoc.c:2719
+msgid "Failed initialize TLS state."
+msgstr ""
+
+#: rpmio/mongoc.c:2731
+msgid "Failed to handshake and validate TLS certificate."
+msgstr ""
+
+#: rpmio/mongoc.c:2870
+msgid "An unknown error ocurred on the server."
+msgstr ""
+
+#: rpmio/mongoc.c:2939
+msgid "Received message other than OP_REPLY."
+msgstr ""
+
+#: rpmio/mongoc.c:4171
+msgid "Cannot use read preferences with for_writes = true"
+msgstr ""
+
+#: rpmio/mongoc.c:4606 rpmio/mongoc.c:6638
+msgid "A cursor derived from this client is in exhaust."
+msgstr ""
+
+#: rpmio/mongoc.c:4623
+#, fuzzy, c-format
+msgid "Failed to send \"%s\" command with database \"%s\": %s"
+msgstr "无法打开数据库 “%s”: %s"
+
+#: rpmio/mongoc.c:4655 rpmio/mongoc.c:25057
+#, fuzzy
+msgid "Failed to decode reply BSON document."
+msgstr "无法对策略文件编码： %s\n"
+
+#: rpmio/mongoc.c:4697 rpmio/mongoc.c:24996 rpmio/mongoc.c:25039
+#: rpmio/mongoc.c:25049
+msgid "Invalid reply from server."
+msgstr ""
+
+#: rpmio/mongoc.c:5016
+msgid "Invalid reply from getnonce"
+msgstr ""
+
+#: rpmio/mongoc.c:5256
+msgid "Received invalid SASL reply from MongoDB server."
+msgstr ""
+
+#: rpmio/mongoc.c:5266
+msgid "SASL reply from MongoDB is too large."
+msgstr ""
+
+#: rpmio/mongoc.c:5344
+msgid "failed base64 encoding message"
+msgstr ""
+
+#: rpmio/mongoc.c:5391
+msgid "cannot determine username for X-509 authentication."
+msgstr ""
+
+#: rpmio/mongoc.c:5525
+msgid "SCRAM reply from MongoDB is too large."
+msgstr ""
+
+#: rpmio/mongoc.c:5598 rpmio/mongoc.c:5608
+#, c-format
+msgid ""
+"The \"%s\" authentication mechanism requires libmongoc built with --enable-"
+"ssl"
+msgstr ""
+
+#: rpmio/mongoc.c:5618
+#, c-format
+msgid ""
+"The \"%s\" authentication mechanism requires libmongoc built with --enable-"
+"sasl"
+msgstr ""
+
+#: rpmio/mongoc.c:5627
+#, c-format
+msgid "Unknown authentication mechanism \"%s\"."
+msgstr ""
+
+#: rpmio/mongoc.c:5804
+#, fuzzy, c-format
+msgid "Could not find node %s"
+msgstr "无法下载 %s\n"
+
+#: rpmio/mongoc.c:5823
+#, fuzzy, c-format
+msgid "Could not find stream for node %s"
+msgstr "无法打开事务后脚本：%s\n"
+
+#: rpmio/mongoc.c:5964 rpmio/mongoc.c:32552
+#, fuzzy, c-format
+msgid "Failed to connect to target host: '%s'"
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:6543
+msgid "Stream is closed"
+msgstr ""
+
+#: rpmio/mongoc.c:6672
+#, c-format
+msgid ""
+"Attempted to send an RPC larger than the max allowed message size. Was %u, "
+"allowed %u."
+msgstr ""
+
+#: rpmio/mongoc.c:6807
+msgid "Corrupt or malicious reply received."
+msgstr ""
+
+#: rpmio/mongoc.c:6831
+#, fuzzy
+msgid "Failed to decode reply from server."
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:7187
+msgid "Failed to append \"pipeline\" to create command."
+msgstr ""
+
+#: rpmio/mongoc.c:7220
+msgid "Failed to append \"batchSize\" or \"cursor\" to create command."
+msgstr ""
+
+#: rpmio/mongoc.c:7234 rpmio/mongoc.c:7506 rpmio/mongoc.c:10053
+msgid "The selected server does not support readConcern"
+msgstr ""
+
+#: rpmio/mongoc.c:7712 rpmio/mongoc.c:7810
+msgid "Cannot generate index name from invalid `keys` argument"
+msgstr ""
+
+#: rpmio/mongoc.c:8069 rpmio/mongoc.c:8162
+msgid "A document was corrupt or contained invalid characters . or $"
+msgstr ""
+
+#: rpmio/mongoc.c:8249 rpmio/mongoc.c:22863
+msgid "update document is corrupt or contains invalid keys including $ or ."
+msgstr ""
+
+#: rpmio/mongoc.c:8323
+msgid "Failed to append bson to create update."
+msgstr ""
+
+#: rpmio/mongoc.c:8699
+msgid "'full' must be a boolean value."
+msgstr ""
+
+#: rpmio/mongoc.c:8759
+#, fuzzy, c-format
+msgid "\"%s\" is an invalid collection name."
+msgstr "%s：%s：选项名称无效\n"
+
+#: rpmio/mongoc.c:8838
+msgid "'scale' must be an int32 value."
+msgstr ""
+
+#: rpmio/mongoc.c:8967 rpmio/mongoc.c:23182
+msgid "The write concern is invalid."
+msgstr ""
+
+#: rpmio/mongoc.c:8996
+#, c-format
+msgid "Write Concern error: %s"
+msgstr ""
+
+#: rpmio/mongoc.c:9824
+msgid "Cannot specify MONGOC_QUERY_EXHAUST and set a limit."
+msgstr ""
+
+#: rpmio/mongoc.c:9835
+msgid "Cannot specify MONGOC_QUERY_EXHAUST with sharded cluster."
+msgstr ""
+
+#: rpmio/mongoc.c:9849
+msgid "$explain must be a boolean."
+msgstr ""
+
+#: rpmio/mongoc.c:9860
+msgid "$snapshot must be a boolean."
+msgstr ""
+
+#: rpmio/mongoc.c:9886
+msgid ""
+"Cannot mix top-level query with dollar keys such as $orderby. Use {$query: "
+"{},...} instead."
+msgstr ""
+
+#: rpmio/mongoc.c:10262 rpmio/mongoc.c:10724
+#, c-format
+msgid "Invalid opcode. Expected %d, got %d."
+msgstr ""
+
+#: rpmio/mongoc.c:10271
+#, c-format
+msgid "Invalid response_to for query. Expected %d, got %d."
+msgstr ""
+
+#: rpmio/mongoc.c:10375
+msgid "empty string is not a valid query operator"
+msgstr ""
+
+#: rpmio/mongoc.c:10598
+msgid "No valid cursor was provided."
+msgstr ""
+
+#: rpmio/mongoc.c:10733
+#, c-format
+msgid "Invalid response_to for getmore. Expected %d, got %d."
+msgstr ""
+
+#: rpmio/mongoc.c:10833
+msgid "Another cursor derived from this client is in exhaust."
+msgstr ""
+
+#: rpmio/mongoc.c:10884
+msgid "Cannot advance a completed or failed cursor."
+msgstr ""
+
+#: rpmio/mongoc.c:11342
+#, c-format
+msgid "Invalid reply to %s command."
+msgstr ""
+
+#: rpmio/mongoc.c:11578
+msgid "Couldn't parse cursor document"
+msgstr ""
+
+#: rpmio/mongoc.c:12374
+msgid "On legacy servers, a filter on name can only be a string."
+msgstr ""
+
+#: rpmio/mongoc.c:12532
+#, c-format
+msgid "The namespace \"%s\" is invalid."
+msgstr ""
+
+#: rpmio/mongoc.c:12543
+msgid "The argument \"capped\" must be a boolean."
+msgstr ""
+
+#: rpmio/mongoc.c:12554
+msgid "The argument \"autoIndexId\" must be a boolean."
+msgstr ""
+
+#: rpmio/mongoc.c:12564
+msgid "The argument \"size\" must be an integer."
+msgstr ""
+
+#: rpmio/mongoc.c:12571
+msgid "The \"size\" parameter requires {\"capped\": true}"
+msgstr ""
+
+#: rpmio/mongoc.c:12582
+msgid "The argument \"max\" must be an integer."
+msgstr ""
+
+#: rpmio/mongoc.c:12589
+msgid "The \"max\" parameter requires {\"capped\": true}"
+msgstr ""
+
+#: rpmio/mongoc.c:12599
+msgid "The \"storage\" parameter must be a document"
+msgstr ""
+
+#: rpmio/mongoc.c:12609 rpmio/mongoc.c:12625
+msgid ""
+"The \"wiredtiger\" option must take a document argument with a \"configString"
+"\" field"
+msgstr ""
+
+#: rpmio/mongoc.c:12618
+msgid "The \"configString\" parameter must be a string"
+msgstr ""
+
+#: rpmio/mongoc.c:12642
+msgid "The argument \"options\" is corrupt or invalid."
+msgstr ""
+
+#: rpmio/mongoc.c:12652
+msgid "Failed to append \"options\" to create command."
+msgstr ""
+
+#: rpmio/mongoc.c:13011
+msgid "A non-NULL filename must be specified."
+msgstr ""
+
+#: rpmio/mongoc.c:13850
+#, c-format
+msgid "missing chunk number %<PRId32>"
+msgstr ""
+
+#: rpmio/mongoc.c:15033
+msgid "Document contains no operations."
+msgstr ""
+
+#: rpmio/mongoc.c:15077 rpmio/mongoc.c:15148
+#, fuzzy, c-format
+msgid "Invalid operator \"%s\""
+msgstr "错误的操作"
+
+#: rpmio/mongoc.c:15128
+#, c-format
+msgid "Invalid value for operator \"%s\""
+msgstr ""
+
+#: rpmio/mongoc.c:15197
+msgid "Invalid logical operator."
+msgstr ""
+
+#: rpmio/mongoc.c:15210 rpmio/mongoc.c:15235
+msgid "Expected document in value."
+msgstr ""
+
+#: rpmio/mongoc.c:17114
+msgid "SASL Failure: insufficient memory."
+msgstr ""
+
+#: rpmio/mongoc.c:17120
+msgid "SASL Failure: failure to negotiate mechanism"
+msgstr ""
+
+#: rpmio/mongoc.c:17126
+msgid "Bad parameter supplied. Please file a bug with mongo-c-driver."
+msgstr ""
+
+#: rpmio/mongoc.c:17133
+#, c-format
+msgid "SASL Failure: (%d): %s"
+msgstr ""
+
+#: rpmio/mongoc.c:17189
+#, c-format
+msgid "SASL Failure: invalid mechanism \"%s\""
+msgstr ""
+
+#: rpmio/mongoc.c:17231
+msgid "SASL Failure: maximum steps detected"
+msgstr ""
+
+#: rpmio/mongoc.c:17239
+msgid "SASL Failure: no payload provided from server."
+msgstr ""
+
+#: rpmio/mongoc.c:19340
+#, c-format
+msgid "Failure during socket delivery: %s (%d)"
+msgstr ""
+
+#: rpmio/mongoc.c:19348
+#, c-format
+msgid ""
+"Failure to send all requested bytes (only sent: %<PRIu64>/%<PRId64> in %dms) "
+"during socket delivery"
+msgstr ""
+
+#: rpmio/mongoc.c:22450
+msgid "Cannot do an empty delete."
+msgstr ""
+
+#: rpmio/mongoc.c:22557
+#, c-format
+msgid ""
+"Document %u is too large for the cluster. Document is %u bytes, max is %d."
+msgstr ""
+
+#: rpmio/mongoc.c:22626
+msgid "Cannot do an empty insert."
+msgstr ""
+
+#: rpmio/mongoc.c:22780
+#, fuzzy, c-format
+msgid "Cannot do an empty %s"
+msgstr "无法打开 %s：%s\n"
+
+#: rpmio/mongoc.c:22872
+msgid "updates is malformed."
+msgstr ""
+
+#: rpmio/mongoc.c:23049
+msgid "Cannot set bypassDocumentValidation for unacknowledged writes"
+msgstr ""
+
+#: rpmio/mongoc.c:23649
+#, fuzzy, c-format
+msgid "Multiple %s errors: "
+msgstr "致命错误："
+
+#: rpmio/mongoc.c:24741
+msgid "Failed to verify TLS cert."
+msgstr ""
+
+#: rpmio/mongoc.c:24749
+msgid "Failed to initialize TLS state."
+msgstr ""
+
+#: rpmio/mongoc.c:24939
+#, fuzzy
+msgid "Failed to write rpc bytes."
+msgstr "写入所有数据到 %s 时失败\n"
+
+#: rpmio/mongoc.c:24976
+#, fuzzy
+msgid "Failed to receive length header from server."
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:24983 rpmio/mongoc.c:25027
+msgid "Server closed connection."
+msgstr ""
+
+#: rpmio/mongoc.c:25020
+#, fuzzy
+msgid "Failed to receive rpc bytes from server."
+msgstr "连接到服务器时失败"
+
+#: rpmio/mongoc.c:26945
+msgid ""
+"SCRAM Failure: could not generate a cryptographically secure nonce in sasl "
+"step 1"
+msgstr ""
+
+#: rpmio/mongoc.c:26957
+msgid "SCRAM Failure: could not encode nonce"
+msgstr ""
+
+#: rpmio/mongoc.c:27026
+msgid "SCRAM Failure: could not buffer auth message in sasl step1"
+msgstr ""
+
+#: rpmio/mongoc.c:27034
+msgid "SCRAM Failure: could not buffer sasl step1"
+msgstr ""
+
+#: rpmio/mongoc.c:27226
+#, c-format
+msgid "SCRAM Failure: unknown key (%c) in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27238
+msgid "SCRAM Failure: invalid parse state in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27268
+msgid "SCRAM Failure: no r param in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27277
+msgid "SCRAM Failure: no s param in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27286
+msgid "SCRAM Failure: no i param in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27297
+msgid "SCRAM Failure: client nonce not repeated in sasl step 2"
+msgstr ""
+
+#: rpmio/mongoc.c:27330
+msgid "SCRAM Failure: unable to decode salt in sasl step2"
+msgstr ""
+
+#: rpmio/mongoc.c:27338
+#, c-format
+msgid "SCRAM Failure: invalid salt length of %d in sasl step2"
+msgstr ""
+
+#: rpmio/mongoc.c:27351
+msgid "SCRAM Failure: unable to parse iterations in sasl step2"
+msgstr ""
+
+#: rpmio/mongoc.c:27367
+msgid "SCRAM Failure: could not buffer auth message in sasl step2"
+msgstr ""
+
+#: rpmio/mongoc.c:27375
+msgid "SCRAM Failure: could not buffer sasl step2"
+msgstr ""
+
+#: rpmio/mongoc.c:27475
+#, c-format
+msgid "SCRAM Failure: unknown key (%c) in sasl step 3"
+msgstr ""
+
+#: rpmio/mongoc.c:27487
+msgid "SCRAM Failure: invalid parse state in sasl step 3"
+msgstr ""
+
+#: rpmio/mongoc.c:27518
+#, c-format
+msgid "SCRAM Failure: authentication failure in sasl step 3 : %s"
+msgstr ""
+
+#: rpmio/mongoc.c:27527
+msgid "SCRAM Failure: no v param in sasl step 3"
+msgstr ""
+
+#: rpmio/mongoc.c:27535
+msgid "SCRAM Failure: could not verify server signature in sasl step 3"
+msgstr ""
+
+#: rpmio/mongoc.c:27585
+msgid "SCRAM Failure: maximum steps detected"
+msgstr ""
+
+#: rpmio/mongoc.c:30316
+msgid "No suitable servers found: `minheartbeatfrequencyms` not reached yet"
+msgstr ""
+
+#: rpmio/mongoc.c:30348
+#, c-format
+msgid "No suitable servers found (`serverselectiontryonce` set): %s"
+msgstr ""
+
+#: rpmio/mongoc.c:30354
+msgid "No suitable servers found (`serverselectiontryonce` set)"
+msgstr ""
+
+#: rpmio/mongoc.c:30367
+msgid "No suitable servers found: `serverselectiontimeoutms` timed out"
+msgstr ""
+
+#: rpmio/mongoc.c:30401 rpmio/mongoc.c:30418
+msgid "Timed out trying to select a server"
+msgstr ""
+
+#: rpmio/mongoc.c:30407
+#, fuzzy, c-format
+msgid "Unknown error '%d' received while waiting on thread condition"
+msgstr "遇到未知错误 %d 在处理包 %s 时"
+
+#: rpmio/mongoc.c:31355
+#, fuzzy, c-format
+msgid "Could not find description for node %u"
+msgstr "无法打开触发运行脚本文件：%s\n"
+
+#: rpmio/mongoc.c:31844
+msgid "member's setVersion or electionId is stale"
+msgstr ""
+
+#: rpmio/mongoc.c:32462
+#, c-format
+msgid "%s calling ismaster on '%s'"
+msgstr ""
+
+#: rpmio/mongoc.c:32520
+#, fuzzy, c-format
+msgid "Failed to resolve '%s'"
+msgstr "解析符号 %s 失败 : %s\n"
+
+#: rpmio/mongoc.c:32611
+#, fuzzy, c-format
+msgid "Failed to connect to UNIX domain socket: %s"
+msgstr "连接到服务器时失败"
 
 #: rpmio/poptIO.c:158
 msgid "MD2 digest (RFC-1319)"
@@ -5049,6 +5810,164 @@ msgstr "离开程序"
 msgid "Print this help text"
 msgstr "打印这份说明文本"
 
+#: rpmio/rpmct.c:248
+#, c-format
+msgid "%s not overwritten\n"
+msgstr ""
+
+#: rpmio/rpmct.c:455
+#, c-format
+msgid "Fts_read: %s: directory causes a cycle\n"
+msgstr ""
+
+#: rpmio/rpmct.c:503
+#, c-format
+msgid "%s%s: name too long (not copied)\n"
+msgstr ""
+
+#: rpmio/rpmct.c:555
+#, c-format
+msgid "%s and %s are identical (not copied).\n"
+msgstr ""
+
+#: rpmio/rpmct.c:563
+#, c-format
+msgid "cannot overwrite directory %s with non-directory %s\n"
+msgstr ""
+
+#: rpmio/rpmct.c:591
+#, fuzzy, c-format
+msgid "%s is a directory (not copied).\n"
+msgstr "%s: 没有设置 chroot 目录\n"
+
+#: rpmio/rpmct.c:636
+#, c-format
+msgid "%s is a socket (not copied).\n"
+msgstr ""
+
+#: rpmio/rpmct.c:738 rpmio/rpmz.c:1684 tools/rpmdigest.c:836
+#: tools/rpmgrep.c:1282 tools/rpmmtree.c:3535 tools/rpmwget.c:1098
+#: tools/semodule.c:83 tools/spooktool.c:286
+#, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "%s：不明选项 -%c\n"
+
+#: rpmio/rpmct.c:753
+msgid "Follow command-line symbolic links"
+msgstr "跟随命令行符号链接"
+
+#: rpmio/rpmct.c:755
+msgid "Always follow symbolic links"
+msgstr "一律跟随符号链接"
+
+#: rpmio/rpmct.c:757
+msgid "Never follow symbolic links"
+msgstr "永不跟随符号链接"
+
+#: rpmio/rpmct.c:759 rpmio/rpmct.c:761
+msgid "Copy directories recursively"
+msgstr "递归复制目录"
+
+#: rpmio/rpmct.c:763
+msgid "Archive mode (same as -RpP)"
+msgstr "归档模式 (如同 -RpP)"
+
+#: rpmio/rpmct.c:765
+msgid "Unlink and retry if 1st open fails"
+msgstr "如果首次打开失败就取消链接并重试"
+
+#: rpmio/rpmct.c:767
+msgid "Prompt before overwriting a file"
+msgstr "覆写文件之前先提示"
+
+#: rpmio/rpmct.c:769
+msgid "Link files instead of copying"
+msgstr "以链接文件代替复制"
+
+#: rpmio/rpmct.c:771
+msgid "Do not overwrite an existing file"
+msgstr "不覆写现有文件"
+
+#: rpmio/rpmct.c:773
+msgid "Preserve mode/ownership/timestamps"
+msgstr "保留模式/所有权/时间戳记"
+
+#: rpmio/rpmct.c:775
+msgid "Stay on thgis file system"
+msgstr "保持于这个文件系统"
+
+#: rpmio/rpmct.c:885
+#, fuzzy, c-format
+msgid "%s: name too long\n"
+msgstr "%s：打开 %s 时失败\n"
+
+#: rpmio/rpmct.c:926 rpmio/rpmct.c:964
+#, fuzzy, c-format
+msgid "%s is not a directory\n"
+msgstr "此路径不是一个目录: %s\n"
+
+#: rpmio/rpmct.c:962
+#, fuzzy, c-format
+msgid "directory %s does not exist\n"
+msgstr "目录 %s 不存在。"
+
+#: rpmio/rpmdate.c:63
+msgid "Display time described by STRING."
+msgstr ""
+
+#: rpmio/rpmdate.c:63 rpmio/rpmdate.c:69 tools/rpmwget.c:1262
+#: tools/rpmwget.c:1286
+msgid "STRING"
+msgstr "STRING"
+
+#: rpmio/rpmdate.c:65
+msgid "Like --date, once for each line of DATEFILE."
+msgstr ""
+
+#: rpmio/rpmdate.c:65
+#, fuzzy
+msgid "DATEFILE"
+msgstr "FILE"
+
+#: rpmio/rpmdate.c:67
+msgid "Set time from FILE mtime."
+msgstr ""
+
+#: rpmio/rpmdate.c:69
+msgid "Set time described by STRING."
+msgstr ""
+
+#: rpmio/rpmdate.c:71 rpmio/rpmdate.c:73
+msgid "Output date and time in RFC 2822 format."
+msgstr ""
+
+#: rpmio/rpmdate.c:75
+msgid "Output date and time in RFC 3339 format."
+msgstr ""
+
+#: rpmio/rpmdate.c:75
+msgid "<hours|minutes|date|seconds|ns>"
+msgstr ""
+
+#: rpmio/rpmdate.c:77 rpmio/rpmdate.c:79 rpmio/rpmdate.c:81
+msgid "Print or set Coordinated Universal Time."
+msgstr ""
+
+#: rpmio/rpmdate.c:122
+#, fuzzy, c-format
+msgid "%s: Fopen failed\n"
+msgstr "%s: 打开失败：%s\n"
+
+#: rpmio/rpmdate.c:149 rpmio/rpmdate.c:212
+#, fuzzy
+msgid "invalid data\n"
+msgstr "无效类型"
+
+#: rpmio/rpmdate.c:156
+#, fuzzy
+msgid "cannot set date\n"
+msgstr "无法创建 %s: %s\n"
+
 #: rpmio/rpmdav.c:1066
 msgid "Authorization Required"
 msgstr "授权必要"
@@ -5064,6 +5983,21 @@ msgstr "服务器错误"
 #: rpmio/rpmdav.c:1072
 msgid "Unknown Error"
 msgstr "不明的错误"
+
+#: rpmio/rpmgfs.c:523
+#, fuzzy, c-format
+msgid "Failed to open \"%s\", aborting.\n"
+msgstr "dlopen 失败 %s %s\n"
+
+#: rpmio/rpmgfs.c:537
+#, fuzzy, c-format
+msgid "Failed to write %u bytes to %s\n"
+msgstr "写入所有数据到 %s 时失败\n"
+
+#: rpmio/rpmgfs.c:772
+#, c-format
+msgid "*** Configure mongodb authentication?\n"
+msgstr ""
 
 #: rpmio/rpmgit.c:1085
 msgid "Create a bare repository."
@@ -5640,6 +6574,18 @@ msgstr "不明的或非预期错误"
 msgid "Malformed URL"
 msgstr "异常的 URL"
 
+#: rpmio/rpmjni.cc:247
+#, c-format
+msgid "*** %s: bsh/Interpreter not found.\n"
+msgstr ""
+
+#: rpmio/rpmjni.cc:248
+#, c-format
+msgid ""
+"*** Install bsh-2.0b6.jar from Apache Extras at\n"
+"\thttps://github.com/beanshell/beanshell\n"
+msgstr ""
+
 #: rpmio/rpmjs.cpp:565
 #, fuzzy
 msgid "Allow (read-only) access to caller's environment"
@@ -5775,6 +6721,77 @@ msgstr "%s(%p[%u],%d) 失败：%m\n"
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr "%s(%d,%d,0x%x,0x%x) 失败：%m\n"
+
+#: rpmio/rpmsed.c:118
+#, fuzzy, c-format
+msgid "%s: Fopen(%s, \"r.fpio\") failed\n"
+msgstr "%s: Fread(%s) 失败：%s\n"
+
+#: rpmio/rpmsed.c:184
+#, fuzzy, c-format
+msgid "%s: fwrite failed\n"
+msgstr "%s: Fwrite 失败: %s\n"
+
+#: rpmio/rpmsed.c:204
+msgid "Add the SUBCMD to the commands to be executed"
+msgstr ""
+
+#: rpmio/rpmsed.c:204
+msgid "SUBCMD"
+msgstr ""
+
+#: rpmio/rpmsed.c:206
+#, fuzzy
+msgid "Append commands to be executed from FILE"
+msgstr "执行前显示命令"
+
+#: rpmio/rpmsed.c:208
+#, fuzzy
+msgid "Follow symlinks when processing"
+msgstr "跟随符号链接"
+
+#: rpmio/rpmsed.c:210
+#, fuzzy
+msgid "Edit files in-place"
+msgstr "列出软件包中的文件"
+
+#: rpmio/rpmsed.c:210
+msgid "SUFFIX"
+msgstr ""
+
+#: rpmio/rpmsed.c:212
+msgid "Use copy instead of rename"
+msgstr ""
+
+#: rpmio/rpmsed.c:214
+msgid "Specify the desired line-wrap length"
+msgstr ""
+
+#: rpmio/rpmsed.c:214
+msgid "N"
+msgstr ""
+
+#: rpmio/rpmsed.c:216
+msgid "Disable all GNU extensions"
+msgstr ""
+
+#: rpmio/rpmsed.c:218
+#, fuzzy
+msgid "Use extended regular expressions"
+msgstr "? 预期于表达式中"
+
+#: rpmio/rpmsed.c:220
+msgid "Consider files as separate rather than continuous"
+msgstr ""
+
+#: rpmio/rpmsed.c:222
+msgid "Load minimal amounts of data"
+msgstr ""
+
+#: rpmio/rpmsed.c:318
+#, c-format
+msgid "Fopen(%s, \"r.fpio\") failed\n"
+msgstr ""
 
 #: rpmio/rpmsql.c:2936
 #, c-format
@@ -6105,13 +7122,6 @@ msgstr "%s：不明的完整性检查方法“%s”\n"
 msgid "%s: Unknown file format type \"%s\"\n"
 msgstr "%s：不明的文件类型“%s”\n"
 
-#: rpmio/rpmz.c:1684 tools/rpmdigest.c:836 tools/rpmgrep.c:1282
-#: tools/rpmmtree.c:3535 tools/rpmwget.c:1098 tools/semodule.c:83
-#: tools/spooktool.c:286
-#, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "%s：不明选项 -%c\n"
-
 #: rpmio/rpmz.c:1713
 msgid "LZMA1 filter"
 msgstr "LZMA1 过滤器"
@@ -6414,6 +7424,143 @@ msgstr "错误：%sport 必须是数字\n"
 #: rpmio/url.c:591
 msgid "url port must be a number\n"
 msgstr "网址连接端口必须是数字\n"
+
+#: rpmio/yajl.c:155
+#, fuzzy
+msgid "unknown"
+msgstr "(未知)"
+
+#: rpmio/yajl.c:158 rpmio/yajl.c:1515
+#, fuzzy
+msgid "ok, no error"
+msgstr "(没有错误)"
+
+#: rpmio/yajl.c:161
+msgid "client canceled parse"
+msgstr ""
+
+#: rpmio/yajl.c:164
+#, fuzzy
+msgid "parse error"
+msgstr "服务器错误"
+
+#: rpmio/yajl.c:1517
+msgid "invalid bytes in UTF8 string."
+msgstr ""
+
+#: rpmio/yajl.c:1519
+msgid "inside a string, '\\' occurs before a character which it may not."
+msgstr ""
+
+#: rpmio/yajl.c:1522
+msgid "invalid character inside string."
+msgstr ""
+
+#: rpmio/yajl.c:1524
+msgid "invalid (non-hex) character occurs after '\\u' inside string."
+msgstr ""
+
+#: rpmio/yajl.c:1527
+#, fuzzy
+msgid "invalid char in json text."
+msgstr "(无效 json 类型)"
+
+#: rpmio/yajl.c:1529
+#, fuzzy
+msgid "invalid string in json text."
+msgstr "(无效字串：rpn)"
+
+#: rpmio/yajl.c:1531
+msgid "malformed number, a digit is required after the exponent."
+msgstr ""
+
+#: rpmio/yajl.c:1533
+msgid "malformed number, a digit is required after the decimal point."
+msgstr ""
+
+#: rpmio/yajl.c:1536
+msgid "malformed number, a digit is required after the minus sign."
+msgstr ""
+
+#: rpmio/yajl.c:1539
+msgid "probable comment found in input text, comments are not enabled."
+msgstr ""
+
+#: rpmio/yajl.c:1542
+#, fuzzy
+msgid "unknown error code"
+msgstr "不明的错误"
+
+#: rpmio/yajl.c:1630
+msgid "                     (right here) ------^\n"
+msgstr ""
+
+#: rpmio/yajl.c:1710
+msgid "client cancelled parse via callback return value"
+msgstr ""
+
+#: rpmio/yajl.c:1735
+msgid "premature EOF"
+msgstr ""
+
+#: rpmio/yajl.c:1766
+msgid "trailing garbage"
+msgstr ""
+
+#: rpmio/yajl.c:1850
+msgid "integer overflow"
+msgstr ""
+
+#: rpmio/yajl.c:1878
+msgid "numeric (floating point) overflow"
+msgstr ""
+
+#: rpmio/yajl.c:1909
+msgid "unallowed token at this point in JSON text"
+msgstr ""
+
+#: rpmio/yajl.c:1913
+#, fuzzy
+msgid "invalid token, internal error"
+msgstr "内部错误"
+
+#: rpmio/yajl.c:1974
+msgid "invalid object key (must be a string)"
+msgstr ""
+
+#: rpmio/yajl.c:1992
+msgid "object key and value must be separated by a colon (':')"
+msgstr ""
+
+#: rpmio/yajl.c:2017
+msgid "after key and value, inside map, I expect ',' or '}'"
+msgstr ""
+
+#: rpmio/yajl.c:2046
+msgid "after array element, I expect ',' or ']'"
+msgstr ""
+
+#: rpmio/yajl.c:2150 rpmio/yajl.c:2200 rpmio/yajl.c:2205 rpmio/yajl.c:2232
+#: rpmio/yajl.c:2309 rpmio/yajl.c:2315 rpmio/yajl.c:2330 rpmio/yajl.c:2336
+#: rpmio/yajl.c:2364 rpmio/yajl.c:2390 rpmio/yajl.c:2415 rpmio/yajl.c:2426
+msgid "Out of memory"
+msgstr ""
+
+#: rpmio/yajl.c:2170
+msgid "context_pop: Bottom of stack reached prematurely"
+msgstr ""
+
+#: rpmio/yajl.c:2272
+#, c-format
+msgid "context_add_value: Object key is not a string (%#04x)"
+msgstr ""
+
+#: rpmio/yajl.c:2296
+#, c-format
+msgid ""
+"context_add_value: Cannot add value to a value of type %#04x (not a "
+"composite type)"
+msgstr ""
 
 #: tools/augtool.c:333
 msgid "Options:"
@@ -8160,10 +9307,6 @@ msgstr "忽略“Content-Length”头部字段。"
 msgid "insert STRING among the headers."
 msgstr "在头部之间插入字串。"
 
-#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
-msgid "STRING"
-msgstr "STRING"
-
 #: tools/rpmwget.c:1264
 msgid "maximum redirections allowed per page."
 msgstr "每页允许的最大重新导向值。"
@@ -8538,39 +9681,6 @@ msgstr "离开程序。"
 #~ msgid "Success"
 #~ msgstr "成功"
 
-#~ msgid "Follow command-line symbolic links"
-#~ msgstr "跟随命令行符号链接"
-
-#~ msgid "Always follow symbolic links"
-#~ msgstr "一律跟随符号链接"
-
-#~ msgid "Never follow symbolic links"
-#~ msgstr "永不跟随符号链接"
-
-#~ msgid "Copy directories recursively"
-#~ msgstr "递归复制目录"
-
-#~ msgid "Archive mode (same as -RpP)"
-#~ msgstr "归档模式 (如同 -RpP)"
-
-#~ msgid "Unlink and retry if 1st open fails"
-#~ msgstr "如果首次打开失败就取消链接并重试"
-
-#~ msgid "Prompt before overwriting a file"
-#~ msgstr "覆写文件之前先提示"
-
-#~ msgid "Link files instead of copying"
-#~ msgstr "以链接文件代替复制"
-
-#~ msgid "Do not overwrite an existing file"
-#~ msgstr "不覆写现有文件"
-
-#~ msgid "Preserve mode/ownership/timestamps"
-#~ msgstr "保留模式/所有权/时间戳记"
-
-#~ msgid "Stay on thgis file system"
-#~ msgstr "保持于这个文件系统"
-
 #~ msgid "Change the access controls on a key"
 #~ msgstr "变更对于某密钥的访问控制"
 
@@ -8739,9 +9849,6 @@ msgstr "离开程序。"
 #~ msgid "Duplicate locale %s in %%lang(%s)\n"
 #~ msgstr "重复的 locale %s 在%%lang(%s) 中\n"
 
-#~ msgid "Invalid capability: %s\n"
-#~ msgstr "无效的 capability：%s\n"
-
 #~ msgid "File capability support not built in\n"
 #~ msgstr "无内建文件capability 支持\n"
 
@@ -8756,9 +9863,6 @@ msgstr "离开程序。"
 
 #~ msgid "Directory not found: %s\n"
 #~ msgstr "没有找到目录：%s\n"
-
-#~ msgid "Not a directory: %s\n"
-#~ msgstr "此路径不是一个目录: %s\n"
 
 #~ msgid "%s: failed to encode\n"
 #~ msgstr "%s：编码失败\n"
@@ -8831,12 +9935,6 @@ msgstr "离开程序。"
 
 #~ msgid "Downloading %s to %s\n"
 #~ msgstr "下载 %s 到 %s 中\n"
-
-#~ msgid "Couldn't download %s\n"
-#~ msgstr "无法下载 %s\n"
-
-#~ msgid "Unknown icon type: %s\n"
-#~ msgstr "未知的图标格式：%s\n"
 
 #~ msgid "line %d: Illegal char '%c' in: %s\n"
 #~ msgstr "行 %d：非法的字符 '%c' 在: %s 中\n"
@@ -8919,9 +10017,6 @@ msgstr "离开程序。"
 #~ msgid "Failed to read  policy file: %s\n"
 #~ msgstr "无法读取策略文件：%s\n"
 
-#~ msgid "Failed to encode policy file: %s\n"
-#~ msgstr "无法对策略文件编码： %s\n"
-
 #~ msgid "Failed to determine a policy name: %s\n"
 #~ msgstr "确定策略名称失败：%s\n"
 
@@ -8945,9 +10040,6 @@ msgstr "离开程序。"
 
 #~ msgid "failed to write all data to %s: %s\n"
 #~ msgstr "无法写入所有的数据到 %s：%s\n"
-
-#~ msgid "bad operator"
-#~ msgstr "错误的操作"
 
 #~ msgid "bad format"
 #~ msgstr "错误的格式"
@@ -9081,9 +10173,6 @@ msgstr "离开程序。"
 #~ msgid "Unable to open current directory: %m\n"
 #~ msgstr "无法打开当前目录：%m\n"
 
-#~ msgid "%s: chroot directory not set\n"
-#~ msgstr "%s: 没有设置 chroot 目录\n"
-
 #~ msgid "Unable to restore root directory: %m\n"
 #~ msgstr "无法恢复根目录：%m\n"
 
@@ -9155,12 +10244,6 @@ msgstr "离开程序。"
 
 #~ msgid "waiting for %s lock on %s\n"
 #~ msgstr "正在等候 %s 锁定 %s\n"
-
-#~ msgid "Failed to dlopen %s %s\n"
-#~ msgstr "dlopen 失败 %s %s\n"
-
-#~ msgid "Failed to resolve symbol %s: %s\n"
-#~ msgstr "解析符号 %s 失败 : %s\n"
 
 #~ msgid "Plugin %%__%s_%s not configured\n"
 #~ msgstr "插件 %%__%s_%s 未配置\n"
@@ -9369,9 +10452,6 @@ msgstr "离开程序。"
 
 #~ msgid "error creating temporary file %s: %m\n"
 #~ msgstr "临时文件创建失败 %s：%m\n"
-
-#~ msgid "failed to create directory"
-#~ msgstr "创建目录失败"
 
 #~ msgid "invalid syntax in lua scriptlet: %s\n"
 #~ msgstr "lua 脚本中存在无效的语法：%s\n"

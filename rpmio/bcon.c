@@ -724,7 +724,7 @@ _bson_concat_array (bson_t            *dest,
    r = bson_iter_init (&iter, src);
 
    if (!r) {
-      fprintf (stderr, "Invalid BSON document, possible memory coruption.\n");
+      fprintf (stderr, _("Invalid BSON document, possible memory coruption.\n"));
       return;
    }
 

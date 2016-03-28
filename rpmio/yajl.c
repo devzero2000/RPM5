@@ -152,16 +152,16 @@ YAJL_GNUC_CONST
 const char *
 yajl_status_to_string(yajl_status stat)
 {
-    const char * statStr = "unknown";
+    const char * statStr = N_("unknown");
     switch (stat) {
         case yajl_status_ok:
-            statStr = "ok, no error";
+            statStr = N_("ok, no error");
             break;
         case yajl_status_client_canceled:
-            statStr = "client canceled parse";
+            statStr = N_("client canceled parse");
             break;
         case yajl_status_error:
-            statStr = "parse error";
+            statStr = N_("parse error");
             break;
     }
     return statStr;
@@ -1512,34 +1512,34 @@ yajl_lex_error_to_string(yajl_lex_error error)
 {
     switch (error) {
         case yajl_lex_e_ok:
-            return "ok, no error";
+            return N_("ok, no error");
         case yajl_lex_string_invalid_utf8:
-            return "invalid bytes in UTF8 string.";
+            return N_("invalid bytes in UTF8 string.");
         case yajl_lex_string_invalid_escaped_char:
-            return "inside a string, '\\' occurs before a character "
-                   "which it may not.";
+            return N_("inside a string, '\\' occurs before a character "
+                   "which it may not.");
         case yajl_lex_string_invalid_json_char:
-            return "invalid character inside string.";
+            return N_("invalid character inside string.");
         case yajl_lex_string_invalid_hex_char:
-            return "invalid (non-hex) character occurs after '\\u' inside "
-                   "string.";
+            return N_("invalid (non-hex) character occurs after '\\u' inside "
+                   "string.");
         case yajl_lex_invalid_char:
-            return "invalid char in json text.";
+            return N_("invalid char in json text.");
         case yajl_lex_invalid_string:
-            return "invalid string in json text.";
+            return N_("invalid string in json text.");
         case yajl_lex_missing_integer_after_exponent:
-            return "malformed number, a digit is required after the exponent.";
+            return N_("malformed number, a digit is required after the exponent.");
         case yajl_lex_missing_integer_after_decimal:
-            return "malformed number, a digit is required after the "
-                   "decimal point.";
+            return N_("malformed number, a digit is required after the "
+                   "decimal point.");
         case yajl_lex_missing_integer_after_minus:
-            return "malformed number, a digit is required after the "
-                   "minus sign.";
+            return N_("malformed number, a digit is required after the "
+                   "minus sign.");
         case yajl_lex_unallowed_comment:
-            return "probable comment found in input text, comments are "
-                   "not enabled.";
+            return N_("probable comment found in input text, comments are "
+                   "not enabled.");
     }
-    return "unknown error code";
+    return N_("unknown error code");
 }
 
 
@@ -1627,7 +1627,7 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
     const char * errorType = NULL;
     const char * errorText = NULL;
     char text[72];
-    const char * arrow = "                     (right here) ------^\n";
+    const char * arrow = N_("                     (right here) ------^\n");
 
     if (yajl_bs_current(hand->stateStack) == yajl_state_parse_error) {
         errorType = "parse";
@@ -1707,7 +1707,7 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
     if (!(x)) {                                                   \
         yajl_bs_set(hand->stateStack, yajl_state_parse_error);    \
         hand->parseError =                                        \
-            "client cancelled parse via callback return value";   \
+            N_("client cancelled parse via callback return value");   \
         return yajl_status_client_canceled;                       \
     }
 
@@ -1732,7 +1732,7 @@ yajl_do_finish(yajl_handle hand)
             if (!(hand->flags & yajl_allow_partial_values))
             {
                 yajl_bs_set(hand->stateStack, yajl_state_parse_error);
-                hand->parseError = "premature EOF";
+                hand->parseError = N_("premature EOF");
                 return yajl_status_error;
             }
             return yajl_status_ok;
@@ -1763,7 +1763,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                                        offset, &buf, &bufLen);
                     if (tok != yajl_tok_eof) {
                         yajl_bs_set(hand->stateStack, yajl_state_parse_error);
-                        hand->parseError = "trailing garbage";
+                        hand->parseError = N_("trailing garbage");
                     }
                     goto around_again;
                 }
@@ -1847,7 +1847,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                             {
                                 yajl_bs_set(hand->stateStack,
                                             yajl_state_parse_error);
-                                hand->parseError = "integer overflow" ;
+                                hand->parseError = N_("integer overflow") ;
                                 /* try to restore error offset */
                                 if (*offset >= bufLen) *offset -= bufLen;
                                 else *offset = 0;
@@ -1875,8 +1875,8 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                             {
                                 yajl_bs_set(hand->stateStack,
                                             yajl_state_parse_error);
-                                hand->parseError = "numeric (floating point) "
-                                    "overflow";
+                                hand->parseError = N_("numeric (floating point) "
+                                    "overflow");
                                 /* try to restore error offset */
                                 if (*offset >= bufLen) *offset -= bufLen;
                                 else *offset = 0;
@@ -1906,11 +1906,11 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                 case yajl_tok_right_bracket:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
                     hand->parseError =
-                        "unallowed token at this point in JSON text";
+                        N_("unallowed token at this point in JSON text");
                     goto around_again;
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
-                    hand->parseError = "invalid token, internal error";
+                    hand->parseError = N_("invalid token, internal error");
                     goto around_again;
             }
             /* got a value.  transition depends on the state we're in. */
@@ -1971,7 +1971,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
                     hand->parseError =
-                        "invalid object key (must be a string)"; 
+                        N_("invalid object key (must be a string)"); 
                     goto around_again;
             }
         }
@@ -1989,8 +1989,8 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                     goto around_again;
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
-                    hand->parseError = "object key and value must "
-                        "be separated by a colon (':')";
+                    hand->parseError = N_("object key and value must "
+                        "be separated by a colon (':')");
                     goto around_again;
             }
         }
@@ -2014,8 +2014,8 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                     goto around_again;
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
-                    hand->parseError = "after key and value, inside map, "
-                                       "I expect ',' or '}'";
+                    hand->parseError = N_("after key and value, inside map, "
+                                       "I expect ',' or '}'");
                     /* try to restore error offset */
                     if (*offset >= bufLen) *offset -= bufLen;
                     else *offset = 0;
@@ -2043,7 +2043,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
                     hand->parseError =
-                        "after array element, I expect ',' or ']'";
+                        N_("after array element, I expect ',' or ']'");
                     goto around_again;
             }
         }
@@ -2147,7 +2147,7 @@ static int context_push(context_t *ctx, yajl_val v)
 
     stack = malloc (sizeof (*stack));
     if (stack == NULL)
-        RETURN_ERROR (ctx, ENOMEM, "Out of memory");
+        RETURN_ERROR (ctx, ENOMEM, _("Out of memory"));
     memset (stack, 0, sizeof (*stack));
 
     assert ((ctx->stack == NULL)
@@ -2167,8 +2167,8 @@ static yajl_val context_pop(context_t *ctx)
     yajl_val v;
 
     if (ctx->stack == NULL)
-        RETURN_ERROR (ctx, NULL, "context_pop: "
-                      "Bottom of stack reached prematurely");
+        RETURN_ERROR (ctx, NULL, _("context_pop: "
+                      "Bottom of stack reached prematurely"));
 
     stack = ctx->stack;
     ctx->stack = stack->next;
@@ -2197,12 +2197,12 @@ static int object_add_keyval(context_t *ctx,
 
     tmpk = realloc((void *) obj->u.object.keys, sizeof(*(obj->u.object.keys)) * (obj->u.object.len + 1));
     if (tmpk == NULL)
-        RETURN_ERROR(ctx, ENOMEM, "Out of memory");
+        RETURN_ERROR(ctx, ENOMEM, _("Out of memory"));
     obj->u.object.keys = tmpk;
 
     tmpv = realloc(obj->u.object.values, sizeof (*obj->u.object.values) * (obj->u.object.len + 1));
     if (tmpv == NULL)
-        RETURN_ERROR(ctx, ENOMEM, "Out of memory");
+        RETURN_ERROR(ctx, ENOMEM, _("Out of memory"));
     obj->u.object.values = tmpv;
 
     obj->u.object.keys[obj->u.object.len] = key;
@@ -2229,7 +2229,7 @@ static int array_add_value (context_t *ctx,
     tmp = realloc(array->u.array.values,
                   sizeof(*(array->u.array.values)) * (array->u.array.len + 1));
     if (tmp == NULL)
-        RETURN_ERROR(ctx, ENOMEM, "Out of memory");
+        RETURN_ERROR(ctx, ENOMEM, _("Out of memory"));
     array->u.array.values = tmp;
     array->u.array.values[array->u.array.len] = value;
     array->u.array.len++;
@@ -2269,8 +2269,8 @@ static int context_add_value (context_t *ctx, yajl_val v)
         if (ctx->stack->key == NULL)
         {
             if (!YAJL_IS_STRING (v))
-                RETURN_ERROR (ctx, EINVAL, "context_add_value: "
-                              "Object key is not a string (%#04x)",
+                RETURN_ERROR (ctx, EINVAL, _("context_add_value: "
+                              "Object key is not a string (%#04x)"),
                               v->type);
 
             ctx->stack->key = v->u.string;
@@ -2293,8 +2293,8 @@ static int context_add_value (context_t *ctx, yajl_val v)
     }
     else
     {
-        RETURN_ERROR (ctx, EINVAL, "context_add_value: Cannot add value to "
-                      "a value of type %#04x (not a composite type)",
+        RETURN_ERROR (ctx, EINVAL, _("context_add_value: Cannot add value to "
+                      "a value of type %#04x (not a composite type)"),
                       ctx->stack->value->type);
     }
 }
@@ -2306,13 +2306,13 @@ static int handle_string (void *ctx,
 
     v = value_alloc (yajl_t_string);
     if (v == NULL)
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     v->u.string = malloc (string_length + 1);
     if (v->u.string == NULL)
     {
         free (v);
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
     }
     memcpy(v->u.string, string, string_length);
     v->u.string[string_length] = 0;
@@ -2327,13 +2327,13 @@ static int handle_number (void *ctx, const char *string, size_t string_length)
 
     v = value_alloc(yajl_t_number);
     if (v == NULL)
-        RETURN_ERROR((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     v->u.number.r = malloc(string_length + 1);
     if (v->u.number.r == NULL)
     {
         free(v);
-        RETURN_ERROR((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
     }
     memcpy(v->u.number.r, string, string_length);
     v->u.number.r[string_length] = 0;
@@ -2361,7 +2361,7 @@ static int handle_start_map (void *ctx)
 
     v = value_alloc(yajl_t_object);
     if (v == NULL)
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     v->u.object.keys = NULL;
     v->u.object.values = NULL;
@@ -2387,7 +2387,7 @@ static int handle_start_array (void *ctx)
 
     v = value_alloc(yajl_t_array);
     if (v == NULL)
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     v->u.array.values = NULL;
     v->u.array.len = 0;
@@ -2412,7 +2412,7 @@ static int handle_boolean (void *ctx, int boolean_value)
 
     v = value_alloc (boolean_value ? yajl_t_true : yajl_t_false);
     if (v == NULL)
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     return ((context_add_value (ctx, v) == 0) ? STATUS_CONTINUE : STATUS_ABORT);
 }
@@ -2423,7 +2423,7 @@ static int handle_null (void *ctx)
 
     v = value_alloc (yajl_t_null);
     if (v == NULL)
-        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, "Out of memory");
+        RETURN_ERROR ((context_t *) ctx, STATUS_ABORT, _("Out of memory"));
 
     return ((context_add_value (ctx, v) == 0) ? STATUS_CONTINUE : STATUS_ABORT);
 }

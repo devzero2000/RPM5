@@ -520,7 +520,7 @@ mongoc_dump_collection(rpmgfs gfs,
 
     fd = Fopen(fn, "w");
     if (fd == NULL || Ferror(fd)) {
-	fprintf (stderr, "Failed to open \"%s\", aborting.\n", fn);
+	fprintf (stderr, _("Failed to open \"%s\", aborting.\n"), fn);
 	goto exit;
     }
 
@@ -534,7 +534,7 @@ mongoc_dump_collection(rpmgfs gfs,
     while (mongoc_cursor_next(cursor, &doc)) {
 	size_t nw = Fwrite(bson_get_data(doc), 1, doc->len, fd);
 	if (BSON_UNLIKELY(doc->len != nw)) {
-	    fprintf(stderr, "Failed to write %u bytes to %s\n", doc->len, fn);
+	    fprintf(stderr, _("Failed to write %u bytes to %s\n"), doc->len, fn);
 	    goto exit;
 	}
     }
@@ -769,7 +769,7 @@ assert(gfs->C);
     if (gfs->G == NULL) {
 	/* XXX FIXME: *** rpmgfsNew: (1.11) Authentication failed. */
 	fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, berr.message);
-	fprintf(stderr, "*** Configure mongodb authentication?\n");
+	fprintf(stderr, _("*** Configure mongodb authentication?\n"));
     }
 assert(gfs->G);
 
