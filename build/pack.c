@@ -1234,7 +1234,7 @@ if (!(_rpmbuildFlags & 4)) {
 		goto exit;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-	    if ((binDir = strchr(binRpm, '/')) != NULL) {
+	    if ((binDir = strrchr(binRpm, '/')) != NULL) {
 		struct stat st;
 		const char *dn;
 		*binDir = '\0';
