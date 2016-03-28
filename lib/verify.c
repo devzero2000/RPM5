@@ -383,13 +383,14 @@ exit:
 	    const char * user = _verify(USER, "U");
 	    const char * group = _verify(GROUP, "G");
 	    const char * mode = _verify(MODE, "M");
+	    const char * caps = ".";	/* XXX RPMVERIFY_CAPS unimplemented */
 
 #undef _verifyfile
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
-		    size, mode, digest, rdev, link, user, group, mtime,
+	    sprintf(te, "%s%s%s%s%s%s%s%s%s  %c %s",
+		    size, mode, digest, rdev, link, user, group, mtime, caps,
 			(FF_ISSET(vf->fflags, CONFIG)	? 'c' :
 			 FF_ISSET(vf->fflags, DOC)	? 'd' :
 			 FF_ISSET(vf->fflags, GHOST)	? 'g' :
