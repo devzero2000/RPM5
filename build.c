@@ -137,7 +137,63 @@ static int buildForTarget(rpmts ts, BTA_t ba)
     Spec spec = NULL;
     int verify = ((ba->buildAmount & RPMBUILD_TRACK) ? 0 : 1);
     int xx;
-    int rc;
+    int rc = 1;		/* assume failure. */
+
+    /* Create build tree if necessary */
+#ifdef	REFERENCE
+    const char * buildtree = "%{_topdir}:%{_specdir}:%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}";
+    const char * rootdir = rpmtsRootDir(ts);
+    if (rpmMkdirs(!rstreq(rootdir, "/") ? rootdir : NULL , buildtree)) {
+        goto exit;
+    }
+#else
+    {
+	const char * rootdir = rpmtsRootDir(ts);
+	const char *dn;
+	rpmRC rpmrc = RPMRC_OK;
+	if (rootdir && !strcmp(rootdir, "/"))
+	    rootdir = NULL;
+#ifdef	DYING
+	if ((dn = rpmGenPath(rootdir, "%{?_topdir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+	if ((dn = rpmGenPath(rootdir, "%{?_specdir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+	if ((dn = rpmGenPath(rootdir, "%{?_sourcedir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+#endif
+	if ((dn = rpmGenPath(rootdir, "%{?_builddir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+#ifdef	DYING
+	if ((dn = rpmGenPath(rootdir, "%{?_rpmdir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+	if ((dn = rpmGenPath(rootdir, "%{?_srcrpmdir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+#endif
+	if ((dn = rpmGenPath(rootdir, "%{?_buildrootdir}", NULL)) != NULL && *dn)
+	    rpmrc = rpmioMkpath(dn, 0755, -1, -1);
+	dn = _free(dn);
+	if (rpmrc != RPMRC_OK)
+	    goto exit;
+    }
+#endif
 
     if (ba->buildMode == 't') {
 	static const char * sfpats[] = { "Specfile", "\\*.spec", NULL };
@@ -219,13 +275,11 @@ static int buildForTarget(rpmts ts, BTA_t ba)
 	struct stat sb;
 	if (Stat(specURL, &sb) < 0) {
 	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specURL);
-	    rc = 1;
 	    goto exit;
 	}
 	if (! S_ISREG(sb.st_mode)) {
 	    rpmlog(RPMLOG_ERR, _("File %s is not a regular file.\n"),
 		specURL);
-	    rc = 1;
 	    goto exit;
 	}
 
@@ -233,7 +287,6 @@ static int buildForTarget(rpmts ts, BTA_t ba)
 	if (!isSpecFile(specURL)) {
 	    rpmlog(RPMLOG_ERR,
 		_("File %s does not appear to be a specfile.\n"), specURL);
-	    rc = 1;
 	    goto exit;
 	}
     }
@@ -244,12 +297,10 @@ static int buildForTarget(rpmts ts, BTA_t ba)
     if (parseSpec(ts, specURL, ba->rootdir, 0, passPhrase,
 		cookie, _anyarch(buildAmount), 0, verify))
     {
-	rc = 1;
 	goto exit;
     }
 #undef	_anyarch
     if ((spec = rpmtsSetSpec(ts, NULL)) == NULL) {
-	rc = 1;
 	goto exit;
     }
 
@@ -258,17 +309,16 @@ static int buildForTarget(rpmts ts, BTA_t ba)
 
     /* Check build prerequisites */
     if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
-	rc = 1;
 	goto exit;
     }
 
     if (buildSpec(ts, spec, buildAmount, ba->noBuild)) {
-	rc = 1;
 	goto exit;
     }
     
     if (ba->buildMode == 't')
 	(void) Unlink(specURL);
+
     rc = 0;
 
 exit:
