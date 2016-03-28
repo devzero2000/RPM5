@@ -1055,7 +1055,7 @@ $_arbitrary_tags_tests	Foo:Bar
 
 #==============================================================================
 # ---- rpmbuild macros.
-#%%{load:%{_usrlibrpm}/macros.rpmbuild}
+%{load:%{_usrlibrpm}/macros.rpmbuild}
 
 #------------------------------------------------------------------------
 # cmake(...) configuration
