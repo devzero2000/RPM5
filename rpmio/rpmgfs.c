@@ -767,7 +767,9 @@ assert(gfs->C);
 
     gfs->G = mongoc_client_get_gridfs(gfs->C, _Gdb, _Gprefix, &berr);
     if (gfs->G == NULL) {
+	/* XXX FIXME: *** rpmgfsNew: (1.11) Authentication failed. */
 	fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, berr.message);
+	fprintf(stderr, "*** Configure mongodb authentication?\n");
     }
 assert(gfs->G);
 
