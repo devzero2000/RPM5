@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <math.h>
+
 /* XXX todo: these should likely be in "system.h" */
 #if defined(HAVE_ICONV)
 #include <iconv.h>
@@ -5096,11 +5098,15 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ac = argvCount(av) + 1;
-    int64_t * stack = memset(alloca(ac*sizeof(*stack)), 0, (ac*sizeof(*stack)));
+    int64_t * stk = memset(alloca(ac*sizeof(*stk)), 0, (ac*sizeof(*stk)));
+    uint8_t iradix = 10;
+    uint8_t oradix = 10;
+    uint8_t prec = 0;
     char * end;
     char * val = NULL;
     int ix = 0;
     int i;
+int _dbug = 0;
 
     switch(he->t) {
     default:
@@ -5108,12 +5114,14 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	goto exit;
 	/*@notreached@*/ break;
     case RPM_UINT64_TYPE:
-	stack[ix] = he->p.ui64p[0];
+	stk[ix++] = he->p.ui64p[0];
+if (_dbug) fprintf(stderr, "\t\tstk[%d]	%lld\n", ix-1, (long long)stk[ix-1]);
 	break;
     case RPM_STRING_TYPE:
 	end = NULL;
 /*@-unrecog@*/	/* Add annotated prototype. */
-	stack[ix] = strtoll(he->p.str, &end, 0);
+	stk[ix++] = strtoll(he->p.str, &end, 0);
+if (_dbug) fprintf(stderr, "\t\tstk[%d]	%lld\n", ix-1, (long long)stk[ix-1]);
 /*@=unrecog@*/
 	if (end && *end != '\0') {
 	    val = xstrdup(_("(invalid string :rpn)"));
@@ -5124,58 +5132,174 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 
     if (av != NULL)
     for (i = 0; av[i] != NULL; i++) {
-	const char * arg = av[i];
-	size_t len = strlen(arg);
+	char * arg = (char *) av[i];
 	int c = (int) *arg;
 
-	if (len == 0) {
-	    /* do nothing */
-	} else if (len > 1) {
-	    if (!(xisdigit(c) || (c == (int)'-' && xisdigit((int) arg[1])))) {
-		val = xstrdup(_("(expected number :rpn)"));
-		goto exit;
-	    }
-	    if (++ix == ac) {
+if (_dbug) fprintf(stderr, "\t\t%p[%u]\t|%s|\n", arg, (unsigned)strlen(arg), arg);
+
+      while ((c = *arg++)) {
+	if (xisdigit(c) || (c == (int)'_' && xisdigit((int) arg[1]))) {
+	    if (ix == ac-1) {
 		val = xstrdup(_("(stack overflow :rpn)"));
 		goto exit;
 	    }
+	    arg--;
+	    if (*arg == '_') *arg = '-';
 	    end = NULL;
-	    stack[ix] = strtoll(arg, &end, 0);
+	    stk[ix] = strtoll(arg, &end, iradix);
+if (_dbug) fprintf(stderr, "** ix %d %lld\n", ix, (long long)stk[ix]);
+	    ix++;	/* push */
+	    arg = end;
+#ifdef	DYING
 	    if (end && *end != '\0') {
 		val = xstrdup(_("(invalid number :rpn)"));
 		goto exit;
 	    }
+#endif
 	} else {
 	    if (ix-- < 1) {
 		val = xstrdup(_("(stack underflow :rpn)"));
 		goto exit;
 	    }
 	    switch (c) {
-	    case '&':	stack[ix] &= stack[ix+1];	/*@switchbreak@*/ break;
-	    case '|':	stack[ix] |= stack[ix+1];	/*@switchbreak@*/ break;
-	    case '^':	stack[ix] ^= stack[ix+1];	/*@switchbreak@*/ break;
-	    case '+':	stack[ix] += stack[ix+1];	/*@switchbreak@*/ break;
-	    case '-':	stack[ix] -= stack[ix+1];	/*@switchbreak@*/ break;
-	    case '*':	stack[ix] *= stack[ix+1];	/*@switchbreak@*/ break;
-	    case '%':	
+	    case '#':	arg += strlen(arg);
+	    case '\n':
+	    case '\r':
+	    case '\t':
+	    case ' ':
+		ix++;	/* XXX undo pop */
+		break;
+	    case 'p':		/* print +NL */
+if (_dbug) fprintf(stderr, "\t%c\tstk[%d]	%lld\n", c, ix, (long long)stk[ix]);
+		fprintf(stderr, "%lld\n", (long long)stk[ix]);
+		ix++;	/* XXX undo pop */
+		break;
+	    case 'n':		/* print -NL & pop */
+if (_dbug) fprintf(stderr, "\t%c\tstk[%d]	%lld\n", c, ix, (long long)stk[ix]);
+		fprintf(stderr, "%lld", (long long)stk[ix]);
+		break;
+	    case 'P':		/* print -NL & pop */
+if (_dbug) fprintf(stderr, "\t%c\tstk[%d]	%lld\n", c, ix, (long long)stk[ix]);
+		fprintf(stderr, "%lld", (long long)stk[ix-1]);
+		break;
+	    case 'f':		/* print stack */
+		ix++;	/* XXX undo pop */
+		for (int j = 0; j < ix; j++)
+if (_dbug) fprintf(stderr, "\t%c\tstk[%d]	%lld\n", c, j, (long long)stk[j]);
+		break;
+
+	    case 'c':		/* clear */
+if (_dbug) fprintf(stderr, "\t%c\tstk[%d]\n", c, ix);
+		ix = 0;
+		break;
+	    case 'd':		/* duplicate */
+		ix++;	/* XXX undo pop */
+		stk[ix] = stk[ix-1];
+		ix++;	/* push */
+		break;
+	    case 'r':		/* reverse */
+		if (ix == 0) {
+		    val = xstrdup(_("(stack underflow :rpn)"));
+		    goto exit;
+		}
+		stk[ix+1] = stk[ix+0];
+		stk[ix+0] = stk[ix-1];
+		stk[ix-1] = stk[ix+1];
+		ix++;	/* XXX undo pop */
+		break;
+
+#if defined(LOGICALOPS)
+	    case '=':	stk[ix-1]  = stk[ix];	break;
+	    case '|':	stk[ix-1] |= stk[ix];	break;
+	    case '&':	stk[ix-1] &= stk[ix];	break;
+	    case '^':	stk[ix-1] ^= stk[ix];	break;
+#endif
+	    case '+':	stk[ix-1] += stk[ix];	break;
+	    case '-':	stk[ix-1] -= stk[ix];	break;
+	    case '*':	stk[ix-1] *= stk[ix];	break;
 	    case '/':	
-		if (stack[ix+1] == 0) {
+	    case '%':	
+		if (stk[ix] == 0) {
 		    val = xstrdup(_("(divide by zero :rpn)"));
 		    goto exit;
 		}
 		if (c == (int)'%')
-		    stack[ix] %= stack[ix+1];
+		    stk[ix-1] %= stk[ix];
 		else
-		    stack[ix] /= stack[ix+1];
-		/*@switchbreak@*/ break;
+		    stk[ix-1] /= stk[ix];
+		break;
+	    case '~':		/* (n d) => (q r) */
+		if (stk[ix] == 0) {
+		    val = xstrdup(_("(divide by zero :rpn)"));
+		    goto exit;
+		}
+		if (ix-- < 1) {
+		    val = xstrdup(_("(stack underflow :rpn)"));
+		    goto exit;
+		}
+		stk[ix+2]  = stk[ix];	/* nsave */
+		ix++;
+		stk[ix-1] /= stk[ix];	/* n /= d (clobbers n) */
+		ix++;
+		stk[ix-1] %= stk[ix];   /* d %= nsave */
+		break;
+#if !defined(LOGICALOPS)
+		/* XXX collides with xor */
+	    case '^':
+		stk[ix-1] = (long long)pow(stk[ix-1], stk[ix]);
+		break;
+		/* XXX collides with or */
+	    case '|':		/* (b e m) => ((b^e)%m) */
+		if (ix-- < 2) {
+		    val = xstrdup(_("(stack underflow :rpn)"));
+		    goto exit;
+		}
+		ix--;
+		if (stk[ix+2] == 0) {
+		    val = xstrdup(_("(divide by zero :rpn)"));
+		    goto exit;
+		}
+		if (stk[ix+1] < 0) {
+		    val = xstrdup(_("(negative exponent :rpn)"));
+		    goto exit;
+		}
+		stk[ix] = fmod( pow(stk[ix], stk[ix+1]), stk[ix+2] );
+		ix++;
+		break;
+#endif
+	    case 'v':
+		stk[ix-1] = sqrt(stk[ix-1]);
+		break;
+	    case 'i':
+		iradix = ((stk[ix] >= 2 && stk[ix] <= 16) ? stk[ix] : 10);
+		break;
+	    case 'o':
+		iradix = ((stk[ix] >= 2 && stk[ix] <= 16) ? stk[ix] : 10);
+		break;
+	    case 'k':
+		prec = ((stk[ix] >= 0 && stk[ix] <= 16) ? stk[ix] : 0);
+		/* rescale stack values? */
+		break;
+	    case 'I':
+		stk[ix++] = iradix;
+		break;
+	    case 'O':
+		stk[ix++] = oradix;
+		break;
+	    case 'K':
+		stk[ix++] = prec;
+		break;
+
 	    }
+if (_dbug) fprintf(stderr, "\t\tstk[%d]	%lld\n", ix-1, (long long)stk[ix-1]);
 	}
+      }
     }
 
     {	HE_t nhe = (HE_t) memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
 	nhe->tag = he->tag;
 	nhe->t = RPM_UINT64_TYPE;
-	nhe->p.ui64p = (rpmuint64_t *)&stack[ix];
+	nhe->p.ui64p = (rpmuint64_t *)&stk[ix-1];
 	nhe->c = 1;
 	val = intFormat(nhe, NULL, NULL);
     }
