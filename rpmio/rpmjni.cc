@@ -243,7 +243,11 @@ assert(mid_doubleValue != NULL);
     jni->mid_doubleValue = (void *) mid_doubleValue;
 
     jclass C = env->FindClass("bsh/Interpreter");
-assert(C != NULL);
+if (C == NULL) {
+fprintf(stderr, "*** %s: bsh/Interpreter not found.\n", __FUNCTION__);
+fprintf(stderr, "*** Install bsh-2.0b4.jar from http://www.beanshell.org\n");
+assert(C != NULL);	// XXX "missing bsh-2.0b4.jar BeanShell"
+}
     jni->C = (void *) C;
 
 #ifdef	DYING	/* XXX incompatible with bsh.eval()? */
