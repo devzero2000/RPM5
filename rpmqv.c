@@ -181,7 +181,7 @@ static struct poptOption optionsTable[] = {
 #endif
 #endif	/* IAM_RPMQV */
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliDepFlagsPoptTable, 0,
         N_("Dependency check/order options:"),
         NULL },
@@ -861,6 +861,7 @@ int main(int argc, const char ** argv)
     {	const char * pkg;
 	int nbuilds = 0;
 
+	if (rpmIsNormal())
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
 
@@ -907,6 +908,7 @@ int main(int argc, const char ** argv)
 #if defined(RPM_VENDOR_OPENPKG) /* no-auto-verbose-increase-for-track-and-fetch */
 	if (ba->buildChar != 't' && ba->buildChar != 'f')
 #endif
+	if (rpmIsNormal())
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
        
