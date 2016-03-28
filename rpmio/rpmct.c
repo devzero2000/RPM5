@@ -245,7 +245,7 @@ rpmctCopyFile(rpmct ct, int dne)
 #define YESNO "(y/n [n]) "
 	if (CP_ISSET(NOCLOBBER)) {
 	    if (rpmIsVerbose())
-		rpmlog(RPMLOG_INFO, "%s not overwritten\n", ct->npath);
+		rpmlog(RPMLOG_INFO, _("%s not overwritten\n"), ct->npath);
 	    (void) Fclose(ifd);
 	    return RPMRC_OK;
 	} else if (CP_ISSET(INTERACTIVE)) {
@@ -452,7 +452,7 @@ rpmctCopy(rpmct ct)
 	    rval = RPMRC_FAIL;
 	    continue;
 	case FTS_DC:			/* Warn, continue. */
-	    rpmlog(RPMLOG_ERR, "Fts_read: %s: directory causes a cycle\n", ct->p->fts_path);
+	    rpmlog(RPMLOG_ERR, _("Fts_read: %s: directory causes a cycle\n"), ct->p->fts_path);
 	    rval = RPMRC_FAIL;
 	    continue;
 	default:
@@ -500,7 +500,7 @@ rpmctCopy(rpmct ct)
 		*target_mid++ = '/';
 	    *target_mid = 0;
 	    if (target_mid - ct->npath + nlen >= PATH_MAX) {
-		rpmlog(RPMLOG_ERR, "%s%s: name too long (not copied)\n", ct->npath, p);
+		rpmlog(RPMLOG_ERR, _("%s%s: name too long (not copied)\n"), ct->npath, p);
 		rval = RPMRC_FAIL;
 		continue;
 	    }
@@ -552,7 +552,7 @@ rpmctCopy(rpmct ct)
 	    if (ct->sb.st_dev == ct->p->fts_statp->st_dev &&
 		ct->sb.st_ino == ct->p->fts_statp->st_ino)
 	    {
-		rpmlog(RPMLOG_ERR, "%s and %s are identical (not copied).\n",
+		rpmlog(RPMLOG_ERR, _("%s and %s are identical (not copied).\n"),
 		    ct->npath, ct->p->fts_path);
 		rval = RPMRC_FAIL;
 		if (S_ISDIR(ct->p->fts_statp->st_mode))
@@ -560,7 +560,7 @@ rpmctCopy(rpmct ct)
 		continue;
 	    }
 	    if (!S_ISDIR(ct->p->fts_statp->st_mode) && S_ISDIR(ct->sb.st_mode)) {
-		rpmlog(RPMLOG_ERR, "cannot overwrite directory %s with non-directory %s\n",
+		rpmlog(RPMLOG_ERR, _("cannot overwrite directory %s with non-directory %s\n"),
 		    ct->npath, ct->p->fts_path);
 		rval = RPMRC_FAIL;
 		continue;
@@ -588,7 +588,7 @@ rpmctCopy(rpmct ct)
 	    break;
 	case S_IFDIR:
 	    if (!CP_ISSET(RECURSE)) {
-		rpmlog(RPMLOG_ERR, "%s is a directory (not copied).\n", ct->p->fts_path);
+		rpmlog(RPMLOG_ERR, _("%s is a directory (not copied).\n"), ct->p->fts_path);
 		(void)Fts_set(ct->t, ct->p, FTS_SKIP);
 		badcp = 1;
 		break;
@@ -633,7 +633,7 @@ rpmctCopy(rpmct ct)
 	    }
 	    break;
 	case S_IFSOCK:
-	    rpmlog(RPMLOG_ERR, "%s is a socket (not copied).\n", ct->p->fts_path);
+	    rpmlog(RPMLOG_ERR, _("%s is a socket (not copied).\n"), ct->p->fts_path);
 	    break;
 	case S_IFIFO:
 	    if (CP_ISSET(RECURSE)) {
@@ -882,7 +882,7 @@ rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
     /* Save the target base. */
     {	const char * target = ct->av[--ct->ac];
 	if (strlen(target) > sizeof(ct->npath) - 2) {
-	    rpmlog(RPMLOG_ERR, "%s: name too long\n", target);
+	    rpmlog(RPMLOG_ERR, _("%s: name too long\n"), target);
 	    goto exit;
 	}
 	(void) strcpy(ct->npath, target);
@@ -923,7 +923,7 @@ rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
     if (r == -1 || !S_ISDIR(ct->sb.st_mode)) {
 	/* Case (1).  Target is not a directory. */
 	if (ct->ac > 1) {
-	    rpmlog(RPMLOG_ERR, "%s is not a directory\n", ct->npath);
+	    rpmlog(RPMLOG_ERR, _("%s is not a directory\n"), ct->npath);
 	    goto exit;
 	}
 
@@ -959,9 +959,9 @@ rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
 
 	if (have_trailing_slash && ct->type == FILE_TO_FILE) {
 	    if (r == -1)
-		rpmlog(RPMLOG_ERR, "directory %s does not exist\n", ct->npath);
+		rpmlog(RPMLOG_ERR, _("directory %s does not exist\n"), ct->npath);
 	    else
-		rpmlog(RPMLOG_ERR, "%s is not a directory\n", ct->npath);
+		rpmlog(RPMLOG_ERR, _("%s is not a directory\n"), ct->npath);
 	    goto exit;
 	}
     } else
