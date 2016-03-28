@@ -39,6 +39,7 @@ LIBRPMMISC_0
     luaL_argerror;
     luaL_checklstring;
     luaL_checkinteger;
+    luaL_checktype;
     luaL_checkversion_;
     luaL_error;
     luaL_loadbuffer;
@@ -79,6 +80,7 @@ LIBRPMMISC_0
     lua_pushboolean;
     lua_pushcclosure;
     lua_pushfstring;
+    lua_pushinteger;
     lua_pushlightuserdata;
     lua_pushlstring;
     lua_pushnil;
