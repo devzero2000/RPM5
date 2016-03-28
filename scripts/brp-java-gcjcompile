@@ -29,13 +29,13 @@ find "$RPM_BUILD_ROOT" -type f -name "*.?ar" | while read jar ; do
     # XXX need splits to handle #158308
     # (til then we can just compile big ones ourselves)
     echo "$PS4$gcj -shared $cflags $ldflags -o $lib $jar"
-    $gcj -shared $cflags $ldflags -o "$RPM_BUILD_ROOT/$lib" "$jar"
+    "$gcj" -shared $cflags $ldflags -o "$RPM_BUILD_ROOT/$lib" "$jar"
 
     [ -d "$RPM_BUILD_ROOT/$dbdir" ] || mkdir -p "$RPM_BUILD_ROOT/$dbdir"
 
     db="$dbdir/$bnjar.db"
     [ -f "$RPM_BUILD_ROOT/$db" ] && exit 1
     
-    $gcj-dbtool -n "$RPM_BUILD_ROOT/$db" 64
-    $gcj-dbtool -f "$RPM_BUILD_ROOT/$db" "$jar" "$lib"
+    "$gcj-dbtool" -n "$RPM_BUILD_ROOT/$db" 64
+    "$gcj-dbtool" -f "$RPM_BUILD_ROOT/$db" "$jar" "$lib"
 done

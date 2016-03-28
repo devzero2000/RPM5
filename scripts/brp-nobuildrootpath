@@ -12,7 +12,7 @@ fi
 #
 # Remove occurrences of $RPM_BUILD_ROOT from *.la and *.pc files.
 #
-for f in $(find $RPM_BUILD_ROOT -type f -name \*.pc -o -name \*.la) ; do
+for f in $(find "$RPM_BUILD_ROOT" -type f -name \*.pc -o -name \*.la) ; do
     # -c to count the occurrences, only proceed if >= 1
     if [ "$(grep -c "${RPM_BUILD_ROOT}\/" "$f")" -ge 1 ]; then
         sed -e "s|${RPM_BUILD_ROOT}/|/|g" "$f" > "$f.out" && \

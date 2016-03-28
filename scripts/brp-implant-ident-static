@@ -11,14 +11,14 @@ if test -z "$tempdir" ; then
 fi
 
 cleanup() {
-	rm -f $tempdir/*
-	rmdir $tempdir
+	rm -f "$tempdir"/*
+	rmdir "$tempdir"
 }
 trap cleanup 0 1 2 3 4 5 6 7 8 9 11 13 14 15
 
-for library in $(find $RPM_BUILD_ROOT -type f -exec file \{\} \; | grep 'current ar archive' | sed 's,:.*,,g' ) ; do
+for library in $(find "$RPM_BUILD_ROOT" -type f -exec file \{\} \; | grep 'current ar archive' | sed 's,:.*,,g' ) ; do
         PUSHDIR=$(pwd)
-	cd $tempdir > /dev/null
+	cd "$tempdir" > /dev/null
 	if test -n "$RPM_BUILD_ROOT" ; then
 		cleanedlibrary=$(echo "$library" | sed s,"$RPM_BUILD_ROOT",,g)
 	else
@@ -30,6 +30,6 @@ for library in $(find $RPM_BUILD_ROOT -type f -exec file \{\} \; | grep 'current
 		objcopy --add-section .rodata=__x_rpm_ident_string.txt "$object"
 		ar r "$library" "$object"
 	done
-	rm -f *.o
-	cd $PUSHDIR > /dev/null
+	rm -f ./*.o
+	cd "$PUSHDIR" > /dev/null
 done
