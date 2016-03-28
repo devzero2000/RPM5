@@ -976,6 +976,12 @@ AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 AC_CHECK_PROGS(LIBTOOLIZE, libtoolize glibtoolize, libtoolize)
 AC_SUBST(LIBTOOLIZE)
 
+dnl # check for autotest
+dnl AC_CONFIG_TESTDIR([tests/auto])
+dnl AC_PATH_PROG(AUTOM4TE,autom4te,:)
+dnl AC_PATH_PROG(__FAKECHROOT, fakechroot, no, $MYPATH)
+dnl AM_CONDITIONAL(HAVE_FAKECHROOT, [test "$__FAKECHROOT" != "no"])
+
 dnl # check for id -u
 AC_MSG_CHECKING(whether id supports -u)
 if ${__ID} -u 2>&1 > /dev/null; then
@@ -3153,6 +3159,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     tests/Makefile tests/macros
     tests/bson/Makefile tests/mongoc/Makefile tests/yajl/Makefile
 ])
+dnl tests/auto/Makefile
 
 dnl # final step: generate output
 AC_OUTPUT
