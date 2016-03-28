@@ -2,6 +2,7 @@
  * \file lib/rpmluaext.c
  */
 
+#define	RPM_LUA_EXTENSIONS_BASED_ON_RPMLIB	1
 #if defined(RPM_VENDOR_OPENPKG) || defined(RPM_LUA_EXTENSIONS_BASED_ON_RPMLIB) /* rpm-lua-extensions-based-on-rpm-lib-functionality */
 
 #include "system.h"
@@ -272,7 +273,7 @@ static int rpmluaext_query(lua_State *L)
 }
 
 /* RPM Lua "rpm.*" function registry */
-static const luaL_reg rpmluaext_registry[] = {
+static const luaL_Reg rpmluaext_registry[] = {
     { "vercmp",    rpmluaext_vercmp    },
     { "digest",    rpmluaext_digest    },
     { "signature", rpmluaext_signature },
@@ -283,7 +284,11 @@ static const luaL_reg rpmluaext_registry[] = {
 /* activate our RPM Lua extensions */
 void rpmluaextActivate(rpmlua lua)
 {
+#if defined(LUA_GLOBALSINDEX)
     lua_pushvalue(lua->L, LUA_GLOBALSINDEX);
+#else
+    lua_pushglobaltable(lua->L);
+#endif
     luaL_openlib(lua->L, "rpm", rpmluaext_registry, 0);
     return;
 }
