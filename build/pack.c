@@ -968,6 +968,7 @@ assert(sigh != NULL);
 	    R = _free(R);
 	    msg = buf;
 	    rc = rpmpkgWrite(item, fd, l, &msg);
+	    msg = _free(msg);	/* XXX coverity 1214098 */
 	}
 
 	if (rc != RPMRC_OK) {

@@ -132,6 +132,7 @@ static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 
 	    nb = 2 * he->c + 1;
 	    t = b = alloca(nb);
+	    *b = '\0';	/* XXX coverity 1357859 */
 	    for (c = 0; c < he->c; c++) {
 		unsigned i;
 		i = (unsigned) *s++;

@@ -547,6 +547,7 @@ fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, be
 
 exit:
 SPEW((stderr, "<-- %s(%p,%s,%s) rc %d\n", __FUNCTION__, gfs, database, collection, rc));
+assert(fn != NULL);	/* XXX coverity 1357842 */
     if (fn)
 	bson_free(fn);
     if (fd)
@@ -601,6 +602,7 @@ fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, be
 
 exit:
 SPEW((stderr, "<-- %s(%p,%s,%s) rc %d\n", __FUNCTION__, gfs, database, collection, rc));
+assert(dn != NULL);	/* XXX coverity 1357843 */
     if (dn)
 	bson_free (dn);
     if (db)

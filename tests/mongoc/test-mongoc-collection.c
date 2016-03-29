@@ -1238,6 +1238,7 @@ test_index_storage (void)
                                                     &opt, &error), error);
 
  cleanup:
+assert(engine != NULL);		/* XXX coverity 1357835 */
    if (engine) bson_free (engine);
    if (collection) mongoc_collection_destroy (collection);
    if (database) mongoc_database_destroy (database);

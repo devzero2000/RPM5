@@ -137,7 +137,7 @@ test_seek (void)
    ASSERT (page->offset == 4);
 
    r = _mongoc_gridfs_file_page_tell (page);
-   ASSERT (r = 4);
+   ASSERT (r == 4);	/* XXX coverity 1357700 */
 
    _mongoc_gridfs_file_page_destroy (page);
 }

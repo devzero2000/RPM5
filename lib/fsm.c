@@ -1299,7 +1299,6 @@ static int fsmMakeLinks(/*@special@*/ /*@partial@*/ IOSM_t fsm)
     fsm->path = NULL;
     fsm->opath = NULL;
     fsm->nsuffix = NULL;
-    fsm->ix = -1;
 
     fsm->ix = fsm->li->filex[fsm->li->createdPath];
     rc = fsmNext(fsm, IOSM_MAP);

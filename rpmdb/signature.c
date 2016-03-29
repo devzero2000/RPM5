@@ -1045,6 +1045,7 @@ assert(sig != NULL);
 exit:
     /* Identify the pubkey fingerprint. */
     t = stpcpy(t, rpmSigString(res));
+assert(sigp != NULL);	/* XXX coverity 1357844 */
     if (sigp != NULL) {
 	t = stpcpy(t, ", key ID ");
 	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);

@@ -1332,7 +1332,6 @@ static int iosmMakeLinks(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     iosm->path = NULL;
     iosm->opath = NULL;
     iosm->nsuffix = NULL;
-    iosm->ix = -1;
 
     iosm->ix = iosm->li->filex[iosm->li->createdPath];
     rc = iosmNext(iosm, IOSM_MAP);

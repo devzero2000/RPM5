@@ -182,6 +182,7 @@ test_bson_as_json_stack_overflow (void)
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 16777220);
+   bson_close(fd);
 
    r = bson_init_static(&b, buf, 16777220);
    BSON_ASSERT(r);
@@ -215,6 +216,7 @@ test_bson_corrupt (void)
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 24);
+   bson_close(fd);
 
    r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);
@@ -243,6 +245,7 @@ test_bson_corrupt_utf8 (void)
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 42);
+   bson_close(fd);
 
    r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);
@@ -272,6 +275,7 @@ test_bson_corrupt_binary (void)
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 26);
+   bson_close(fd);
 
    r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);

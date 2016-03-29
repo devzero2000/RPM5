@@ -232,11 +232,10 @@ static int Xcvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
     case SQLITE_DONE:
 	break;		/* Filter out valid returns. */
     default:
-      {	rpmsql sql = (rpmsql) dbi->dbi_db;
+      {	assert(dbi != NULL);	/* XXX coverity 1357841 */
+	rpmsql sql = (rpmsql) dbi->dbi_db;
 	sqlite3 * sqlI = (sqlite3 *) sql->I;
-	const char * errmsg = dbi != NULL
-		? sqlite3_errmsg(sqlI)
-		: "";
+	const char * errmsg = sqlite3_errmsg(sqlI);
 	rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
 		func, fn, ln, msg, rc, errmsg);
       }	break;

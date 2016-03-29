@@ -13762,8 +13762,8 @@ _mongoc_gridfs_file_refresh_page (mongoc_gridfs_file_t *file)
    const char *key;
    bson_iter_t iter;
 
-   const uint8_t *data;
-   uint32_t len;
+   const uint8_t *data = NULL;	/* XXX coverity 1357857 */
+   uint32_t len = 0;		/* XXX coverity 1357858 */
 
    ENTRY;
 
@@ -13864,6 +13864,8 @@ _mongoc_gridfs_file_refresh_page (mongoc_gridfs_file_t *file)
       }
    }
 
+assert(data != NULL);	/* XXX coverity 1357858 */
+assert(len > 0);	/* XXX coverity 1357857 */
    file->page = _mongoc_gridfs_file_page_new (data, len, file->chunk_size);
 
    /* seek in the page towards wherever we're supposed to be */

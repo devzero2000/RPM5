@@ -415,7 +415,7 @@ test_bulk_write (mongoc_collection_t *collection,
    bool ordered;
    mongoc_write_concern_t *wc;
    mongoc_bulk_operation_t *bulk;
-   bson_iter_t requests_iter;
+   bson_iter_t requests_iter = {};	/* XXX coverity 1357860 */
    bson_t requests;
    bson_t request;
    uint32_t r;

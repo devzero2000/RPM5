@@ -228,6 +228,7 @@ Usage: date [-u] [-d datestr] [-s datestr] [+FORMAT] [MMDDhhmm[[CC]YY][.ss]]\
 	    else do {
 		nt += 64;
 		t = (char *) realloc(t, nt);
+assert(t != NULL);	/* XXX coverity 1357687 */
 	    } while (strftime(t, nt, format, &tm) == 0);
 
 	    if (format == rfc_2822_format)

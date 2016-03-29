@@ -126,14 +126,15 @@ static int parse(const char *s, int status, int numtok, ...)
     r = jsmn_parse(&p, s, strlen(s), t, numtok);
     if (r != status) {
 	printf("status is %d, not %d\n", r, status);
-	return 0;
+	ok = 0;
+	goto exit;
     }
-
     if (status >= 0) {
 	va_start(args, numtok);
 	ok = vtokeq(s, t, numtok, args);
 	va_end(args);
     }
+exit:
     free(t);
     return ok;
 }

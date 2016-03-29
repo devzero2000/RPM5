@@ -864,7 +864,10 @@ assert(p != NULL);
     h = headerLink(origH);
 /*@=castexpose@*/
 
-    relocations = (rpmRelocation) alloca(sizeof(*relocations) * numRelocations);
+    {	/* XXX coverity 1214105 */
+	size_t nb = numRelocations * sizeof(*relocations);
+	relocations = (rpmRelocation) memset(alloca(nb), 0, nb);
+    }
 
     /* Build sorted relocation list from raw relocations. */
     for (i = 0; i < numRelocations; i++) {

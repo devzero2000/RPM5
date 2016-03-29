@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
     size_t nr = fread(script, size, 1, json);
     assert(nr > 0);
     fclose(json);
+    script[nr] = '\0';	/* XXX coverity 1214483 */
 
     Jparse_t x;
     memset(&x, 0, sizeof(Jparse_t));

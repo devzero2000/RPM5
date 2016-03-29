@@ -723,15 +723,13 @@ int parseExpressionBoolean(Spec spec, const char *expr)
     /* Parse the expression. */
     v = doLogical(&state);
     if (!v) {
-	state.str = _free(state.str);
-	return -1;
+	goto exit;
     }
 
     /* If the next token is not TOK_EOF, we have a syntax error. */
     if (state.nextToken != TOK_EOF) {
 	rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
-	state.str = _free(state.str);
-	return -1;
+	goto exit;
     }
 
     DEBUG(valueDump("parseExprBoolean:", v, stdout));
@@ -747,8 +745,9 @@ int parseExpressionBoolean(Spec spec, const char *expr)
 	break;
     }
 
+exit:
     state.str = _free(state.str);
-    valueFree(v);
+    if (v) valueFree(v);
     return result;
 }
 
@@ -770,22 +769,20 @@ char * parseExpressionString(Spec spec, const char *expr)
     /* Parse the expression. */
     v = doLogical(&state);
     if (!v) {
-	state.str = _free(state.str);
-	return NULL;
+	goto exit;
     }
 
     /* If the next token is not TOK_EOF, we have a syntax error. */
     if (state.nextToken != TOK_EOF) {
 	rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
-	state.str = _free(state.str);
-	return NULL;
+	goto exit;		/* XXX coverity 1357834 */
     }
 
     DEBUG(valueDump("parseExprString:", v, stdout));
 
     switch (v->type) {
     case VALUE_TYPE_INTEGER: {
-	char buf[128];
+	char buf[32];
 	sprintf(buf, "%d", v->data.i);
 	result = xstrdup(buf);
     } break;
@@ -796,7 +793,8 @@ char * parseExpressionString(Spec spec, const char *expr)
 	break;
     }
 
+exit:
     state.str = _free(state.str);
-    valueFree(v);
+    if (v) valueFree(v);
     return result;
 }

@@ -39,6 +39,8 @@ get_test_file (const char *filename,
 #endif
    ASSERT(len > 0);
 
+   close(fd);
+
    *length = len;
    return buf;
 }

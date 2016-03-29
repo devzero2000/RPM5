@@ -239,19 +239,20 @@ get_bson_from_json_file(char *filename)
    length = ftell(file);
    fseek(file, 0, SEEK_SET);
    if (length < 1) {
+      fclose(file);	/* XXX coverity 1357833 */
       return NULL;
    }
 
    /* read entire file into buffer */
    buffer = (const char *)bson_malloc0(length);
+   if (!buffer) {	/* XXX coverity 1357846 */
+      fclose(file);
+      return NULL;
+   }
    if (fread((void *)buffer, 1, length, file) != (size_t)length) {
       abort();
    }
-
    fclose(file);
-   if (!buffer) {
-      return NULL;
-   }
 
    /* convert to bson */
    data = bson_new_from_json((const uint8_t*)buffer, length, &error);
