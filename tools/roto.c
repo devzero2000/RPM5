@@ -3553,7 +3553,7 @@ static int setup_default_config_opts(ROTO_t roto, void * config_opts, uid_t unpr
 #ifdef	REFERENCE
         roto->chrootgid = grp.getgrnam("mock")[2]
     except KeyError:
-        #  mock group doesn't exist, must set in config file
+        #  mock group doesnt exist, must set in config file
         pass
 #else
     {	struct group * gr = getgrnam("mock");
