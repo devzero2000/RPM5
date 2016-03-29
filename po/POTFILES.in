@@ -91,6 +91,7 @@ rpmio/glob.c
 rpmio/gzdio.c
 rpmio/html-parse.c
 rpmio/iosm.c
+rpmio/jsmn.c
 rpmio/libsqlio.c
 rpmio/lookup3.c
 rpmio/lsyck.c
@@ -122,7 +123,6 @@ rpmio/rpmio.c
 rpmio/rpmiob.c
 rpmio/rpmjni.cc
 rpmio/rpmjs.cpp
-rpmio/rpmjsmn.c
 rpmio/rpmku.c
 rpmio/rpmlog.c
 rpmio/rpmltc.c
