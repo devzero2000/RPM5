@@ -983,7 +983,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	/* Print package component sizes. */
 
 	he->tag = (rpmTag) RPMSIGTAG_SIZE;
-	xx = headerGet(sigh, he, 0);
+	xx = headerGet(sigh, he, HEADERGET_SIGHEADER);
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
 	    rc = printSize(fd, sigSize, pad, datasize);

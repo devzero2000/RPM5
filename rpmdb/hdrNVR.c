@@ -249,7 +249,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	return;
 
     for (hi = headerInit(sigh);
-        headerNext(hi, he, 0);
+        headerNext(hi, he, HEADERGET_SIGHEADER);
         he->p.ptr = _free(he->p.ptr))
     {
 	/* XXX Translate legacy signature tag values. */
@@ -347,7 +347,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	}
 assert(he->p.ptr != NULL);
 	if (!headerIsEntry(sigh, he->tag)) {
-	    xx = headerPut(sigh, he, 0);
+	    xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 assert(xx == 1);
 	}
     }

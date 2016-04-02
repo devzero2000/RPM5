@@ -272,7 +272,7 @@ assert(dig != NULL);
     he->p.ptr = _free(he->p.ptr);
 
     /* Retrieve the tag parameters from the signature header. */
-    xx = headerGet(sigh, she, 0);
+    xx = headerGet(sigh, she, HEADERGET_SIGHEADER);
     if (she->p.ptr == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;

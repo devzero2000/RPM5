@@ -871,6 +871,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
 	/*@modifies he, internalState @*/;
 #define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
 #define	HEADERGET_NOI18NSTRING	(1 << 1) /*!< Return i18n strings as argv. */
+#define	HEADERGET_SIGHEADER	(1 << 2) /*!< Override signature tag data. */
 
 /** \ingroup header
  * Add or append tag container to header.

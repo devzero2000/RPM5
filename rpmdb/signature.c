@@ -374,7 +374,7 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	SHA1 = _free(SHA1);
 	if (!xx)
 	    goto exit;
@@ -418,7 +418,7 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	pkt = _free(pkt);
 	if (!xx)
 	    goto exit;
@@ -461,7 +461,7 @@ assert(0);	/* XXX never happens. */
 	he->p.ui32p = &pktlen;
 	he->c = 1;
 /*@-compmempass@*/
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 /*@=compmempass@*/
 	if (!xx)
 	    break;
@@ -476,7 +476,7 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	if (!xx)
 	    break;
 	ret = 0;

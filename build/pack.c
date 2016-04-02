@@ -892,7 +892,7 @@ assert(0);
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = (void *) dig->sig;
 	he->c = dig->siglen;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	dig->sig = _free(dig->sig);		/* XXX lazily instead? */
 	dig->siglen = 0;
     }
@@ -902,7 +902,7 @@ assert(0);
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	SHA1 = _free(SHA1);
     }
 
@@ -911,7 +911,7 @@ assert(0);
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &payloadSize;
 	he->c = 1;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
     }
 
     /* Reallocate the signature header into one contiguous region. */
@@ -937,7 +937,7 @@ assert(slen < nb);
 	he->t = RPM_BIN_TYPE;
 	he->p.ui8p = b;
 	he->c = nb;
-	xx = headerPut(sigh, he, 0);
+	xx = headerPut(sigh, he, HEADERGET_SIGHEADER);
 	sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
 assert(sigh != NULL);
     }
