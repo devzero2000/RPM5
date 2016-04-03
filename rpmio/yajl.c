@@ -1958,6 +1958,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                     }
                     yajl_bs_set(hand->stateStack, yajl_state_map_sep);
                     goto around_again;
+		    break;
                 case yajl_tok_right_bracket:
                     if (yajl_bs_current(hand->stateStack) ==
                         yajl_state_map_start)
