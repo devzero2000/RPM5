@@ -512,26 +512,24 @@ tagStore_t tagStoreFree(tagStore_t dbiTags, size_t dbiNTags)
  * Validate that implicit and explicit types are identical.
  * @param he		tag container
  */
-void tagTypeValidate(HE_t he);
-void tagTypeValidate(HE_t he)
+void tagTypeValidate(HE_t he, unsigned int flags);
+void tagTypeValidate(HE_t he, unsigned int flags)
 {
+    /* XXX Skip RPMSIGTAG_* validation. */
+    if (flags & HEADERGET_SIGHEADER)
+	return;
+
+#if !defined(SUPPORT_I18NSTRING_TYPE)
     /* XXX Re-map RPM_I18NSTRING_TYPE -> RPM_STRING_TYPE */
     if (he->t == RPM_I18NSTRING_TYPE)
 	he->t = RPM_STRING_TYPE;
+#endif
 
     /* XXX Arbitrary tags are always strings. */
     if ((he->tag & 0x40000000)
      && (he->t == RPM_STRING_TYPE || he->t == RPM_STRING_ARRAY_TYPE))
 	return;
 
-    /* XXX Make 0x3fffffff disappear for now. Signature? */
-    if (he->tag == 0x3fffffff && he->t == RPM_BIN_TYPE)
-	return;
-
-/* XXX hack around known borkage for now. */
-if (!(he->tag == 62))
-if (!(he->tag == 261 || he->tag == 269))
-if (!(he->tag == 1000 || he->tag == 1004 || he->tag == 1007))
 if (!(he->tag == 1029 || he->tag == 1086 || he->tag == 1087))
 if (he->t != (tagType(he->tag) & 0xffff))
 fprintf(stderr, "==> warning: tag %u type(0x%x) != implicit type(0x%x)\n", (unsigned) he->tag, he->t, tagType(he->tag));
