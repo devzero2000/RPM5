@@ -488,55 +488,57 @@ enum rpmTag_e {
     _RPMTAG_SUPPLEMENTNEVRS	= 5060, /* s[] extension */
     _RPMTAG_ENHANCENEVRS	= 5061, /* s[] extension */
     RPMTAG_ENCODING		= 5062, /* s */
-    _RPMTAG_FILETRIGGERIN		= 5063, /* internal */
-    _RPMTAG_FILETRIGGERUN		= 5064, /* internal */
-    _RPMTAG_FILETRIGGERPOSTUN		= 5065, /* internal */
-    RPMTAG_FILETRIGGERSCRIPTS		= 5066, /* s[] */
-    RPMTAG_FILETRIGGERSCRIPTPROG	= 5067, /* s[] */
-    RPMTAG_FILETRIGGERSCRIPTFLAGS	= 5068, /* i[] */
-    RPMTAG_FILETRIGGERNAME		= 5069, /* s[] */
-    RPMTAG_FILETRIGGERINDEX		= 5070, /* i[] */
-    RPMTAG_FILETRIGGERVERSION		= 5071, /* s[] */
-    RPMTAG_FILETRIGGERFLAGS		= 5072, /* i[] */
-    _RPMTAG_TRANSFILETRIGGERIN		= 5073, /* internal */
-    _RPMTAG_TRANSFILETRIGGERUN		= 5074, /* internal */
-    _RPMTAG_TRANSFILETRIGGERPOSTUN	= 5075, /* internal */
-    RPMTAG_TRANSFILETRIGGERSCRIPTS	= 5076, /* s[] */
-    RPMTAG_TRANSFILETRIGGERSCRIPTPROG	= 5077, /* s[] */
-    RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS	= 5078, /* i[] */
-    RPMTAG_TRANSFILETRIGGERNAME		= 5079, /* s[] */
-    RPMTAG_TRANSFILETRIGGERINDEX	= 5080, /* i[] */
-    RPMTAG_TRANSFILETRIGGERVERSION	= 5081, /* s[] */
-    RPMTAG_TRANSFILETRIGGERFLAGS	= 5082, /* i[] */
-    _RPMTAG_REMOVEPATHPOSTFIXES  	= 5083, /* s internal */
-    RPMTAG_FILETRIGGERPRIORITIES	= 5084, /* i[] */
-    RPMTAG_TRANSFILETRIGGERPRIORITIES	= 5085, /* i[] */
-    _RPMTAG_FILETRIGGERCONDS		= 5086, /* s[] extension */
-    _RPMTAG_FILETRIGGERTYPE		= 5087, /* s[] extension */
-    _RPMTAG_TRANSFILETRIGGERCONDS	= 5088, /* s[] extension */
-    _RPMTAG_TRANSFILETRIGGERTYPE	= 5089, /* s[] extension */
-    RPMTAG_FILESIGNATURES		= 5090, /* s[] */
-    RPMTAG_FILESIGNATURELENGTH  	= 5091, /* i */
+    _RPMTAG_FILETRIGGERIN		= 5063,	/* internal */
+    _RPMTAG_FILETRIGGERUN		= 5064,	/* internal */
+    _RPMTAG_FILETRIGGERPOSTUN		= 5065,	/* internal */
+    RPMTAG_FILETRIGGERSCRIPTS		= 5066,	/* s[] */
+    RPMTAG_FILETRIGGERSCRIPTPROG	= 5067,	/* s[] */
+    RPMTAG_FILETRIGGERSCRIPTFLAGS	= 5068,	/* i[] */
+    RPMTAG_FILETRIGGERNAME		= 5069,	/* s[] */
+    RPMTAG_FILETRIGGERINDEX		= 5070,	/* i[] */
+    RPMTAG_FILETRIGGERVERSION		= 5071,	/* s[] */
+    RPMTAG_FILETRIGGERFLAGS		= 5072,	/* i[] */
+    _RPMTAG_TRANSFILETRIGGERIN		= 5073,	/* internal */
+    _RPMTAG_TRANSFILETRIGGERUN		= 5074,	/* internal */
+    _RPMTAG_TRANSFILETRIGGERPOSTUN	= 5075,	/* internal */
+    RPMTAG_TRANSFILETRIGGERSCRIPTS	= 5076,	/* s[] */
+    RPMTAG_TRANSFILETRIGGERSCRIPTPROG	= 5077,	/* s[] */
+    RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS	= 5078,	/* i[] */
+    RPMTAG_TRANSFILETRIGGERNAME		= 5079,	/* s[] */
+    RPMTAG_TRANSFILETRIGGERINDEX	= 5080,	/* i[] */
+    RPMTAG_TRANSFILETRIGGERVERSION	= 5081,	/* s[] */
+    RPMTAG_TRANSFILETRIGGERFLAGS	= 5082,	/* i[] */
+    _RPMTAG_REMOVEPATHPOSTFIXES  	= 5083,	/* s internal */
+    RPMTAG_FILETRIGGERPRIORITIES	= 5084,	/* i[] */
+    RPMTAG_TRANSFILETRIGGERPRIORITIES	= 5085,	/* i[] */
+    _RPMTAG_FILETRIGGERCONDS		= 5086,	/* s[] extension */
+    _RPMTAG_FILETRIGGERTYPE		= 5087,	/* s[] extension */
+    _RPMTAG_TRANSFILETRIGGERCONDS	= 5088,	/* s[] extension */
+    _RPMTAG_TRANSFILETRIGGERTYPE	= 5089,	/* s[] extension */
+    RPMTAG_FILESIGNATURES		= 5090,	/* s[] */
+    RPMTAG_FILESIGNATURELENGTH  	= 5091,	/* i */
 
 /*@-enummemuse@*/
-    RPMTAG_FIRSTFREE_TAG,	/*!< internal */
+    RPMTAG_FIRSTFREE_TAG,			/*!< internal */
 /*@=enummemuse@*/
 
-    RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9, /* s[] arbitrary */
-    RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314, /* s[] arbitrary */
+    RPMTAG_SIGPADDING		= 0x3fffffff,	/* x */
 
-    RPMTAG_BUILDPREPPROG	= 0x4ba37c9e, /* s[] arbitrary */
-    RPMTAG_BUILDPREP		= 0x799c0b4d, /* s[] arbitrary */
-    RPMTAG_BUILDBUILDPROG	= 0x6fb46014, /* s[] arbitrary */
-    RPMTAG_BUILDBUILD		= 0x5bae1a5a, /* s[] arbitrary */
-    RPMTAG_BUILDINSTALLPROG	= 0x70d4ab6f, /* s[] arbitrary */
-    RPMTAG_BUILDINSTALL		= 0x567f5983, /* s[] arbitrary */
-    RPMTAG_BUILDCHECKPROG	= 0x488a60ce, /* s[] arbitrary */
-    RPMTAG_BUILDCHECK		= 0x7f3b97b5, /* s[] arbitrary */
-    RPMTAG_BUILDCLEANPROG	= 0x42c93d41, /* s[] arbitrary */
-    RPMTAG_BUILDCLEAN		= 0x566042bf, /* s[] arbitrary */
+    RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9,	/* s[] arbitrary */
+    RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314,	/* s[] arbitrary */
 
-    RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
+    RPMTAG_BUILDPREPPROG	= 0x4ba37c9e,	/* s[] arbitrary */
+    RPMTAG_BUILDPREP		= 0x799c0b4d,	/* s[] arbitrary */
+    RPMTAG_BUILDBUILDPROG	= 0x6fb46014,	/* s[] arbitrary */
+    RPMTAG_BUILDBUILD		= 0x5bae1a5a,	/* s[] arbitrary */
+    RPMTAG_BUILDINSTALLPROG	= 0x70d4ab6f,	/* s[] arbitrary */
+    RPMTAG_BUILDINSTALL		= 0x567f5983,	/* s[] arbitrary */
+    RPMTAG_BUILDCHECKPROG	= 0x488a60ce,	/* s[] arbitrary */
+    RPMTAG_BUILDCHECK		= 0x7f3b97b5,	/* s[] arbitrary */
+    RPMTAG_BUILDCLEANPROG	= 0x42c93d41,	/* s[] arbitrary */
+    RPMTAG_BUILDCLEAN		= 0x566042bf,	/* s[] arbitrary */
+
+    RPMTAG_LASTARBITRARY_TAG	= 0x80000000	/*!< internal */
 };
 #define	RPMTAG_EXTERNAL_TAG		1000000
 #define	RPMTAG_NOT_FOUND	((rpmTag)0xffffffff)
@@ -559,7 +561,7 @@ enum rpmSigTag_e {
     RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER,	/*!< internal RSA header signature. */
     RPMSIGTAG_ECDSA	= RPMTAG_ECDSAHEADER,	/*!< internal ECDSA header signature. */
-    RPMSIGTAG_PADDING	= 0x3fffffff		/*!< signature header padding */
+    RPMSIGTAG_PADDING	= RPMTAG_SIGPADDING,	/*!< signature header padding */
 };
 
 /** \ingroup header
