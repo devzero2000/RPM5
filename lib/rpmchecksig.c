@@ -567,7 +567,7 @@ hkp->pktlen = pktlen;
     memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
 
     if (pgpPktLen(hkp->pkt, hkp->pktlen, pp) < 0
-     || rpmhkpLoadKey(hkp, dig, 0, 0))
+     || rpmhkpLoadKey(hkp, dig, 0, 0) < 0)
 	goto exit;
 
     /* Validate pubkey self-signatures. */
@@ -1153,7 +1153,7 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 	    he->tag = she->tag;
 	    if (!headerGet(sigh, he, 0) 
 	     || pgpPktLen(he->p.ui8p, he->c, pp) < 0
-	     || rpmhkpLoadSignature(NULL, dig, pp))
+	     || rpmhkpLoadSignature(NULL, dig, pp) < 0)
 	    {
 		he->p.ptr = _free(he->p.ptr);
 		goto exit;
@@ -1208,7 +1208,7 @@ assert(she->p.ptr != NULL);
 		     continue;
 
 		if (pgpPktLen(she->p.ui8p, she->c, pp) < 0
-		 || rpmhkpLoadSignature(NULL, dig, pp)
+		 || rpmhkpLoadSignature(NULL, dig, pp) < 0
 		 || (sigp->version != 3 && sigp->version != 4))
 		{
 		    rpmlog(RPMLOG_ERR,
