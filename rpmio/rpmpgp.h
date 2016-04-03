@@ -1126,9 +1126,11 @@ char * pgpHexCvt(/*@returned@*/ char * t, const rpmuint8_t * s, size_t nbytes)
 char * pgpHexStr(const rpmuint8_t * p, size_t plen)
 	/*@*/
 {
-    static char prbuf[8*BUFSIZ];	/* XXX ick */
+    static char prbuf[BUFSIZ];	/* XXX ick */
+    static size_t nb = sizeof(prbuf) - 32;
     char *t = prbuf;
-    t = pgpHexCvt(t, p, plen);
+    unsigned ui = (plen <= nb) ? plen : nb;
+    t = pgpHexCvt(t, p, ui);
     return prbuf;
 }
 
@@ -1143,11 +1145,15 @@ const char * pgpMpiStr(const rpmuint8_t * p)
 	/*@requires maxRead(p) >= 3 @*/
 	/*@*/
 {
-    static char prbuf[8*BUFSIZ];	/* XXX ick */
+    static char prbuf[BUFSIZ];	/* XXX ick */
+    static size_t nb = sizeof(prbuf) - 32;
     char *t = prbuf;
-    sprintf(t, "[%4u]: ", pgpGrab(p, 2));
+    unsigned ui = pgpGrab(p, 2);
+    sprintf(t, "[%4u]: ", ui);
     t += strlen(t);
-    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
+    if ((ui = pgpMpiLen(p)) > nb)
+	ui = nb;
+    t = pgpHexCvt(t, p+2, ui-2);
     return prbuf;
 }
 
