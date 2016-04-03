@@ -161,18 +161,18 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
 	/*@modifies *signid, fileSystem, internalState @*/
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int rc = 1;
+    int rc = 1;		/* assume failure */
     int xx;
 
     he->tag = (rpmTag) sigtag;
     xx = headerGet(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
-
 	/* XXX expose ppSignid() from rpmhkp.c? */
 	pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
-	(void) pgpPktLen(he->p.ui8p, he->c, pp);
-	if (!rpmhkpLoadSignature(NULL, dig, pp)) {
+	if (pgpPktLen(he->p.ui8p, he->c, pp) > 0
+	 && !rpmhkpLoadSignature(NULL, dig, pp))
+	{
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
@@ -566,9 +566,9 @@ hkp->pktlen = pktlen;
 	(void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
     memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
 
-    xx = pgpPktLen(hkp->pkt, hkp->pktlen, pp);
-
-    xx = rpmhkpLoadKey(hkp, dig, 0, 0);
+    if (pgpPktLen(hkp->pkt, hkp->pktlen, pp) < 0
+     || rpmhkpLoadKey(hkp, dig, 0, 0))
+	goto exit;
 
     /* Validate pubkey self-signatures. */
     if (validate) {
@@ -592,8 +592,10 @@ hkp->pktlen = pktlen;
     /* XXX hack up a user id (if not already present) */
     if (pubp->userid == NULL) {
 	if (hkp->uidx >= 0 && hkp->uidx < hkp->npkts) {
-	    size_t nb = pgpPktLen(hkp->pkts[hkp->uidx], hkp->pktlen, pp);
+	    size_t nb;
 	    char * t;
+	    if (pgpPktLen(hkp->pkts[hkp->uidx], hkp->pktlen, pp) < 0)
+		goto exit;
 	    nb = pp->hlen;
 	    t = (char *) memcpy(xmalloc(nb + 1), pp->u.u->userid, nb);
 	    t[nb] = '\0';
@@ -1149,9 +1151,13 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_ECDSA:
 	    he->tag = she->tag;
-	    xx = headerGet(sigh, he, 0);
-	    xx = pgpPktLen(he->p.ui8p, he->c, pp);
-	    xx = rpmhkpLoadSignature(NULL, dig, pp);
+	    if (!headerGet(sigh, he, 0) 
+	     || pgpPktLen(he->p.ui8p, he->c, pp) < 0
+	     || rpmhkpLoadSignature(NULL, dig, pp))
+	    {
+		he->p.ptr = _free(he->p.ptr);
+		goto exit;
+	    }
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
@@ -1201,9 +1207,10 @@ assert(she->p.ptr != NULL);
 		if (nosignatures)
 		     continue;
 
-		xx = pgpPktLen(she->p.ui8p, she->c, pp);
-		xx = rpmhkpLoadSignature(NULL, dig, pp);
-		if (sigp->version != 3 && sigp->version != 4) {
+		if (pgpPktLen(she->p.ui8p, she->c, pp) < 0
+		 || rpmhkpLoadSignature(NULL, dig, pp)
+		 || (sigp->version != 3 && sigp->version != 4))
+		{
 		    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 			fn, sigp->version);
