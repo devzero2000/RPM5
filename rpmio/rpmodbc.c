@@ -1263,7 +1263,7 @@ int xx;
 	urlinfo u = NULL;
 
 	xx = urlSplit(fn, &u);
-assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES || URL_IS_SQLSERVER);
+assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES || ut == URL_IS_SQLSERVER);
 	odbc->db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
 	odbc->u = urlLink(u, __FUNCTION__);
     }
