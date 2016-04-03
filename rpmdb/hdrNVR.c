@@ -304,7 +304,12 @@ assert(0);
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
  	    xx = headerPut(h, he, 0);
-assert(xx == 1);
+	    if (xx != 1) {
+		rpmlog(RPMLOG_ERROR,
+		    _("%s: headerPut failed(%d): tag(%u) t(%u) data %p[%u]\n"),
+			__FUNCTION__, xx, he->tag, he->t, he->p.ptr, he->c);
+
+	    }
 	}
     }
     hi = headerFini(hi);
