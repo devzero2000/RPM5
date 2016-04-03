@@ -453,6 +453,7 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
     int xx;
     int i;
 
+assert(p);
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
@@ -515,7 +516,8 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 	    if (_pgp_print)
 		fprintf(stderr, "%7d", i);
 	}
-	pgpPrtStr("", pgpMpiStr(p));
+	if (p)
+	    pgpPrtStr("", pgpMpiStr(p));
 	pgpPrtNL();
     }
 
@@ -1031,7 +1033,7 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
     pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pktlen, pp);
 
-    if (!(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
+    if (rc < 0 || !(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
 	return -1;
 
     /* Choose the correct keyid. */
