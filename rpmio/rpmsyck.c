@@ -45,11 +45,12 @@ static int rpmSyckFreeNode(char *key, rpmsyck_node node, char *arg) {
 static void rsFini(void * _rpmSyck)
 {
     rpmSyck rs = (rpmSyck) _rpmSyck;
-    if(rs->syms)
+    if (rs->syms) {
 	syck_st_foreach(rs->syms, (enum st_retval (*)(const char *, const void *, void *))rpmSyckFreeNode, 0);
 
-    syck_st_free_table(rs->syms);
-    rs->syms = NULL;
+	syck_st_free_table(rs->syms);
+	rs->syms = NULL;
+    }
     rs->firstNode = NULL;
 }
 

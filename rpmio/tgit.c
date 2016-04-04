@@ -1883,8 +1883,7 @@ static rpmRC cmd_blame(int argc, char *argv[])
 	strcpy(spec, "HEAD");
     else
 	git_oid_tostr(spec, sizeof(spec), &blameopts.newest_commit);
-    strcat(spec, ":");
-    strcat(spec, path);
+    stpncpy(stpncpy(spec, ":", sizeof(*spec)-1), path, sizeof(*spec)-2);
 
     xx = chkgit(git, "git_revparse_single",
 		git_revparse_single(&obj, git->R, spec));
