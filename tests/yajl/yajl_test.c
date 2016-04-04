@@ -253,6 +253,7 @@ main(int argc, char ** argv)
     {
         file = stdin;
     }
+assert(file != NULL);	/* XXX coverity 1357678 */
     for (;;) {
         rd = fread((void *) fileData, 1, bufSize, file);
 
