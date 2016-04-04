@@ -32,12 +32,14 @@ GENfree(HeaderIterator)
 #endif	/* __cplusplus */
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-extern void tagTypeValidate(HE_t he)
+extern void tagTypeValidate(HE_t he, unsigned int flags)
 	/*@*/;
 #endif
 
 /*@unchecked@*/
 int _hdr_debug = 0;
+
+static int jbj;
 
 /** \ingroup header
  */
@@ -337,10 +339,6 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
     size_t length = 0;
 
     switch (type) {
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-    case RPM_I18NSTRING_TYPE:
-assert(0);
-#endif
     case RPM_STRING_TYPE:
 	if (count != 1)
 	    return 0;
@@ -353,9 +351,7 @@ assert(0);
 	break;
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
-#if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-#endif
     case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
 	    while (count--) {
@@ -1082,9 +1078,10 @@ assert(h != NULL);
 		rpmuint32_t * stei = (rpmuint32_t *)
 			memcpy(alloca(nb), dataStart + off, nb);
 		rdl = (rpmuint32_t)-ntohl(stei[2]);	/* negative offset */
-assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
+		if (hdrchkData(rdl))
+		    goto errxit;
 		ril = (rpmuint32_t)(rdl/sizeof(*pe));
-		if (hdrchkTags(ril) || hdrchkData(rdl))
+		if (hdrchkTags(ril))
 		    goto errxit;
 	    } else {
 		ril = il;
@@ -1425,7 +1422,8 @@ assert(nh->bloblen == pvlen);
 		fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
 			nuh, (unsigned)pvlen, errno, strerror(errno));
 	}
-    } else {
+    } else
+    {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
 	if ((nh = headerLoad(nuh)) != NULL)
 	    nh->flags |= HEADERFLAG_ALLOCATED;
@@ -1538,6 +1536,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	} else {
 	    he->p.argv = argv = (const char **) DRD_xmalloc(nb + entry->length);
 	    t = (char *) &argv[count];
+fprintf(stderr, "*** %s: memcpy(%p, %p, %u)\n", __FUNCTION__, t, entry->data, (unsigned)entry->length);
 	    memcpy(t, entry->data, entry->length);
 	}
 	/*@=mods@*/
@@ -1695,6 +1694,21 @@ headerFindI18NString(Header h, indexEntry entry)
 }
 #endif
 
+static void
+dumpEntry(const char *msg, indexEntry entry)
+{
+    if (msg)
+	fprintf(stderr, "================ %s %p\n", msg, entry);
+    if (entry)
+    fprintf(stderr, "\tentry tag %d type %d offset %d count %d data %p[%u]\n",
+	entry->info.tag,
+	entry->info.type,
+	entry->info.offset,
+	entry->info.count,
+	entry->data,
+	(unsigned)entry->length);
+}
+
 /**
  * Retrieve tag data from header.
  * @param h		header
@@ -1702,13 +1716,15 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param flags		headerGet flags
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, HE_t he, int flags)
+static int intGetEntry(Header h, HE_t he, unsigned int flags)
 	/*@modifies he @*/
 {
     int minMem = 0;
     indexEntry entry;
     int rc;
 
+if (jbj)
+fprintf(stderr, "--> %s(%p,%p, 0x%x) tag %d\n", __FUNCTION__, h, he, flags, he  ->tag);
     /* First find the tag */
 /*@-mods@*/		/*@ FIX: h modified by sort. */
     entry = findEntry(h, he->tag, (rpmTagType)0);
@@ -1719,6 +1735,90 @@ static int intGetEntry(Header h, HE_t he, int flags)
 	he->c = 0;
 	return 0;
     }
+
+    /* XXX sanity check on count field */
+    if (entry->info.count > entry->length) {
+	size_t count = entry->info.count;
+	entry->info.count = entry->length;
+fprintf(stderr, "*** %s: OVERRIDE\ttag %d type %d count %u -> %u\n", __FUNCTION__, he->tag, entry->info.type, count, (unsigned)entry->info.count);
+    }
+
+    /* XXX Hardwire signature header tag type/count. */
+if (flags & HEADERGET_SIGHEADER || he->tag == RPMTAG_PUBKEYS) {
+if (jbj)
+dumpEntry("before", entry);
+    switch (he->tag) {
+    default:
+if (jbj)
+fprintf(stderr, "    PASS\t\n");
+	break;
+    case 62:		/* HEADER_SIGNATURES */
+if (jbj)
+fprintf(stderr, "  HDRSIG\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+    case 256+8:		/* RPMSIGTAG_BADSHA1_1 (obsolete) */
+    case 256+9:		/* RPMSIGTAG_BADSHA1_2 (obsolete) */
+	/*@fallthrough@*/
+    case 256+13:	/* RPMSIGTAG_SHA1 */
+if (jbj)
+fprintf(stderr, "    SHA1\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_STRING_TYPE;
+	break;
+    case 256+10:	/* RPMTAG_PUBKEYS */
+if (jbj)
+fprintf(stderr, " PUBKEYS\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_STRING_ARRAY_TYPE;
+	if (entry->info.count == 0 || entry->info.count > 16)
+	    entry->info.count = 1;
+	break;
+    case 1000:		/* RPMSIGTAG_SIZE */
+if (jbj)
+fprintf(stderr, "    SIZE\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+    case 1001:		/* RPMSIGTAG_LEMD5_1 (obsolete) */
+    case 1003:		/* RPMSIGTAG_LEMD5_2 (obsolete) */
+    case 1004:		/* RPMSIGTAG_MD5 */
+if (jbj)
+fprintf(stderr, "     MD5\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	entry->info.count = 128/8;
+	break;
+    case 256+11:	/* RPMSIGTAG_DSA */
+    case 256+12:	/* RPMSIGTAG_RSA */
+    case 256+16:	/* RPMSIGTAG_ECDSA */
+    case 1002:		/* RPMSIGTAG_PGP */
+    case 1005:		/* RPMSIGTAG_GPG */
+    case 1006:		/* RPMSIGTAG_PGP5 (obsolete) */
+if (jbj)
+fprintf(stderr, "     SIG\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+    case 1007:		/* RPMSIGTAG_PAYLOADSIZE */
+if (jbj)
+fprintf(stderr, " PAYSIZE\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+    case 1046:		/* RPMTAG_ARCHIVESIZE */
+if (jbj)
+fprintf(stderr, "ARCHSIZE\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+
+    case 0x3fffffff:	/* RPMSIGTAG_PADDING */
+if (jbj)
+fprintf(stderr, " PADDING\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+
+    }
+if (jbj)
+dumpEntry(" after", entry);
+}
 
     switch (entry->info.type) {
 #if defined(SUPPORT_I18NSTRING_TYPE)
@@ -1734,6 +1834,13 @@ static int intGetEntry(Header h, HE_t he, int flags)
 	}
 	/*@fallthrough@*/
 #endif
+    case RPM_STRING_TYPE:
+	if (entry->info.count > 1) {
+	    size_t count = entry->info.count;
+	    entry->info.count = 1;
+fprintf(stderr, "*** %s: OVERRIDE\ttag %d type %d count %u -> %u\n", __FUNCTION__, he->tag, entry->info.type, count, (unsigned)entry->info.count);
+	}
+	/*@fallthrough@*/
     default:
 	rc = copyEntry(entry, he, minMem);
 	break;
@@ -2169,6 +2276,7 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
     Header h = hi->h;
     size_t slot = hi->next_index;
     indexEntry entry = NULL;
+    int minMem = 0;
     int rc;
 
     /* Ensure that *he is reliably initialized. */
@@ -2189,9 +2297,106 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
 	(void) rpmswEnter((rpmop)sw, 0);
 
     he->tag = entry->info.tag;
-    rc = copyEntry(entry, he, 0);
-    if (rc)
+
+    /* XXX sanity check on count field */
+    if (entry->info.count > entry->length) {
+	size_t count = entry->info.count;
+	entry->info.count = entry->length;
+fprintf(stderr, "*** %s: OVERRIDE\ttag %d type %d count %u -> %u\n", __FUNCTION__, he->tag, entry->info.type, count, (unsigned)entry->info.count);
+    }
+
+    /* XXX Hardwire signature header tag type/count. */
+if (flags & HEADERGET_SIGHEADER || he->tag == RPMTAG_PUBKEYS) {
+if (jbj)
+dumpEntry("before", entry);
+    switch (he->tag) {
+    default:
+if (jbj)
+fprintf(stderr, "    PASS\t\n");
+	break;
+    case 62:		/* HEADER_SIGNATURES */
+if (jbj)
+fprintf(stderr, "  HDRSIG\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+    case 256+8:		/* RPMSIGTAG_BADSHA1_1 (obsolete) */
+    case 256+9:		/* RPMSIGTAG_BADSHA1_2 (obsolete) */
+	/*@fallthrough@*/
+    case 256+13:	/* RPMSIGTAG_SHA1 */
+if (jbj)
+fprintf(stderr, "    SHA1\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_STRING_TYPE;
+	break;
+    case 256+10:	/* RPMTAG_PUBKEYS */
+if (jbj)
+fprintf(stderr, " PUBKEYS\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_STRING_ARRAY_TYPE;
+	if (entry->info.count == 0 || entry->info.count > 16)
+	    entry->info.count = 1;
+	break;
+    case 1000:		/* RPMSIGTAG_SIZE */
+if (jbj)
+fprintf(stderr, "    SIZE\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+    case 1001:		/* RPMSIGTAG_LEMD5_1 (obsolete) */
+    case 1003:		/* RPMSIGTAG_LEMD5_2 (obsolete) */
+    case 1004:		/* RPMSIGTAG_MD5 */
+if (jbj)
+fprintf(stderr, "     MD5\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	entry->info.count = 128/8;
+	break;
+    case 256+11:	/* RPMSIGTAG_DSA */
+    case 256+12:	/* RPMSIGTAG_RSA */
+    case 256+16:	/* RPMSIGTAG_ECDSA */
+    case 1002:		/* RPMSIGTAG_PGP */
+    case 1005:		/* RPMSIGTAG_GPG */
+    case 1006:		/* RPMSIGTAG_PGP5 (obsolete) */
+if (jbj)
+fprintf(stderr, "     SIG\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+    case 1007:		/* RPMSIGTAG_PAYLOADSIZE */
+if (jbj)
+fprintf(stderr, " PAYSIZE\toff %d\toverride type/count\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+    case 1046:		/* RPMTAG_ARCHIVESIZE */
+if (jbj)
+fprintf(stderr, "ARCHSIZE\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_UINT32_TYPE;
+	entry->info.count = 1;
+	break;
+
+    case 0x3fffffff:	/* RPMSIGTAG_PADDING */
+if (jbj)
+fprintf(stderr, " PADDING\toff %d\toverride type\n", entry->info.offset);
+	entry->info.type = RPM_BIN_TYPE;
+	break;
+
+    }
+if (jbj)
+dumpEntry(" after", entry);
+}
+    if (entry->info.type == RPM_STRING_TYPE) {
+	if (entry->info.count > 1) {
+	    size_t count = entry->info.count;
+	    entry->info.count = 1;
+fprintf(stderr, "*** %s: OVERRIDE\ttag %d type %d count %u -> %u\n", __FUNCTION__, he->tag, entry->info.type, count, (unsigned)entry->info.count);
+	}
+    }
+
+    rc = copyEntry(entry, he, minMem);
+    if (rc) {
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+    /* XXX verify that explicit and implicit types are identical. */
+	tagTypeValidate(he, flags);
+#endif
 	rc = rpmheRealloc(he);
+    }
 
     if (sw != NULL)	(void) rpmswExit((rpmop)sw, 0);
 
@@ -2281,21 +2486,17 @@ int headerGet(Header h, HE_t he, unsigned int flags)
     if (sw != NULL)	(void) rpmswExit((rpmop)sw, 0);
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-/*@-modfilesys@*/
     /* XXX verify that explicit and implicit types are identical. */
     if (rc)
-	tagTypeValidate(he);
-/*@=modfilesys@*/
+	tagTypeValidate(he, flags);
 #endif
 
-/*@-modfilesys@*/
     if (!((rc == 0 && he->freeData == 0 && he->p.ptr == NULL) ||
 	  (rc == 1 && he->freeData == 1 && he->p.ptr != NULL)))
     {
 if (_hdr_debug)
 fprintf(stderr, "==> %s(%u) %u %p[%u] free %u rc %d\n", name, (unsigned) he->tag, (unsigned) he->t, he->p.ptr, (unsigned) he->c, he->freeData, rc);
     }
-/*@=modfilesys@*/
 
     return rc;
 }
@@ -2305,10 +2506,8 @@ int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
     int rc;
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-/*@-modfilesys@*/
     /* XXX verify that explicit and implicit types are identical. */
-    tagTypeValidate(he);
-/*@=modfilesys@*/
+    tagTypeValidate(he, flags);
 #endif
 
     if (he->append)
@@ -2330,10 +2529,8 @@ int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 {
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-/*@-modfilesys@*/
     /* XXX verify that explicit and implicit types are identical. */
-    tagTypeValidate(he);
-/*@=modfilesys@*/
+    tagTypeValidate(he, flags);
 #endif
 
     return headerModifyEntry(h, he);
