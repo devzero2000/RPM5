@@ -706,15 +706,19 @@ fprintf(stderr, "--> wrSignature(%p, %p, %p)\n", fd, ptr, msg);
  * @param siglen		signature header size
  * @param pad			signature padding
  * @param datalen		length of header+payload
+ * @retval *st			stat(2) of input file
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen)
+static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad,
+		size_t datalen, struct stat *st)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    struct stat sb, * st = &sb;
     size_t expected;
     size_t nl = rpmpkgSizeof("Lead", NULL);
+
+    if (st == NULL)
+	st = memset(alloca(sizeof(*st)), 0, sizeof(*st));
 
 #ifndef	DYING	/* XXX Fstat(2) contentLength not gud enuf yet. */
     int fdno = Fileno(fd);
@@ -775,6 +779,7 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     rpmuint32_t i;
+    struct stat sb, *st = &sb;
     static int map = 1;
 
 if (_pkgio_debug)
@@ -794,6 +799,13 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	    goto exit;
 	}
     }
+
+    if (Fstat(fd, st) < 0) {
+	(void) snprintf(buf, sizeof(buf),
+		_("sigh stat: BAD, Fstat(2) failed"));
+	goto exit;
+    }
+
     startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
@@ -814,22 +826,28 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	    goto exit;
 	}
     }
+    /* XXX arbitrary limit check doesn't help much */
     il = (rpmuint32_t) ntohl(block[2]);
-    if (il > 32) {
+    if (il > (st->st_size - startoff - sizeof(block)) || il > 32) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh tags: BAD, no. of tags(%u) out of range"), (unsigned) il);
 	goto exit;
     }
+    /* XXX arbitrary limit check doesn't help much */
     dl = (rpmuint32_t) ntohl(block[3]);
-    if (dl > 8192) {
+    if (dl > (st->st_size - startoff - sizeof(block)) || dl > 8192) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh data: BAD, no. of bytes(%u) out of range"), (unsigned) dl);
 	goto exit;
     }
 
-/*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
-/*@=sizeoftype@*/
+    if (nb > (st->st_size - startoff - sizeof(block))) {
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr blob: BAD, header size (%u) larger than file size"),
+		(unsigned) nb);
+       goto exit;
+    }
     if (map) {
 	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
         static const int prot = PROT_READ | PROT_WRITE;
@@ -844,7 +862,8 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #1214082 */
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
                 NULL, (unsigned)pvlen, prot, flags, fdno, (unsigned)off,
                 errno, strerror(errno));
-    } else {
+    } else
+    {
 	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
 	ei = (rpmuint32_t *) xmalloc(pvlen);
     }
@@ -915,7 +934,9 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	if (info->tag == (rpmuint32_t) htonl(RPMTAG_HEADERIMAGE)) {
 	    rpmuint32_t stag = (rpmuint32_t) htonl(RPMTAG_HEADERSIGNATURES);
 	    info->tag = (rpmTag) stag;
+#ifdef	DYING	/* XXX can't retrofit with PROT_READ */
 	    memcpy(dataEnd, &stag, sizeof(stag));
+#endif
 	}
 	dataEnd += REGION_TAG_COUNT;
 
@@ -986,7 +1007,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	xx = headerGet(sigh, he, HEADERGET_SIGHEADER);
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
-	    rc = printSize(fd, sigSize, pad, datasize);
+	    rc = printSize(fd, sigSize, pad, datasize, st);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
 			_("sigh sigSize(%u): BAD, Fstat(2) failed"), (unsigned) sigSize);
@@ -1255,7 +1276,7 @@ exit:
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 if (_pkgio_debug)
-fprintf(stderr, "<-- headerCheck #1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- headerCheck#1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	return rc;
     }
 
@@ -1275,7 +1296,7 @@ fprintf(stderr, "<-- headerCheck #1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 if (_pkgio_debug)
-fprintf(stderr, "<-- headerCheck #2: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- headerCheck#2: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	return rc;
     }
 
@@ -1298,9 +1319,15 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	pleft = info->count;
 	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
+	if (xx < 0) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping header with malformed RSA signature packet\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != (rpmuint8_t)3
-	 && dig->signature.version != (rpmuint8_t)4)
+	if (xx < 0
+	 || (dig->signature.version != 3 && dig->signature.version != 4))
 	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -1317,9 +1344,15 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	pleft = info->count;
 	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
+	if (xx < 0) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping header with malformed DSA signature packet\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != (rpmuint8_t)3
-	 && dig->signature.version != (rpmuint8_t)4)
+	if (xx < 0
+	 || (dig->signature.version != 3 && dig->signature.version != 4))
 	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -1336,9 +1369,15 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	pleft = info->count;
 	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
+	if (xx < 0) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping header with malformed ECDSA signature packet\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != (rpmuint8_t)3
-	 && dig->signature.version != (rpmuint8_t)4)
+	if (xx < 0
+	 || (dig->signature.version != 3 && dig->signature.version != 4))
 	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -1442,6 +1481,7 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     static int map = 1;
+    struct stat sb, *st = &sb;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
@@ -1468,6 +1508,12 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	}
     }
 
+    if (Fstat(fd, st) < 0) {
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr stat: BAD, Fstat(2) failed"));
+	goto exit;
+    }
+
     startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	/* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
@@ -1475,7 +1521,8 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	    rc = RPMRC_NOTFOUND;
 	else
 	    (void) snprintf(buf, sizeof(buf),
-		_("hdr size(%u): BAD, read returned %d"), (unsigned)sizeof(block), xx);
+		_("hdr size(%u): BAD, read returned %d"),
+		(unsigned)sizeof(block), xx);
 	goto exit;
     }
 
@@ -1491,21 +1538,33 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     }
 
     il = (rpmuint32_t)ntohl(block[2]);
-    if (hdrchkTags(il)) {
+    if ((il * sizeof(struct entryInfo_s)) > (st->st_size - startoff - sizeof(block))
+     || hdrchkTags(il))
+    {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr tags: BAD, no. of tags(%u) out of range"), (unsigned) il);
+		_("hdr tags: BAD, no. of tags(%u) out of range"),
+		(unsigned) il);
 
 	goto exit;
     }
     dl = (rpmuint32_t)ntohl(block[3]);
-    if (hdrchkData(dl)) {
+    if (dl > (st->st_size - startoff - sizeof(block))
+     || hdrchkData(dl))
+    {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr data: BAD, no. of bytes(%u) out of range\n"), (unsigned) dl);
+		_("hdr data: BAD, no. of bytes(%u) out of range"),
+		(unsigned) dl);
 	goto exit;
     }
 
 /*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
+    if (nb > (st->st_size - startoff - sizeof(block))) {
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr blob: BAD, header size (%u) larger than file size"),
+		(unsigned) nb);
+       goto exit;
+    }
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
     if (map) {
@@ -1548,7 +1607,7 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #124081 */
     /* OK, blob looks sane, load the header. */
     h = headerLoad(ei);
     if (h == NULL) {
-	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
+	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD"));
         goto exit;
     }
     if (map) {
@@ -1573,6 +1632,7 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #124081 */
 	    (void) headerSetOrigin(h, origin);
     }
 /*@-mods@*/
+    /* Save file size in metadata header. */
     {	struct stat * st = headerGetStatbuf(h);
 	int saveno = errno;
 	(void) Fstat(fd, st);
