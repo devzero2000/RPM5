@@ -87,6 +87,7 @@ static int hBlobDigest(Header h, pgpDig dig, pgpHashAlgo hash_algo,
     rpmop op = NULL;
     unsigned char * hmagic = NULL;
     size_t nmagic = 0;
+    int rc = RPMRC_FAIL;	/* assume failure */
     int xx;
 
     he->tag = RPMTAG_HEADERIMMUTABLE;
@@ -105,10 +106,11 @@ static int hBlobDigest(Header h, pgpDig dig, pgpHashAlgo hash_algo,
     dig->nbytes += he->c;
     (void) rpmswExit(op, dig->nbytes);
     op->count--;	/* XXX one too many */
+    rc = RPMRC_OK;
 
 exit:
     he->p.ptr = _free(he->p.ptr);
-    return xx;
+    return rc;
 }
 
 /*@-mods@*/
@@ -290,8 +292,16 @@ assert(0);
     case RPMSIGTAG_ECDSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPktLen(she->p.ui8p, she->c, pp);
+	if (xx < 0) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping package %s with malformed signature packet(0x%x)\n"),
+		fn, she->p.ui8p[0]);
+	    goto exit;
+	}
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	if (xx < 0
+	 || (dig->signature.version != 3 && dig->signature.version != 4))
+	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
@@ -300,7 +310,10 @@ assert(0);
 	}
 	switch (dig->signature.pubkey_algo) {
 	default:
-assert(0);
+	    rpmlog(RPMLOG_ERR,
+		_("skipping package %s with unknown signature algorithm(%u)\n"),
+		fn, dig->signature.pubkey_algo);
+	    goto exit;
 	    break;
 	case PGPPUBKEYALGO_RSA:
 	    dig->sigtag = RPMSIGTAG_RSA;
@@ -315,11 +328,23 @@ assert(0);
 	    ctxp = &dig->hecdsa;
 	    break;
 	}
-	xx = hBlobDigest(h, dig, dig->signature.hash_algo, ctxp);
+	rc = hBlobDigest(h, dig, dig->signature.hash_algo, ctxp);
+	if (rc != RPMRC_OK || *ctxp == NULL) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping package %s cannot calculate header blob digest\n"),
+		fn);
+	    goto exit;
+	}
 	break;
     case RPMSIGTAG_SHA1:
 	/* XXX dig->hsha? */
-	xx = hBlobDigest(h, dig, PGPHASHALGO_SHA1, &dig->hdsa);
+	rc = hBlobDigest(h, dig, PGPHASHALGO_SHA1, &dig->hdsa);
+	if (rc != RPMRC_OK || dig->hdsa == NULL) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping package %s cannot calculate header blob SHA1\n"),
+		fn);
+	    goto exit;
+	}
 	break;
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
