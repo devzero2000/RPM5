@@ -444,7 +444,7 @@ test_mongoc_rpc_reply_gather (void)
 
    writer = bson_writer_new (&buf, &len, 0, bson_realloc_ctx, NULL);
    for (i = 0; i < 100; i++) {
-      bson_writer_begin(writer, &b);
+      ASSERT(bson_writer_begin(writer, &b));
       bson_writer_end(writer);
    }
 

@@ -324,8 +324,8 @@ test_create_collection (void)
 
    name = gen_collection_name ("create_collection");
    ASSERT_OR_PRINT (
-      collection = mongoc_database_create_collection (database, name,
-                                                      &options, &error),
+      (collection = mongoc_database_create_collection (database, name,
+                                                      &options, &error)) != NULL,
       error);
 
    bson_destroy (&options);

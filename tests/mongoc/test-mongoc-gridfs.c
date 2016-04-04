@@ -49,7 +49,7 @@ test_create (void)
    ASSERT (client);
 
    ASSERT_OR_PRINT (
-      (gridfs = mongoc_client_get_gridfs (client, "test", "foo", &error)),
+      (gridfs = mongoc_client_get_gridfs (client, "test", "foo", &error)) != NULL,
       error);
 
    mongoc_gridfs_drop (gridfs, &error);
@@ -80,8 +80,8 @@ test_remove (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = mongoc_client_get_gridfs (
-      client, "test", "foo", &error), error);
+   ASSERT_OR_PRINT ((gridfs = mongoc_client_get_gridfs (
+      client, "test", "foo", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -122,7 +122,7 @@ test_list (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "list", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "list", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -159,14 +159,14 @@ test_list (void)
 
    bson_init (&query);
    bson_append_utf8 (&query, "filename", -1, "file.1", -1);
-   ASSERT_OR_PRINT (file = mongoc_gridfs_find_one (gridfs, &query, &error),
+   ASSERT_OR_PRINT ((file = mongoc_gridfs_find_one (gridfs, &query, &error)) != NULL,
                     error);
 
    ASSERT_CMPINT (strcmp (mongoc_gridfs_file_get_filename (file), "file.1"), ==, 0);
    mongoc_gridfs_file_destroy (file);
 
    ASSERT_OR_PRINT (
-      file = mongoc_gridfs_find_one_by_filename (gridfs, "file.1", &error),
+      (file = mongoc_gridfs_find_one_by_filename (gridfs, "file.1", &error)) != NULL,
       error);
 
    ASSERT_CMPINT (strcmp (mongoc_gridfs_file_get_filename (file), "file.1"), ==, 0);
@@ -194,7 +194,7 @@ test_properties (void)
 
    client = test_framework_client_new ();
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "list", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "list", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -248,7 +248,7 @@ test_create_from_stream (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "from_stream", &error)),
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "from_stream", &error)) != NULL,
                     error);
 
    mongoc_gridfs_drop (gridfs, &error);
@@ -280,7 +280,7 @@ test_seek (void)
 
    client = test_framework_client_new ();
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "seek", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "seek", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -331,7 +331,7 @@ test_read (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "read", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "read", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -407,7 +407,7 @@ test_write (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "write", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "write", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -484,7 +484,7 @@ test_empty (void)
 
    client = test_framework_client_new ();
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "empty", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "empty", &error)) != NULL, error);
 
    stream = mongoc_stream_file_new_for_path (BINARY_DIR"/empty.dat", O_RDONLY, 0);
 
@@ -539,7 +539,7 @@ test_stream (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (client, "fs", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (client, "fs", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 
@@ -660,8 +660,8 @@ test_remove_by_filename (void)
    client = test_framework_client_new ();
    ASSERT (client);
 
-   ASSERT_OR_PRINT (gridfs = get_test_gridfs (
-      client, "fs_remove_by_filename", &error), error);
+   ASSERT_OR_PRINT ((gridfs = get_test_gridfs (
+      client, "fs_remove_by_filename", &error)) != NULL, error);
 
    mongoc_gridfs_drop (gridfs, &error);
 

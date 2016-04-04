@@ -199,7 +199,7 @@ test_topology_scanner_discovery ()
    mock_server_replies_simple (request, secondary_response);
    /* scan completes */
    AWAIT (scanner->async->ncmds == 0);
-   ASSERT_OR_PRINT ((sd = future_get_mongoc_server_description_ptr (future)),
+   ASSERT_OR_PRINT ((sd = future_get_mongoc_server_description_ptr (future)) != NULL,
                     error);
 
    ASSERT_CMPSTR (sd->host.host_and_port,

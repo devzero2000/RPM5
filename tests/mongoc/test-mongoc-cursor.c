@@ -316,7 +316,7 @@ _test_kill_cursors (bool pooled,
                             "db.collection", "{'b': 1}", use_killcursors_cmd);
 
    if (!future_get_bool (future)) {
-      mongoc_cursor_error (cursor, &error);
+      ASSERT (mongoc_cursor_error (cursor, &error));
       fprintf (stderr, "%s\n", error.message);
       abort ();
    };
