@@ -397,12 +397,18 @@ assert(ltc->digest && ltc->digestlen > 0);
     /* XXX &rc is where valid is returned: return code ususally CRYPT_OK */
     switch (pubp->pubkey_algo) {
     default:
-assert(0);
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-assert(ltc->hashIdx >= 0);
+	if (ltc->hashIdx < 0
+	 || !ltc->c || mp_unsigned_bin_size(ltc->c) >= (int)sizeof(sig))
+	    goto exit;
 	siglen = ltc->nbits/8;
+	if (siglen > sizeof(sig))
+	    goto exit;
 	nz = siglen - mp_unsigned_bin_size(ltc->c);
+	if (nz > sizeof(sig))
+	    nz = 0;
 	if (nz)		/* XXX resurrect leading zero bytes. */
 	    memset(sig, 0, nz);
 	xx = mp_to_unsigned_bin(ltc->c, sig+nz);
@@ -412,8 +418,8 @@ assert(ltc->hashIdx >= 0);
 			_padding, ltc->hashIdx, saltlen, &rc, &ltc->rsa));
 	break;
     case PGPPUBKEYALGO_DSA:
-assert(ltc->r && ltc->s);
-assert(ltc->qbits);
+	if (!(ltc->r && ltc->s && ltc->qbits))
+	    goto exit;
 	/* XXX Truncate to qbits (if necessary) */
 	dlen = (ltc->digestlen > ltc->qbits/8 ? ltc->qbits/8 : ltc->digestlen);
 	xx = rpmltcErr(ltc, "dsa_verify_hash_raw",
@@ -426,7 +432,8 @@ assert(ltc->qbits);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-assert(ltc->r && ltc->s);
+	if (!(ltc->r && ltc->s && ltc->qbits))
+	    goto exit;
 	xx = der_encode_sequence_multi(sig, &siglen,
 			LTC_ASN1_INTEGER, 1UL, ltc->r,
 			LTC_ASN1_INTEGER, 1UL, ltc->s,
@@ -437,6 +444,7 @@ assert(ltc->r && ltc->s);
 	break;
     }
 
+exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -699,6 +707,7 @@ assert(ltc->nbits > 0);
 	nb = pgpMpiLen(p);
 	rc = ecc_ansi_x963_import(p+2, nb-2, &ltc->ecdsa);
 assert(rc == CRYPT_OK);
+	rc = 0;
 	break;
     }
 
