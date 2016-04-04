@@ -367,6 +367,7 @@ SPEW((stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsign
 
     pleft = sigpktlen;
     xx = pgpPktLen(sigpkt, pleft, pp);
+    if (xx < 0) goto exit;
     xx = rpmhkpLoadSignature(NULL, dig, pp);
     if (xx) goto exit;
 
@@ -412,9 +413,6 @@ _rpmhkpDumpDig(__FUNCTION__, dig, NULL);
 	/* XXX TODO: only validate once, then cache using rpmku */
 	/* XXX need at least 3 packets to validate a pubkey */
 	if (validate && hkp->npkts >= 3) {
-#ifdef	DYING
-pgpPrtPkts(hkp->pkt, hkp->pktlen, NULL, 1);
-#endif
 	    xx = rpmhkpValidate(hkp, NULL);
 	    switch (xx) {
 	    case RPMRC_OK:
