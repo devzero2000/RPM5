@@ -2922,8 +2922,6 @@ fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
 	    break;
 	case URL_IS_MONGO:	/* XXX FIXME */
 	default:
-	    if (fd) (void) fdClose(fd);
-	    fd = NULL;
 	    goto exit;
 	    /*@notreached@*/ break;
 	}
