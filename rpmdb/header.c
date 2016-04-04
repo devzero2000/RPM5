@@ -1536,7 +1536,6 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	} else {
 	    he->p.argv = argv = (const char **) DRD_xmalloc(nb + entry->length);
 	    t = (char *) &argv[count];
-fprintf(stderr, "*** %s: memcpy(%p, %p, %u)\n", __FUNCTION__, t, entry->data, (unsigned)entry->length);
 	    memcpy(t, entry->data, entry->length);
 	}
 	/*@=mods@*/
