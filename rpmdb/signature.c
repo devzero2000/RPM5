@@ -257,9 +257,31 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
-
-    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = pgpGetSignature(dig);
+
+#ifdef	DYING
+    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
+#else
+    {	void * sig = *pktp;
+	size_t siglen = *pktlenp;
+	size_t pleft = siglen;
+	pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
+
+	if (pgpPktLen((const rpmuint8_t *)sig, pleft, pp) < 0) {
+	    *pktp = _free(*pktp);
+	    rpmlog(RPMLOG_ERR, _("malformed signature packet\n"));
+	    return 1;
+	}
+	if (rpmhkpLoadSignature(NULL, dig, pp) < 0
+	 || (sigp->version != 3 && sigp->version != 4))
+	{
+	    *pktp = _free(*pktp);
+	    rpmlog(RPMLOG_ERR, _("cannot load V%u signature\n"),
+		(unsigned) sigp->version);
+	    return 1;
+	}
+    }
+#endif
 
     /* Identify the type of signature being returned. */
     /* XXX FIXME: RPMSIGTAG{DSA,RSA,ECDSA} are interchangeable. */
