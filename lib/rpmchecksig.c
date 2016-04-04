@@ -165,7 +165,7 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
     int xx;
 
     he->tag = (rpmTag) sigtag;
-    xx = headerGet(sigh, he, 0);
+    xx = headerGet(sigh, he, HEADERGET_SIGHEADER);
     if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
 	/* XXX expose ppSignid() from rpmhkp.c? */
@@ -281,7 +281,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	/* Lose the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
-	xx = headerGet(sigh, he, 0);
+	xx = headerGet(sigh, he, HEADERGET_SIGHEADER);
 	if (xx) {
 	    HE_t ohe = (HE_t) memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
 	    HeaderIterator hi;
@@ -296,11 +296,11 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	    oh = headerCopyLoad(he->p.ptr);
 	    for (hi = headerInit(oh);
-		headerNext(hi, ohe, 0);
+		headerNext(hi, ohe, HEADERGET_SIGHEADER);
 		ohe->p.ptr = _free(ohe->p.ptr))
 	    {
 		if (ohe->p.ptr) {
-		    xx = headerPut(nh, ohe, 0);
+		    xx = headerPut(nh, ohe, HEADERGET_SIGHEADER);
 		}
 	    }
 	    hi = headerFini(hi);
@@ -318,13 +318,13 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 if (sigh != NULL) {
 	/* Eliminate broken digest values. */
 	he->tag = (rpmTag)RPMSIGTAG_LEMD5_1;
-	xx = headerDel(sigh, he, 0);
+	xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 	he->tag = (rpmTag)RPMSIGTAG_LEMD5_2;
-	xx = headerDel(sigh, he, 0);
+	xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 	he->tag = (rpmTag)RPMSIGTAG_BADSHA1_1;
-	xx = headerDel(sigh, he, 0);
+	xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 	he->tag = (rpmTag)RPMSIGTAG_BADSHA1_2;
-	xx = headerDel(sigh, he, 0);
+	xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 
 	/* Toss and recalculate header+payload size and digests. */
 	{   static const rpmuint32_t sigs[] =
@@ -332,7 +332,7 @@ if (sigh != NULL) {
 	    size_t nsigs = sizeof(sigs) / sizeof(sigs[0]);
 	    for (i = 0; i < (int)nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		xx = rpmAddSignature(sigh, sigtarget, (rpmSigTag) he->tag, qva->passPhrase);
 		if (xx)
 		    goto exit;
@@ -347,7 +347,7 @@ if (sigh != NULL) {
 	    size_t nsigs = sizeof(sigs) / sizeof(sigs[0]);
 	    for (i = 0; i < (int)nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 	    }
 	} else {	/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
@@ -366,31 +366,31 @@ if (sigh != NULL) {
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_ECDSA:
 		he->tag = (rpmTag)RPMSIGTAG_GPG;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
 		he->tag = (rpmTag)RPMSIGTAG_GPG;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_RSA:
 		he->tag = (rpmTag)RPMSIGTAG_PGP;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		he->tag = (rpmTag)RPMSIGTAG_PGP;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		he->tag = (rpmTag)RPMSIGTAG_DSA;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
 		he->tag = (rpmTag)RPMSIGTAG_RSA;
-		xx = headerDel(sigh, he, 0);
+		xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 		/*@switchbreak@*/ break;
 	    }
 
 	    he->tag = (rpmTag)sigtag;
-	    xx = headerDel(sigh, he, 0);
+	    xx = headerDel(sigh, he, HEADERGET_SIGHEADER);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
 	    if (xx)
 		goto exit;
@@ -1151,7 +1151,7 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_ECDSA:
 	    he->tag = she->tag;
-	    if (!headerGet(sigh, he, 0) 
+	    if (!headerGet(sigh, he, HEADERGET_SIGHEADER) 
 	     || pgpPktLen(he->p.ui8p, he->c, pp) < 0
 	     || rpmhkpLoadSignature(NULL, dig, pp) < 0)
 	    {
@@ -1186,7 +1186,7 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
 	if (sigh != NULL)
 	for (hi = headerInit(sigh);
-	    headerNext(hi, she, 0) != 0;
+	    headerNext(hi, she, HEADERGET_SIGHEADER) != 0;
 	    she->p.ptr = _free(she->p.ptr))
 	{
 
