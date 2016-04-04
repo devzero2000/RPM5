@@ -148,18 +148,18 @@ static PyObject *rpmfd_flush(rpmfdObject *s)
 
 static PyObject *rpmfd_isatty(rpmfdObject *s)
 {
-    int fileno;
+    int fdno;
     if (s->fd == NULL) return err_closed();
 
     Py_BEGIN_ALLOW_THREADS
-    fileno = Fileno(s->fd);
+    fdno = Fileno(s->fd);
     Py_END_ALLOW_THREADS
 
-    if (Ferror(s->fd)) {
+    if (fdno < 0 || Ferror(s->fd)) {
 	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
 	return NULL;
     }
-    return PyBool_FromLong(isatty(fileno));
+    return PyBool_FromLong(isatty(fdno));
 }
 
 static PyObject *rpmfd_seek(rpmfdObject *s, PyObject *args, PyObject *kwds)
@@ -198,10 +198,10 @@ static PyObject *rpmfd_tell(rpmfdObject *s)
 static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "size", NULL };
-    char *buf = NULL;
     ssize_t reqsize = -1;
-    ssize_t bufsize = 0;
-    ssize_t read = 0;
+    char *b = NULL;
+    size_t nb = 0;
+    size_t nr = 0;
     PyObject *res = NULL;
     
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|l", kwlist, &reqsize))
@@ -209,23 +209,23 @@ static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 
     if (s->fd == NULL) return err_closed();
 
-    bufsize = (reqsize < 0) ? fdSize(s->fd) : reqsize;
-    if ((buf = malloc(bufsize+1)) == NULL) {
+    nb = (reqsize < 0) ? fdSize(s->fd) : reqsize;
+    if ((b = malloc(nb+1)) == NULL) {
 	return PyErr_NoMemory();
     }
     
     Py_BEGIN_ALLOW_THREADS 
-    read = Fread(buf, 1, bufsize, s->fd);
+    nr = Fread(b, 1, nb, s->fd);
     Py_END_ALLOW_THREADS 
 
     if (Ferror(s->fd)) {
 	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
 	goto exit;
     }
-    res = PyBytes_FromStringAndSize(buf, read);
+    res = PyBytes_FromStringAndSize(b, nr);
 
 exit:
-    free(buf);
+    free(b);
     return res;
 }
 

@@ -730,11 +730,12 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 
 	fd = fdDup(fdno);
 SPEW((stderr, "\t%p = fdDup(%d)\n", fd, fdno));
+	if (fd) {
+	    (void) fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
 
-	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
-
-	if (origin != NULL)
-	    (void) fdSetOpen(fd, origin, 0, 0);
+	    if (origin != NULL)
+		(void) fdSetOpen(fd, origin, 0, 0);
+	}
 
 	return fd;
     } else
