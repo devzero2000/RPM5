@@ -658,10 +658,12 @@ rpmctCopy(rpmct ct)
     }
 
 exit:
-    if (ct->t != NULL)
-	Fts_close(ct->t);
-    ct->t = NULL;
-    ct->p = NULL;
+    if (ct != NULL) {
+	if (ct->t != NULL)
+	    Fts_close(ct->t);
+	ct->t = NULL;
+	ct->p = NULL;
+    }
     return rval;
 }
 
