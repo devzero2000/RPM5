@@ -433,20 +433,15 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, key
 
 	/* XXX ECDSA OID parameter is stored differently than MPI's */
 	if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
-	    if (p+1+p[0] > pend)
-		goto exit;
-	    if (pgpImplMpiItem(lbl[0], dig, mpix+0, p+1, p+1+p[0]))
-		goto exit;
-	    p += p[0] + 1;
 	    mpil = pgpMpiLen(p);
 	    if (mpil < 0)
-		goto exit;
-	    if (p+mpil > pend)
-		goto exit;
-	    if (pgpImplMpiItem(lbl[1], dig, mpix+1, p, p+mpil))
-		goto exit;
-	    p += mpil;
-	    i = 2;
+	        goto exit;
+	    if (pgpImplMpiItem(lbl[0], dig, mpix+0, p+1, p+1+p[0]))
+	        goto exit;
+	    if (pgpImplMpiItem(lbl[1], dig, mpix+1, p+1+p[0], p+mpil))
+	        goto exit;
+	    p = pend;
+	    i = nmpis;
 	} else
 	for (i = 0; i < nmpis && p+2 <= pend; i++) {
 	    mpil = pgpMpiLen(p);
