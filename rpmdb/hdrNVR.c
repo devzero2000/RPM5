@@ -6,6 +6,7 @@
 
 #include <rpmiotypes.h>
 #include <rpmmacro.h>
+#include <rpmlog.h>
 
 #define	_RPMTAG_INTERNAL
 #include "header_internal.h"		/* XXX hdrchkType(), hdrchkData() */
@@ -305,7 +306,7 @@ assert(0);
 	    }
  	    xx = headerPut(h, he, 0);
 	    if (xx != 1) {
-		rpmlog(RPMLOG_ERROR,
+		rpmlog(RPMLOG_ERR,
 		    _("%s: headerPut failed(%d): tag(%u) t(%u) data %p[%u]\n"),
 			__FUNCTION__, xx, he->tag, he->t, he->p.ptr, he->c);
 
