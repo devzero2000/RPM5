@@ -44,15 +44,21 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
     for (i = 0; i < il; i++) {
 	info->tag = (rpmTag) ntohl(pe[i].tag);
 	info->type = (rpmTagType) ntohl(pe[i].type);
+	info->offset = (rpmint32_t) ntohl(pe[i].offset);
+	info->count = (rpmuint32_t) ntohl(pe[i].count);
+#if 0
+fprintf(stderr, "\ttag %d type %d offset 0x%x count %d\n", info->tag, info->type, info->offset, info->count);
+#endif
+
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
 	}
-	info->offset = (rpmint32_t) ntohl(pe[i].offset);
+#ifdef	DYING
 assert(negate || info->offset >= 0);	/* XXX insurance */
+#endif
 	if (negate)
 	    info->offset = -info->offset;
-	info->count = (rpmuint32_t) ntohl(pe[i].count);
 
 	if (hdrchkType(info->type))
 	    return (int)i;
