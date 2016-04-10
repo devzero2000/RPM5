@@ -2198,6 +2198,7 @@ typedef FILE duk_file;
 #define DUK_F_USE_REPL_ALL
 #endif
 
+#define	DUK_F_USE_REPL_ALL
 #if defined(DUK_F_USE_REPL_ALL)
 #define DUK_USE_REPL_FPCLASSIFY
 #define DUK_USE_REPL_SIGNBIT
@@ -3553,6 +3554,7 @@ typedef FILE duk_file;
 #undef DUK_USE_VALSTACK_UNSAFE
 #define DUK_USE_VERBOSE_EXECUTOR_ERRORS
 
+#undef	DUK_USE_MATH_BUILTIN
 /*
  *  Alternative customization header
  *

@@ -1,3 +1,5 @@
+#ifndef H_EDON_R
+#define H_EDON_R
 
 #include <stdint.h>
 
@@ -45,3 +47,5 @@ int edonr_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *ha
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* H_EDON_R */
