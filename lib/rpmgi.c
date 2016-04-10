@@ -132,24 +132,28 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
 	rpmrc = rpmReadPackageManifest(fd, &gi->argc, &gi->argv);
 	(void) Fclose(fd);
 	switch (rpmrc) {
-	case RPMRC_NOTFOUND:
 	case RPMRC_FAIL:
 	default:
 	    gi->rc = rpmrc;
 	    break;
+	case RPMRC_NOTFOUND:
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_NOSIG:
 	case RPMRC_OK:
+#ifdef	DYING
 	    /* XXX manifest tried after *.rpm forces a reset. here? */
 	    if (gi->rc == RPMRC_NOTFOUND)
-		gi->rc = RPMRC_OK;
+		rpmrc = gi->rc = RPMRC_OK;
+#endif
 	    break;
 	}
     } else {
 	gi->rc = RPMRC_NOTFOUND;	/* XXX other failures? */
     }
 
+if (_rpmgi_debug  < 0)
+fprintf(stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, gi, path, rpmrc);
     return rpmrc;
 }
 
@@ -222,6 +226,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
     rpmRC rpmrc = RPMRC_NOTFOUND;
     Header h = NULL;
 
+if (_rpmgi_debug  < 0)
+fprintf(stderr, "--> %s(%p) fn[%d] %s\n", __FUNCTION__, gi, gi->i, gi->argv[gi->i]);
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
 	const char * fn;	/* XXX gi->hdrPath? */
@@ -264,6 +270,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
     (void)headerFree(h);
     h = NULL;
 
+if (_rpmgi_debug  < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, gi, rpmrc);
     return rpmrc;
 }
 
@@ -595,6 +603,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 if (_rpmgi_debug)
 fprintf(stderr, "--> %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
 
+top:
     /* Free header from previous iteration. */
     (void)headerFree(gi->h);
     gi->h = NULL;
@@ -744,7 +753,15 @@ if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
 	/* Read next header, lazily expanding manifests as found. */
 	rpmrc = rpmgiLoadReadHeader(gi);
-
+if (_rpmgi_debug  < 0)
+fprintf(stderr, "*** rc %d gi %p\t%p[%d]: h %p %s\n", rpmrc, gi, gi->argv, gi->i, gi->h, gi->argv[gi->i]);
+	/* XXX non-rpm, non-manifest, returns NOTFOUND with h == NULL */
+	/* Skip non-existent *.rpm and non-manifest files if more to do. */
+	if (rpmrc == RPMRC_NOTFOUND) {
+	    gi->rc = RPMRC_OK;
+	    if (gi->i+1 < gi->argc && gi->argv[gi->i+1] != NULL)
+		goto top;
+	}
 	if (rpmrc != RPMRC_OK)	/* XXX check this */
 	    goto enditer;
 
