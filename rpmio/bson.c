@@ -12054,11 +12054,11 @@ bson_atomic_int64_add (volatile int64_t *p,
 /* The minimum and maximum finite time values.  */
 static time_t const time_t_min =
     (TYPE_SIGNED(time_t)
-        ? (time_t) -1 << (CHAR_BIT * sizeof (time_t) - 1)
+        ? (time_t) (0xffffffffffffffffULL << (CHAR_BIT * sizeof (time_t) - 1))
         : 0);
 static time_t const time_t_max =
     (TYPE_SIGNED(time_t)
-        ? - (~ 0 < 0) - ((time_t) -1 << (CHAR_BIT * sizeof (time_t) - 1))
+        ? - (~ 0 < 0) - ((time_t) (0xffffffffffffffffULL << (CHAR_BIT * sizeof (time_t) - 1)))
         : -1);
 
 
