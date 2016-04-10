@@ -932,6 +932,10 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
+#ifdef __AFL_HAVE_MANUAL_CONTROL
+  __AFL_INIT();
+#endif
+
 JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
