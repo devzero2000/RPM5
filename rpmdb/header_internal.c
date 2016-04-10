@@ -40,35 +40,71 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
 /*@=castexpose@*/
     entryInfo info = (entryInfo) iv;
     rpmuint32_t i;
+    rpmTag ptag = 0;
+    rpmint32_t poff = 0;
 
     for (i = 0; i < il; i++) {
 	info->tag = (rpmTag) ntohl(pe[i].tag);
 	info->type = (rpmTagType) ntohl(pe[i].type);
 	info->offset = (rpmint32_t) ntohl(pe[i].offset);
 	info->count = (rpmuint32_t) ntohl(pe[i].count);
-#if 0
-fprintf(stderr, "\ttag %d type %d offset 0x%x count %d\n", info->tag, info->type, info->offset, info->count);
-#endif
 
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
 	}
-#ifdef	DYING
-assert(negate || info->offset >= 0);	/* XXX insurance */
+
+#ifdef	NOTYET	/* XXX more todo here */
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+	/* XXX Re-map RPM_I18NSTRING_TYPE -> RPM_STRING_TYPE */
+	if (info->type == RPM_I18NSTRING_TYPE)
+	    info->type = RPM_STRING_TYPE;
 #endif
+#endif
+
+	if (!(negate || info->offset >= 0))
+	    return (int)i;
 	if (negate)
 	    info->offset = -info->offset;
 
+	if (i > 0 && ptag > info->tag) {
+	    if (ptag > RPMTAG_FIRSTFREE_TAG) {
+		i--;
+		info->tag = (rpmTag) ntohl(pe[i].tag);
+		info->type = (rpmTagType) ntohl(pe[i].type);
+		info->offset = (rpmint32_t) ntohl(pe[i].offset);
+		info->count = (rpmuint32_t) ntohl(pe[i].count);
+	    }
+	    return (int)i;
+	}
+	ptag = info->tag;
+
 	if (hdrchkType(info->type))
 	    return (int)i;
+
 	if (hdrchkAlign(info->type, info->offset))
 	    return (int)i;
 	if (hdrchkRange((rpmint32_t)dl, info->offset))
 	    return (int)i;
+
+	if (i > 0 && info->offset >= 0 && poff > info->offset)
+	    return (int)i;
+	poff = info->offset;
+
 	if (hdrchkData(info->count))
 	    return (int)i;
 
+	if (info->count < 1 || info->count > dl)
+	    return (int)i;
+
+	switch (info->type) {
+	default:
+	    break;
+	case RPM_STRING_TYPE:
+	    if (info->count != 1)	/* XXX reset count to 1? */
+		return (int)i;
+	    break;
+	}
     }
     return -1;
 }

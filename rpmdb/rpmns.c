@@ -369,12 +369,7 @@ SPEW((stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsign
     xx = pgpPktLen(sigpkt, pleft, pp);
     if (xx < 0) goto exit;
     xx = rpmhkpLoadSignature(NULL, dig, pp);
-    if (xx) goto exit;
-
-    if (sigp->version != (rpmuint8_t)3 && sigp->version != (rpmuint8_t)4) {
-SPEW((stderr, "==> unverifiable V%u\n", (unsigned)sigp->version));
-	goto exit;
-    }
+    if (xx < 0) goto exit;
 
     if (ts->hkp == NULL)
 	ts->hkp = rpmhkpNew(NULL, 0);

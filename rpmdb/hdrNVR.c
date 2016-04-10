@@ -17,9 +17,7 @@
  * Macros to be defined from per-header tag values.
  * @todo Should other macros be added from header when installing a package?
  */
-/*@observer@*/ /*@unchecked@*/
 static struct tagMacro {
-/*@observer@*/ /*@null@*/
     const char *macroname;	/*!< Macro name to define. */
     rpmTag	tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
@@ -33,10 +31,7 @@ static struct tagMacro {
     { NULL, (rpmTag) 0 }
 };
 
-/*@-globs -mods -incondefs@*/
 int headerMacrosLoad(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
@@ -69,22 +64,22 @@ int headerMacrosLoad(Header h)
 	case RPM_UINT8_TYPE:
 	    ival = (rpmuint64_t)he->p.ui8p[0];
 	    val = numbuf;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_UINT16_TYPE:
 	    ival = (rpmuint64_t)he->p.ui16p[0];
 	    val = numbuf;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_UINT32_TYPE:
 	    ival = (rpmuint64_t)he->p.ui32p[0];
 	    val = numbuf;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[0];
 	    val = numbuf;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_STRING_TYPE:
 	    val = he->p.str;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_I18NSTRING_TYPE:
 #if !defined(SUPPORT_I18NSTRING_TYPE)
 assert(0);
@@ -92,26 +87,20 @@ assert(0);
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_BIN_TYPE:
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	
 	if (val) {
-/*@-duplicatequals@*/
 	    if (val == numbuf)
 		sprintf(numbuf, "%llu", (unsigned long long)ival);
-/*@=duplicatequals@*/
 	    addMacro(NULL, tagm->macroname, NULL, val, -1);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
     return 0;
 }
-/*@=globs =mods =incondefs@*/
 
-/*@-globs -mods -incondefs@*/
 int headerMacrosUnload(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
@@ -125,10 +114,10 @@ int headerMacrosUnload(Header h)
 	switch (he->t) {
 	case RPM_UINT32_TYPE:
 	    delMacro(NULL, tagm->macroname);
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_STRING_TYPE:
 	    delMacro(NULL, tagm->macroname);
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_I18NSTRING_TYPE:
 #if !defined(SUPPORT_I18NSTRING_TYPE)
 assert(0);
@@ -139,7 +128,7 @@ assert(0);
 	case RPM_UINT16_TYPE:
 	case RPM_UINT64_TYPE:
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
@@ -158,14 +147,12 @@ assert(0);
 
     return 0;
 }
-/*@=globs =mods =incondefs@*/
 
 int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
 		const char **vp, const char **rp, const char **ap)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
-/*@-onlytrans@*/
     if (np) {
 	he->tag = RPMTAG_NAME;
 	if (headerGet(h, he, 0)
@@ -201,13 +188,11 @@ int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
            "platform" information is actually overkill, just revert to the
            RPM 4 behaviour and do not expose any such information at all. */
 	he->tag = RPMTAG_ARCH;
-/*@-observertrans -readonlytrans@*/
 	if (!headerIsEntry(h, he->tag))
 	    *ap = xstrdup("pubkey");
 	else
 	if (!headerIsEntry(h, RPMTAG_SOURCERPM))
 	    *ap = xstrdup("src");
-/*@=observertrans =readonlytrans@*/
 	else
 	if (headerGet(h, he, 0)
 	 && he->t == RPM_STRING_TYPE && he->c == 1)
@@ -217,7 +202,6 @@ int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
 	    *ap = NULL;
 	he->p.ptr = _free(he->p.ptr);
     }
-/*@=onlytrans@*/
     return 0;
 }
 
@@ -253,56 +237,67 @@ void headerMergeLegacySigs(Header h, const Header sigh)
         headerNext(hi, he, HEADERGET_SIGHEADER);
         he->p.ptr = _free(he->p.ptr))
     {
+assert(he->p.ptr != NULL);
 	/* XXX Translate legacy signature tag values. */
 	switch ((rpmSigTag)he->tag) {
 	case RPMSIGTAG_SIZE:
 	    he->tag = RPMTAG_SIGSIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_MD5:
 	    he->tag = RPMTAG_SIGMD5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_PAYLOADSIZE:
 	    he->tag = RPMTAG_ARCHIVESIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_ECDSA:
+	    break;
 	default:
 	    /* Skip all unknown tags that are not in the signature tag range. */
 	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))
 		continue;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
-assert(he->p.ptr != NULL);
 	if (!headerIsEntry(h, he->tag)) {
+#ifdef	DYING
 	    if (hdrchkType(he->t))
 		continue;
 	    if (hdrchkData(he->c))
 		continue;
+#endif
 	    switch(he->t) {
 	    default:
-assert(0);	/* XXX keep gcc quiet */
-		/*@switchbreak@*/ break;
+assert(0);
+		rpmlog(RPMLOG_ERR,
+		    _("%s: skipping tag: tag(%u) t(%u) data %p[%u]\n"),
+			__FUNCTION__, xx, he->tag, he->t, he->p.ptr, he->c);
+		continue;
+		break;
 	    case RPM_UINT8_TYPE:
 	    case RPM_UINT16_TYPE:
 	    case RPM_UINT32_TYPE:
 	    case RPM_UINT64_TYPE:
+assert(he->c == 1);
 		if (he->c != 1)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_STRING_TYPE:
+assert(he->c == 1);
+		if (he->c != 1)
+		    continue;
+		break;
 	    case RPM_BIN_TYPE:
+assert(he->c < 16*1024);
 		if (he->c >= 16*1024)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
-#endif
 	    case RPM_STRING_ARRAY_TYPE:
+assert(0);
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		break;
 	    }
  	    xx = headerPut(h, he, 0);
 	    if (xx != 1) {
@@ -331,16 +326,16 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	switch (he->tag) {
 	case RPMTAG_SIGSIZE:
 	    he->tag = (rpmTag) RPMSIGTAG_SIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGMD5:
 	    he->tag = (rpmTag) RPMSIGTAG_MD5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
 		continue;
 	    he->tag = (rpmTag) RPMSIGTAG_PAYLOADSIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_RSAHEADER:
 	case RPMTAG_DSAHEADER:
@@ -349,7 +344,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	    /* Skip all unknown tags that are not in the signature tag range. */
 	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))
 		continue;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 assert(he->p.ptr != NULL);
 	if (!headerIsEntry(sigh, he->tag)) {

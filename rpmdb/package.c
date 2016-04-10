@@ -9,7 +9,6 @@
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 
-#define	_RPMHKP_INTERNAL	/* XXX internal prototypes. */
 #include <rpmhkp.h>
 
 #include <rpmtag.h>
@@ -23,20 +22,11 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-/*@access Header @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX void * */
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
 unsigned int * keyids = NULL;
 
 #ifndef	DYING
-/*@unchecked@*/
 static unsigned int nkeyids_max = 256;
-/*@unchecked@*/
 static unsigned int nkeyids = 0;
-/*@unchecked@*/
 static unsigned int nextkeyid  = 0;
 
 /**
@@ -45,8 +35,6 @@ static unsigned int nextkeyid  = 0;
  * @return		0 if new keyid, otherwise 1
  */
 static int pgpStashKeyid(pgpDig dig)
-	/*@globals nextkeyid, nkeyids, keyids @*/
-	/*@modifies nextkeyid, nkeyids, keyids @*/
 {
     pgpDigParams sigp = pgpGetSignature(dig);
     const void * sig = pgpGetSig(dig);
@@ -91,7 +79,8 @@ static int hBlobDigest(Header h, pgpDig dig, pgpHashAlgo hash_algo,
     int xx;
 
     he->tag = RPMTAG_HEADERIMMUTABLE;
-    xx = headerGet(h, he, 0);
+
+    xx = headerGet(h, he, HEADERGET_SIGHEADER);
     if (!xx)
 	goto exit;
     (void) headerGetMagic(NULL, &hmagic, &nmagic);
@@ -113,7 +102,6 @@ exit:
     return rc;
 }
 
-/*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -165,7 +153,7 @@ assert(dig != NULL);
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
 		(msg && *msg ? msg : _("read failed\n")));
 	    msg = _free(msg);
 	    goto exit;
@@ -222,7 +210,6 @@ assert(dig != NULL);
 	op = (rpmop) pgpStatsAccumulator(dig, opx);
 	(void) rpmswEnter(op, 0);
     }
-/*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = fd->stats->ops[FDSTAT_READ].bytes;
     {	const char item[] = "Header";
 	msg = NULL;
@@ -235,7 +222,6 @@ assert(dig != NULL);
 	msg = _free(msg);
     }
     nb = fd->stats->ops[FDSTAT_READ].bytes - nb;
-/*@=type@*/
     if (opx > 0 && op != NULL) {
 	(void) rpmswExit(op, nb);
 	op = NULL;
@@ -279,9 +265,7 @@ assert(dig != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-/*@-ownedtrans -noeffect@*/
     xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
-/*@=ownedtrans =noeffect@*/
 
     switch ((rpmSigTag)she->tag) {
     default:	/* XXX keep gcc quiet. */
@@ -296,18 +280,18 @@ assert(0);
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with malformed signature packet(0x%x)\n"),
 		fn, she->p.ui8p[0]);
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (xx < 0
-	 || (dig->signature.version != 3 && dig->signature.version != 4))
-	{
+	if (xx < 0) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+
 	switch (dig->signature.pubkey_algo) {
 	default:
 	    rpmlog(RPMLOG_ERR,
@@ -328,6 +312,7 @@ assert(0);
 	    ctxp = &dig->hecdsa;
 	    break;
 	}
+
 	rc = hBlobDigest(h, dig, dig->signature.hash_algo, ctxp);
 	if (rc != RPMRC_OK || *ctxp == NULL) {
 	    rpmlog(RPMLOG_ERR,
@@ -434,4 +419,3 @@ exit:
 
     return rc;
 }
-/*@=mods@*/
