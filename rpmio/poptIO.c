@@ -236,6 +236,7 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("Echo-384 digest"), NULL },
  { "echo-512",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_ECHO_512,
 	N_("Echo-512 digest"), NULL },
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
  { "edonr-224",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_EDONR_224,
 	N_("EdonR-224 digest"), NULL },
  { "edonr-256",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_EDONR_256,
@@ -244,6 +245,7 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("EdonR-384 digest"), NULL },
  { "edonr-512",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_EDONR_512,
 	N_("EdonR-512 digest"), NULL },
+#endif
  { "fugue-224",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_FUGUE_224,
 	N_("Fugue-224 digest"), NULL },
  { "fugue-256",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_FUGUE_256,
@@ -284,6 +286,7 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("Keccak-384 digest"), NULL },
  { "keccak-512",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_KECCAK_512,
 	N_("Keccak-512 digest"), NULL },
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
  { "lane-224",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_LANE_224,
 	N_("Lane-224 digest"), NULL },
  { "lane-256",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_LANE_256,
@@ -292,6 +295,7 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("Lane-384 digest"), NULL },
  { "lane-512",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_LANE_512,
 	N_("Lane-512 digest"), NULL },
+#endif
  { "luffa-224",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_LUFFA_224,
 	N_("Luffa-224 digest"), NULL },
  { "luffa-256",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_LUFFA_256,

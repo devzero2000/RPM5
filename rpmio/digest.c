@@ -31,7 +31,9 @@
 #undef	Final
 #undef	Hash
 
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
 #include "edon-r.h"
+#endif
 
 #include "fugue.h"
 
@@ -59,7 +61,9 @@
 #undef	Final
 #undef	Hash
 
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
 #include "lane.h"
+#endif
 
 #include "luffa.h"
 
@@ -727,6 +731,7 @@ echo:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _echo_Update;
 	ctx->Digest = (int (*)(void *, byte *)) echo_Final;
 	break;
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
     case PGPHASHALGO_EDONR_224: ctx->digestsize = 224/8; goto edonr;
     case PGPHASHALGO_EDONR_256: ctx->digestsize = 256/8; goto edonr;
     case PGPHASHALGO_EDONR_384: ctx->digestsize = 384/8; goto edonr;
@@ -743,6 +748,7 @@ edonr:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
 	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
 	break;
+#endif
     case PGPHASHALGO_FUGUE_224: ctx->digestsize = 224/8; goto fugue;
     case PGPHASHALGO_FUGUE_256: ctx->digestsize = 256/8; goto fugue;
     case PGPHASHALGO_FUGUE_384: ctx->digestsize = 384/8; goto fugue;
@@ -820,6 +826,7 @@ keccak:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _keccak_Update;
 	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
 	break;
+#ifdef	CLANG_ASAN_COMPILES_SLOWLY
     case PGPHASHALGO_LANE_224: ctx->digestsize = 224/8; goto lane;
     case PGPHASHALGO_LANE_256: ctx->digestsize = 256/8; goto lane;
     case PGPHASHALGO_LANE_384: ctx->digestsize = 384/8; goto lane;
@@ -835,6 +842,7 @@ lane:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) laneUpdate;
 	ctx->Digest = (int (*)(void *, byte *)) laneDigest;
 	break;
+#endif
     case PGPHASHALGO_LUFFA_224: ctx->digestsize = 224/8; goto luffa;
     case PGPHASHALGO_LUFFA_256: ctx->digestsize = 256/8; goto luffa;
     case PGPHASHALGO_LUFFA_384: ctx->digestsize = 384/8; goto luffa;

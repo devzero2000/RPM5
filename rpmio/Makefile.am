@@ -126,8 +126,8 @@ pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
 noinst_HEADERS = \
 	ar.h bcon.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	blake2.h blake2-impl.h blake2-rpm.h blake2-kat.h \
-	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
-	groestl.h hamsi.h jh.h jsmn.h keccak.h lane.h luffa.h md2.h md6.h \
+	arirang.h blake.h bmw.h chi.h cubehash.h echo.h fugue.h \
+	groestl.h hamsi.h jh.h jsmn.h keccak.h luffa.h md2.h md6.h \
 	duktape.h mongoc.h radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	pcrs.h poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
@@ -147,8 +147,8 @@ usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	getdate.c \
 	blake2b.c blake2bp.c blake2s.c blake2sp.c blake2-rpm.c \
-	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
-	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c radiogatun.c\
+	arirang.c blake.c bmw.c chi.c cubehash.c echo.c fugue.c \
+	groestl.c hamsi.c jh.c keccak.c luffa.c md2.c md6.c radiogatun.c\
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
 	rpmgit.c rpmio-stub.c \
 	rpmjs.cpp rpmjsio.c rpmkeyring.c \
