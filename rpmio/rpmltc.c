@@ -635,7 +635,7 @@ int rpmltcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     rpmltc ltc = dig->impl;
     unsigned int  nb = (pend >= p ? (pend - p) : 0);
     unsigned int mbits = (((8 * (nb - 2)) + 0x1f) & ~0x1f);
-    int rc = 0;
+    int rc = -1;	/* assume failure */
 
     switch (itemno) {
     default:
@@ -650,6 +650,8 @@ assert(0);
 	_loadBN(ltc->r, p+2, nb-2);
 	break;
     case 21:	/* DSA s */
+	if (mbits != ltc->qbits)
+	    goto exit;
 assert(mbits == ltc->qbits);
 	_loadBN(ltc->s, p+2, nb-2);
 	break;
@@ -669,10 +671,14 @@ assert(mbits == ltc->qbits);
 	_loadBN(ltc->dsa.q, p+2, nb-2);
 	break;
     case 42:	/* DSA g */
+	if (mbits != ltc->nbits)
+	    goto exit;
 assert(mbits == ltc->nbits);
 	_loadBN(ltc->dsa.g, p+2, nb-2);
 	break;
     case 43:	/* DSA y */
+	if (mbits != ltc->nbits)
+	    goto exit;
 assert(mbits == ltc->nbits);
 	_loadBN(ltc->dsa.y, p+2, nb-2);
 	break;
@@ -681,6 +687,8 @@ assert(mbits == ltc->nbits);
 	_loadBN(ltc->r, p+2, nb-2);
 	break;
     case 51:	/* ECDSA s */
+	if (mbits != ltc->qbits)
+	    goto exit;
 assert(mbits == ltc->qbits);
 	_loadBN(ltc->s, p+2, nb-2);
 	break;
@@ -700,17 +708,20 @@ assert(mbits == ltc->qbits);
 		ltc->nbits = 256;	/* XXX FIXME default? */
 	    s = _free(s);
 	}
+	if (ltc->nbits <= 0)
+	    goto exit;
 assert(ltc->nbits > 0);
 	break;
     case 61:	/* ECDSA Q */
 	mbits = pgpMpiBits(p);
 	nb = pgpMpiLen(p);
-	rc = ecc_ansi_x963_import(p+2, nb-2, &ltc->ecdsa);
-assert(rc == CRYPT_OK);
-	rc = 0;
+	if (ecc_ansi_x963_import(p+2, nb-2, &ltc->ecdsa) != CRYPT_OK)
+	    goto exit;;
 	break;
     }
+    rc = 0;
 
+exit:
     return rc;
 }
 
