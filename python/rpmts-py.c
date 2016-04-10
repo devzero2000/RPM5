@@ -241,12 +241,19 @@ static PyObject *
 rpmts_AddErase(rpmtsObject * s, PyObject * args)
 {
     Header h;
+    uint32_t hdrNum;
 
     if (!PyArg_ParseTuple(args, "O&:AddErase", hdrFromPyObject, &h))
         return NULL;
 
-SPEW((stderr, "*** %s(%p,%p) ts %p\n", __FUNCTION__, s, h, s->ts));
+    hdrNum = headerGetInstance(h);
+
+SPEW((stderr, "*** %s(%p,%p) ts %p hdrNum %ld\n", __FUNCTION__, s, h, s->ts, hdrNum));
+#ifdef REFERENCE /* this doesn't work, RPM5 requires a unique hdrNum */
     return PyBool_FromLong(rpmtsAddEraseElement(s->ts, h, -1) == 0);
+#else
+    return PyBool_FromLong(rpmtsAddEraseElement(s->ts, h, hdrNum) == 0);
+#endif
 }
 
 static int
