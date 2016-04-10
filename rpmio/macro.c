@@ -713,6 +713,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 {
     size_t bufn = _macro_BUFSIZ + clen;
     char * buf = (char *) alloca(bufn);
+    char *t;
     FILE *shf;
     int rc;
     int c;
@@ -723,6 +724,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
     if (rc)
 	return rc;
 
+    t = mb->t;
     if ((shf = popen(buf, "r")) == NULL)
 	return 1;
     while(mb->nb > 0 && (c = fgetc(shf)) != EOF)
@@ -730,7 +732,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
     (void) pclose(shf);
 
     /* XXX delete trailing \r \n */
-    while (iseol(mb->t[-1])) {
+    while (mb->t > t && iseol(mb->t[-1])) {
 	*(mb->t--) = '\0';
 	mb->nb++;
     }
@@ -2740,8 +2742,22 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
 	rc = Glob(av[j], GLOB_TILDE, Glob_error, &gl);
-	if (rc)
+	if (rc) {
+	    /* Remap to RPMRC returns */
+	    switch (rc) {
+	    case GLOB_NOMATCH:		/* No matches found.  */
+		continue;
+		break;
+	    case GLOB_NOSPACE:		/* Ran out of memory.  */
+	    case GLOB_ABORTED:		/* Read error.  */
+	    case GLOB_NOSYS:		/* Not implemented.  */
+	    default:
+		break;
+	    }
+	    rc = RPMRC_FAIL;
+	    Globfree(&gl);
 	    goto exit;
+	}
 
 	/* XXX Prepend the URL leader for globs that have stripped it off */
 	maxb = 0;
@@ -2798,9 +2814,9 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    *argvPtr = argv;
 	if (argcPtr)
 	    *argcPtr = argc;
-	rc = 0;
+	rc = RPMRC_OK;
     } else
-	rc = 1;
+	rc = RPMRC_NOTFOUND;
 
 
 exit:
