@@ -1846,7 +1846,8 @@ static rpmRC cmd_blame(int argc, char *argv[])
     } else
     if (git->ac == 3) {
 	path = git->av[2];
-	sprintf(spec, "%s..%s", git->av[0], git->av[1]);
+	snprintf(spec, sizeof(spec)-1, "%s..%s", git->av[0], git->av[1]);
+	spec[sizeof(spec)-1] = '\0';
         commitspec = xstrdup(spec);
 	spec[0] = '\0';
     } else
@@ -1880,10 +1881,14 @@ static rpmRC cmd_blame(int argc, char *argv[])
      * `commitish:path/to/file.txt` format to find it.
      */
     if (git_oid_iszero(&blameopts.newest_commit))
-	strcpy(spec, "HEAD");
+	strncpy(spec, "HEAD", sizeof(spec)-1);
     else
 	git_oid_tostr(spec, sizeof(spec), &blameopts.newest_commit);
-    stpncpy(stpncpy(spec, ":", sizeof(*spec)-1), path, sizeof(*spec)-2);
+    {	size_t ns = strlen(spec);
+	char *se = spec+ns;
+	stpncpy(stpncpy(se, ":", sizeof(spec)-ns-1), path, sizeof(spec)-ns-2);
+	spec[sizeof(spec)-1] = '\0';
+    }
 
     xx = chkgit(git, "git_revparse_single",
 		git_revparse_single(&obj, git->R, spec));
