@@ -185,11 +185,11 @@
     // bson_t* common_param final_code
     assert(bson_finish($0) == BSON_OK);
     bson_destroy($0);
-    bson_dealloc($0);
     $0 = NULL;
   </final_code>
 </spec_type>
 
+<!--
 <spec_type>
   <kind> common_param </kind>
   <data_type> bson_timestamp_t </data_type>
@@ -214,23 +214,24 @@
   <data_type> bson_date_t </data_type>
   <value> 0x0102030405060708 </value>
 </spec_type>
+-->
 
 <spec_type>
   <kind> common_param </kind>
-  <data_type> bson_iterator * </data_type>
+  <data_type> bson_iter_t* </data_type>
   <value> NULL  </value>
   <global_code>
-    // bson_iterator* common_param global_code
+    // bson_iter_t* common_param global_code
   </global_code>
   <decl_code>
-    // bson_iterator* common_param decl_code
-    bson * ib = bson_alloc();
-    bson_iterator * i = bson_iterator_alloc();
+    // bson_iter_t* common_param decl_code
+    bson * ib = bson_new();
+    bson_iter_t* i = bson_malloc(sizeof(*i));
+    const char key[] = "foo";
   </decl_code>
   <init_code>
-    // bson_iterator* common_param init_code
-    assert(bson_init(ib) == BSON_OK);
-    bson_iterator_init(i, ib);
+    // bson_iter_t* common_param init_code
+    assert(bson_iter_init(i, ib));
   </init_code>
   <pre_condition>
     1
@@ -239,18 +240,16 @@
     1
   </constraint>
   <post_condition>
-    bson_iterator_more(i) && \
-    bson_iterator_next(i) == type && \
-    bson_iterator_type(i) == type && \
-    !strcmp(bson_iterator_key(i), name)
+    bson_iter_next(i) && \
+    bson_iter_type(i) == type && \
+    !strcmp(bson_iter_key(i), key)
   </post_condition>
   <final_code>
-    // bson_iterator* common_param final_code
+    // bson_iter_t* common_param final_code
 #define	ENVfinal	\
-  { bson_iterator_dealloc(ib); \
-    ib = NULL; \
+  { bson_free(i); \
+    i = NULL; \
     bson_destroy(ib); \
-    bson_dealloc(ib); \
     ib = NULL; \
   }
   </final_code>
@@ -270,7 +269,6 @@
   <final_code>
     // i_ctor final_code
     bson_destroy(cb);
-    bson_dealloc(cb);
     eb = NULL;
   </final_code>
   <pre_condition>
@@ -284,16 +282,17 @@
   </post_condition>
   <associating>
     <interfaces>
-      bson_iterator_double
-      bson_iterator_double_raw
-      bson_iterator_int
-      bson_iterator_int_raw
-      bson_iterator_long
-      bson_iterator_long_raw
+      bson_iter_double
+      bson_iter_double_unsafe
+      bson_iter_int32
+      bson_iter_int32_unsafe
+      bson_iter_int64
+      bson_iter_int64_unsafe
     </interfaces>
   </associating>
 </spec_type>
 -->
+<!--
 <spec_type>
   <kind> env </kind>
   <global_code>
@@ -311,8 +310,8 @@
   <final_code>
     // XXX env final_code
 #if defined(ENVfinal)
-    if (i) { bson_iterator_dealloc(i); i = NULL; }
-    if (ib) { bson_destroy(ib); bson_dealloc(ib); ib = NULL; }
+    if (i) { bson_free(i); i = NULL; }
+    if (ib) { bson_destroy(ib); ib = NULL; }
 #endif
   </final_code>
   <pre_condition>
@@ -326,27 +325,49 @@
   </post_condition>
   <associating>
     <interfaces>
-      bson_iterator_bin_data
-      bson_iterator_bool
-      bson_iterator_bool_raw
-      bson_iterator_code
-      bson_iterator_date
-      bson_iterator_double
-      bson_iterator_double_raw
-      bson_iterator_int
-      bson_iterator_int_raw
-      bson_iterator_long
-      bson_iterator_long_raw
-      bson_iterator_oid
-      bson_iterator_regex
-      bson_iterator_string
-      bson_iterator_string_len
-      bson_iterator_timestamp
-      bson_iterator_time_t
+      bson_iter_binary
+      bson_iter_bool
+      bson_iter_bool_unsafe
+      bson_iter_code
+      bson_iter_code_unsafe
+      bson_iter_codewscope
+      bson_iter_dbpointer
+      bson_iter_document
+
+      bson_iter_double
+      bson_iter_double_unsafe
+      bson_iter_int32
+      bson_iter_int32_unsafe
+      bson_iter_int64
+      bson_iter_int64_unsafe
+
+      bson_iter_key
+      bson_iter_key_unsafe
+
+      bson_iter_oid
+      bson_iter_oid_unsafe
+      bson_iter_regex
+
+      bson_iter_utf8
+      bson_iter_utf8_unsafe
+      bson_iter_utf8_len
+      bson_iter_utf8_len_unsafe
+
+      bson_iter_date_time
+      bson_iter_time_t
+      bson_iter_time_t_unsafe
+      bson_iter_timeval
+      bson_iter_timeval_unsafe
+      bson_iter_timestamp
+      bson_iter_type
+      bson_iter_type_unsafe
+
     </interfaces>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> double </data_type>
@@ -372,13 +393,15 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_double
-      bson_iterator_double_raw
+      bson_iter_double
+      bson_iter_double_unsafe
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> const char * </data_type>
@@ -390,15 +413,17 @@
     assert(bson_append_binary(ib, name, BSON_BIN_BINARY, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !memcmp($0, val, nval) && bson_iterator_bin_type(i) == BSON_BIN_BINARY && bson_iterator_bin_len(i) == nval </constraint>
+  <constraint> !memcmp($0, val, nval) && bson_iter_type(i) == BSON_TYPE_BINARY && bson_iter_binary_len(i) == nval </constraint>
   <associating>
     <interfaces>
-      bson_iterator_bin_data
+      bson_iter_binary
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> bson_oid_t * </data_type>
@@ -414,12 +439,14 @@
   <constraint> !memcmp($0->bytes, val.bytes, sizeof(val.bytes)) && $0->ints[0] == val.ints[0] && $0->ints[1] == val.ints[1] && $0->ints[2] == val.ints[2] </constraint>
   <associating>
     <interfaces>
-      bson_iterator_oid
+      bson_iter_oid
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> const char * </data_type>
@@ -431,15 +458,17 @@
     assert(bson_append_string(ib, name, val) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval+1 </constraint>
+  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iter_utf8_len(i) == nval+1 </constraint>
   <associating>
     <interfaces>
-      bson_iterator_string
+      bson_iter_utf8
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> int </data_type>
@@ -451,15 +480,17 @@
     assert(bson_append_string_n(ib, name, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> $0 == nval+1 && !strncmp(bson_iterator_string(i), val, nval) </constraint>
+  <constraint> $0 == nval+1 && !strncmp(bson_iter_utf8(i), val, nval) </constraint>
   <associating>
     <interfaces>
-      bson_iterator_string_len
+      bson_iter_utf8_len
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> bson_bool_t </data_type>
@@ -473,13 +504,15 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_bool
-      bson_iterator_bool_raw
+      bson_iter_bool
+      bson_iter_bool_unsafe
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> int </data_type>
@@ -493,13 +526,15 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_int
-      bson_iterator_int_raw
+      bson_iter_int32
+      bson_iter_int32_unsafe
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> long </data_type>
@@ -513,13 +548,15 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_long
-      bson_iterator_long_raw
+      bson_iter_int64
+      bson_iter_int64_unsafe
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> bson_date_t </data_type>
@@ -533,12 +570,14 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_date
+      bson_iter_date_time
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> time_t </data_type>
@@ -552,12 +591,14 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_time_t
+      bson_iter_time_t
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> bson_timestamp_t </data_type>
@@ -570,17 +611,18 @@
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
   <constraint>
-    bson_iterator_timestamp_increment(i) == val->i && \
-    bson_iterator_timestamp_time(i) == val->t && \
+    bson_iter_timestamp_increment(i) == val->i && \
+    bson_iter_timestamp_time(i) == val->t && \
     $0.i == val->i && $0.t == val->t
   </constraint>
   <associating>
     <interfaces>
-      bson_iterator_timestamp
+      bson_iter_timestamp
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
 <!--
 <spec_type>
@@ -596,13 +638,14 @@
   <constraint> $0 == val </constraint>
   <associating>
     <interfaces>
-      bson_iterator_???
+      bson_iter_???
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
 -->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> const char * </data_type>
@@ -618,17 +661,19 @@
   </init_code>
   <constraint>
     !strcmp($0, val) && (int)strlen($0) == nval &&\
-    !strcmp(bson_iterator_regex_opts(i), opts) && \
-    (int)strlen(bson_iterator_regex_opts(i)) == nopts
+    !strcmp(bson_iter_regex_opts(i), opts) && \
+    (int)strlen(bson_iter_regex_opts(i)) == nopts
   </constraint>
   <associating>
     <interfaces>
-      bson_iterator_regex
+      bson_iter_regex
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
+<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> const char * </data_type>
@@ -643,11 +688,12 @@
   <constraint> !strcmp($0, val) && (int)strlen($0) == nval </constraint>
   <associating>
     <interfaces>
-      bson_iterator_code
+      bson_iter_code
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
+-->
 
 <!--
 <spec_type>
@@ -664,7 +710,7 @@
   <constraint> !strncmp($0, val, nval) && (int)strlen($0) == nval </constraint>
   <associating>
     <interfaces>
-      bson_iterator_code
+      bson_iterr_code
     </interfaces>
     <links> retval </links>
   </associating>
@@ -681,10 +727,10 @@
     assert(bson_append_symbol(ib, name, val) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval </constraint>
+  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iter_utf8_len(i) == nval </constraint>
   <associating>
     <interfaces>
-      bson_iterator_string
+      bson_iter_utf8
     </interfaces>
     <links> retval </links>
   </associating>
@@ -701,10 +747,10 @@
     assert(bson_append_symbol_n(ib, name, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval </constraint>
+  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iter_utf8_len(i) == nval </constraint>
   <associating>
     <interfaces>
-      bson_iterator_string
+      bson_iter_utf8
     </interfaces>
     <links> retval </links>
   </associating>
@@ -713,52 +759,71 @@
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> int </data_type>
-  <constraint> $0 == BSON_OK </constraint>
+  <data_type> bool </data_type>
+  <constraint> $0 </constraint>
   <associating>
     <interfaces>
-      bson_init_finished_data
-      bson_init_finished_data_with_copy
-      bson_init_size
-      bson_init_unfinished_data
-      bson_ensure_space
-      bson_init_empty
-      bson_copy
-      bson_append_oid
-      bson_append_new_oid
-      bson_append_int
-      bson_append_long
-      bson_append_double
-      bson_append_string
-      bson_append_string_n
-      bson_append_symbol
-      bson_append_symbol_n
-      bson_append_code
-      bson_append_code_n
-      bson_append_code_w_scope
-      bson_append_code_w_scope_n
+
+      bson_iter_init
+      bson_iter_init_find
+      bson_iter_init_find_case
+      bson_iter_find
+      bson_iter_find_case
+      bson_iter_find_descendant
+      bson_iter_next
+      bson_iter_bool
+      bson_iter_as_bool
+      bson_iter_recurse
+      bson_iter_visit_all
+
+      bson_oid_equal
+      bson_oid_is_valid
+      bson_utf8_validate
+
+      bson_writer_begin
+      bson_init_from_json
+      bson_init_static
+      bson_equal
+      bson_validate
+
+      bson_append_value
+      bson_append_array
       bson_append_binary
       bson_append_bool
-      bson_append_null
-      bson_append_undefined
-      bson_append_maxkey
+      bson_append_code
+      bson_append_code_with_scope
+      bson_append_dbpointer
+      bson_append_double
+      bson_append_document
+      bson_append_document_begin
+      bson_append_document_end
+      bson_append_array_begin
+      bson_append_array_end
+      bson_append_int32
+      bson_append_int64
+      bson_append_iter
       bson_append_minkey
+      bson_append_maxkey
+      bson_append_null
+      bson_append_oid
       bson_append_regex
-      bson_append_bson
-      bson_append_element
-      bson_append_timestamp
-      bson_append_date
+      bson_append_utf8
+      bson_append_symbol
       bson_append_time_t
-      bson_append_start_object
-      bson_append_start_array
-      bson_append_finish_object
-      bson_append_finish_array
+      bson_append_timeval
+      bson_append_date_time
+      bson_append_now_utc
+      bson_append_timestamp
+      bson_append_undefined
+      bson_concat
+
     </interfaces>
     <links> retval </links>
   </associating>
 </spec_type>
 
 <!-- mongo.h -->
+<!-- NOMONGO
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmmgo </data_type>
@@ -881,6 +946,7 @@
     <links> retval </links>
   </associating>
 </spec_type>
+NOMONGO -->
 
 <!-- ar.h -->
 <!-- cpio.h -->

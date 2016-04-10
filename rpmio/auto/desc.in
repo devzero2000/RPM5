@@ -332,6 +332,7 @@
      bcon_extract
 
      <!-- bson link failures -->
+<!--
      bson_append_binary
      bson_append_bool
      bson_append_code
@@ -348,6 +349,7 @@
      bson_append_time_t
      bson_append_undefined
      bson_append_value
+-->
      bson_is_power_of_two
      bson_iter_array
      bson_iter_as_bool
@@ -448,6 +450,9 @@
      bson_validate
      bson_value_copy
      bson_writer_begin
+
+     <!-- bson run failures -->
+     bson_oid_is_value
 
 <!--
      bson_iterator_subiterator
