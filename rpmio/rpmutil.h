@@ -105,7 +105,8 @@
 #  define RPM_GNUC_INTERNAL
 #endif
 
-#if !__clang__ &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 7	/* XXX gud enuf? */
+/* if !__clang__ &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 7 */
+#ifdef HAVE_GNUC_TM_ATOMIC
 #  define RPM_GNUC_TM_SAFE	__attribute__((transaction_safe))
 #  define RPM_GNUC_TM_PURE	__attribute__((transaction_pure))
 #  define RPM_GNUC_TM_CALLABLE	__attribute__((transaction_callable))
@@ -127,6 +128,21 @@
 #  define RPM_GNUC_TM_CANCEL
 #endif
 
+#if defined(__has_attribute)
+# if __has_feature(address_sanitizer)
+#   define  RPM_GNUC_NOASAN		__attribute__((no_sanitize("address")))
+#   define  RPM_GNUC_NOBOUNDS		__attribute__((no_sanitize("bounds")))
+#   define  RPM_GNUC_NOUNDEFINED	__attribute__((no_sanitize("undefined")))
+# else
+#   define  RPM_GNUC_NOASAN
+#   define  RPM_GNUC_NOBOUNDS
+#   define  RPM_GNUC_NOUNDEFINED
+# endif
+#else
+#   define  RPM_GNUC_NOASAN
+#   define  RPM_GNUC_NOBOUNDS
+#   define  RPM_GNUC_NOUNDEFINED
+#endif
 
 /* Guard C code in headers, while including them from C++ */
 #ifdef  __cplusplus
