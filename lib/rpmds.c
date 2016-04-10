@@ -3704,8 +3704,10 @@ if (_rpmds_debug > 0)
 fprintf(stderr, "*** rpmdsRldpath(%p, %s) globbing %s\n", PRCO, rldp, buf);
 
 	xx = Glob(buf, 0, NULL, &gl);
-	if (xx)		/* glob error, probably GLOB_NOMATCH */
+	if (xx)	{	/* glob error, probably GLOB_NOMATCH */
+	    Globfree(&gl);
 	    continue;
+	}
 
 if (_rpmds_debug > 0)
 fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, gl.gl_pathc);
