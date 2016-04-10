@@ -121,6 +121,9 @@ librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES)
 #libsql_la_SOURCES	= libsql.c
 #libsql_la_LIBADD	= librpm.la $(RPMDB_LDADD_COMMON)
 
+# pkglib libraries needs to have usrlib libraries already installed!
+install-pkglibLTLIBRARIES: install-usrlibLTLIBRARIES
+
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
