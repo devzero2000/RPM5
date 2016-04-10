@@ -126,7 +126,6 @@ rpmhkp rpmhkpLookup(const char * keyname)
 rpmRC rpmhkpValidate(/*@null@*/ rpmhkp hkp, /*@null@*/ const char * keyname)
 	/*@*/;
 
-#if defined(_RPMHKP_INTERNAL)
 /**
  * Load values into pubkey params from packet.
  * @param hkp		hkp handle
@@ -149,6 +148,7 @@ int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
 int rpmhkpLoadSignature(/*@null@*/ rpmhkp hkp, pgpDig dig, pgpPkt pp)
 	/*@*/;
 
+#if defined(_RPMHKP_INTERNAL)
 /**
  * Retrieve/Load the pubkey associated with a signature.
  * @param hkp		hkp handle

@@ -399,9 +399,6 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, key
     }
 
     if (p) {
-#ifdef	DYING
-	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
-#else
 	const rpmuint8_t * pend = pp->u.h + pp->hlen;
 	const char * rsalbl[] =
 		{ "    n =", "    e =", NULL };
@@ -456,7 +453,6 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, key
 
 	if (p != pend || i != nmpis)
 	    goto exit;
-#endif
 	rc = 0;
     }
 
@@ -534,8 +530,13 @@ int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
 	goto exit;
     }
     sigp->version = pp->u.h[0];
+    sigp->pubkey_algo = 0;
+    sigp->hash_algo = 0;
 
     switch (pp->u.h[0]) {
+    default:
+	goto exit;
+	break;
     case 3: {
 	sigp->version = pp->u.r->version;
 	sigp->pubkey_algo = pp->u.r->pubkey_algo;
@@ -624,10 +625,6 @@ p = punhash + nunhash + 2;
 
     /* XXX Load signature paramaters. */
     if (p) {
-#ifdef	DYING
-	pgpPrtSigParams(dig, pp,
-		(pgpPubkeyAlgo)sigp->pubkey_algo, (pgpSigType)sigp->sigtype, p);
-#else
 	const rpmuint8_t * pend = pp->u.h + pp->hlen;
 	const char * rsalbl[] = { " m**d =", NULL };
 	const char * dsalbl[] = { "    r =", "    s =", NULL };
@@ -639,8 +636,8 @@ p = punhash + nunhash + 2;
 	switch (sigp->pubkey_algo) {
 	case PGPPUBKEYALGO_EDDSA:
 	default:
-		goto exit;
-		break;
+	    goto exit;
+	    break;
 	case PGPPUBKEYALGO_RSA:
 	    lbl = rsalbl; nmpis = 1; mpix = 10;
 	    break;
@@ -649,6 +646,23 @@ p = punhash + nunhash + 2;
 	    break;
 	case PGPPUBKEYALGO_ECDSA:
 	    lbl = dsalbl; nmpis = 2; mpix = 50;
+	    break;
+	}
+
+	switch (sigp->hash_algo) {
+	default:
+	    goto exit;
+	    break;
+	case PGPHASHALGO_MD5:
+	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_RIPEMD160:
+	case PGPHASHALGO_MD2:
+	case PGPHASHALGO_TIGER192:
+	case PGPHASHALGO_HAVAL_5_160:
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+	case PGPHASHALGO_SHA224:
 	    break;
 	}
 
@@ -665,12 +679,11 @@ p = punhash + nunhash + 2;
 
 	if (p != pend || i != nmpis)
 	    goto exit;
-#endif
 	rc = 0;
     }
 
 exit:
-HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u\n", __FUNCTION__, hkp, dig, pp, rc, sigp->version));
+HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u %u/%u\n", __FUNCTION__, hkp, dig, pp, rc, sigp->version, sigp->pubkey_algo, sigp->hash_algo));
 
     return rc;
 }
