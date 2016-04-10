@@ -9216,7 +9216,7 @@ mongoc_counters_calc_size (void)
            (n_cpu * n_groups * sizeof(mongoc_counter_slots_t)));
 
 #ifdef BSON_OS_UNIX
-   return BSON_MAX(getpagesize(), size);
+   return BSON_MAX((size_t)getpagesize(), size);
 #else
    return size;
 #endif
@@ -29259,7 +29259,7 @@ _mongoc_stream_tls_openssl_writev (mongoc_stream_t *stream,
              *
              * copy into the buffer */
 
-            bytes = BSON_MIN (iov[i].iov_len - iov_pos, buf_end - buf_tail);
+            bytes = BSON_MIN (iov[i].iov_len - iov_pos, (size_t)(buf_end - buf_tail));
 
             memcpy (buf_tail, (char *) iov[i].iov_base + iov_pos, bytes);
             buf_tail += bytes;
