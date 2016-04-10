@@ -664,7 +664,7 @@ static int davConnect(urlinfo u)
 {
     const char * path = NULL;
     int ut = urlPath(u->url, &path);
-    int rc;
+    int rc = NE_CONNECT;	/* assume failure */
 
 DAVDEBUG(-1, (stderr, "--> %s(%p) url %s\n", __FUNCTION__, u, u->url));
 
@@ -684,9 +684,17 @@ DAVDEBUG(-1, (stderr, "--> %s(%p) url %s\n", __FUNCTION__, u, u->url));
 /* ======================= */
 
     /* HACK: where should server capabilities be read? */
+#ifdef	DYING
 assert(path && *path == '/');
     if (path == NULL || *path == '\0')
 	path = "/";
+#else
+    if (path == NULL || *path == '\0') {
+	errno = ENOENT;		/* HACK: errno same as non-existent path. */
+	rc = NE_CONNECT;
+	goto exit;
+    }
+#endif
 
 #ifdef NOTYET	/* XXX too many new directories while recursing. */
     /* Repeat OPTIONS for new directories. */
