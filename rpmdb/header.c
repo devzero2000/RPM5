@@ -1414,6 +1414,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
     {	const char ** argv;
 	size_t nb = count * sizeof(*argv);
 	char * t;
+	char * te;
 	unsigned i;
 
 	if (minMem) {
@@ -1423,12 +1424,16 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    he->p.argv = argv = (const char **) DRD_xmalloc(nb + entry->length);
 	    t = (char *) &argv[count];
 	    memcpy(t, entry->data, entry->length);
+	    t[entry->length-1] = '\0';	/* XXX ensure NUL terminated */
 	}
+	te = t + entry->length;
 	for (i = 0; i < (unsigned) count; i++) {
 	    argv[i] = t;
 	    t = strchr(t, 0);
 	    t++;
 	}
+	if (t != te)			/* XXX ensure full copy */
+	    rc = 0;
     }	break;
 
     default:
