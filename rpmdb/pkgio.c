@@ -1072,7 +1072,6 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     const void * sig = NULL;
     rpmVSFlags vsflags = pgpDigVSFlags;
     size_t siglen = 0;
-    int blen;
     rpmuint32_t ril = 0;
     const unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -1104,7 +1103,11 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 
     /* Is there an immutable header region tag? */
     if (entry->info.tag != RPMTAG_HEADERIMMUTABLE) {
-	rc = RPMRC_NOTFOUND;
+	if (entry->info.tag < RPMTAG_HEADERI18NTABLE) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("region tag: BAD, %s"), entryInfoStr(&entry->info));
+	} else
+	    rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
@@ -1163,6 +1166,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 	switch (entry->info.tag) {
 	case RPMTAG_SHA1HEADER:
 	{   const unsigned char * b;
+	    int blen;
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
 	    if (entry->info.type != RPM_STRING_TYPE || entry->info.count != 1)
@@ -1478,12 +1482,15 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     (void) headerGetMagic(NULL, &b, &nb);
     if (memcmp(block, b, nb)) {
 	unsigned char * x = (unsigned char *) block;
-	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"), x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"),
+		x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
 	goto exit;
     }
 
     il = (rpmuint32_t)ntohl(block[2]);
-    if ((il * sizeof(struct entryInfo_s)) > (st->st_size - startoff - sizeof(block))
+    if (il < 1
+     || (il * sizeof(struct entryInfo_s)) > (st->st_size - startoff - sizeof(block))
      || hdrchkTags(il))
     {
 	(void) snprintf(buf, sizeof(buf),
@@ -1493,7 +1500,8 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	goto exit;
     }
     dl = (rpmuint32_t)ntohl(block[3]);
-    if (dl > (st->st_size - startoff - sizeof(block))
+    if (dl < 1
+     || dl > (st->st_size - startoff - sizeof(block))
      || hdrchkData(dl))
     {
 	(void) snprintf(buf, sizeof(buf),
