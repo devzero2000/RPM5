@@ -243,8 +243,14 @@ fprintf(stderr, "--> %s(%p) fn[%d] %s\n", __FUNCTION__, gi, gi->i, gi->argv[gi->
 	} else
 	    rpmrc = RPMRC_OK;
 
-	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
+	if (rpmrc == RPMRC_OK)
 	    break;
+	if (gi->flags & RPMGI_NOMANIFEST) {
+	    /* XXX remap skipped -> failed reads */
+	    if (rpmrc == RPMRC_NOTFOUND)
+		gi->rc = rpmrc = RPMRC_FAIL;
+	    break;
+	}
 	if (rpmrc == RPMRC_NOSIG) {
 	    /* XXX move error message to caller. */
 	    rpmlog(RPMLOG_NOTICE, _("not signed: %s\n"), fn);
