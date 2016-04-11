@@ -245,12 +245,14 @@ fprintf(stderr, "--> %s(%p) fn[%d] %s\n", __FUNCTION__, gi, gi->i, gi->argv[gi->
 
 	if (rpmrc == RPMRC_OK)
 	    break;
+
 	if (gi->flags & RPMGI_NOMANIFEST) {
 	    /* XXX remap skipped -> failed reads */
 	    if (rpmrc == RPMRC_NOTFOUND)
 		gi->rc = rpmrc = RPMRC_FAIL;
 	    break;
 	}
+
 	if (rpmrc == RPMRC_NOSIG) {
 	    /* XXX move error message to caller. */
 	    rpmlog(RPMLOG_NOTICE, _("not signed: %s\n"), fn);
@@ -460,7 +462,7 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
 if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, gi->mi);
+fprintf(stderr, "*** %s: gi %p key %p[%d]\tmi %p\n", __FUNCTION__, gi, gi->keyp, (int)gi->keylen, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
@@ -756,11 +758,11 @@ nextkey:
     case RPMDBI_ARGLIST:
 	/* XXX gi->active initialize? */
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
+fprintf(stderr, "*** %s: gi %p\t%p[%d]: %s\n", __FUNCTION__, gi, gi->argv, gi->i, gi->argv[gi->i]);
 	/* Read next header, lazily expanding manifests as found. */
 	rpmrc = rpmgiLoadReadHeader(gi);
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "*** rc %d gi %p\t%p[%d]: h %p %s\n", rpmrc, gi, gi->argv, gi->i, gi->h, gi->argv[gi->i]);
+fprintf(stderr, "*** %s: rc %d gi %p\t%p[%d]: h %p %s\n", __FUNCTION__, rpmrc, gi, gi->argv, gi->i, gi->h, gi->argv[gi->i]);
 	/* XXX non-rpm, non-manifest, returns NOTFOUND with h == NULL */
 	/* Skip non-existent *.rpm and non-manifest files if more to do. */
 	if (rpmrc == RPMRC_NOTFOUND) {
