@@ -1,4 +1,3 @@
-/*@-sizeoftype@*/
 /** \ingroup header
  * \file rpmdb/header_internal.c
  */
@@ -13,7 +12,6 @@
 /**
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
-/*@observer@*/ /*@unchecked@*/
 int rpm_typeAlign[16] =  {
     1,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
@@ -35,9 +33,7 @@ int rpm_typeAlign[16] =  {
 
 int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv, int negate)
 {
-/*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
-/*@=castexpose@*/
     entryInfo info = (entryInfo) iv;
     rpmuint32_t i;
     rpmTag ptag = 0;
@@ -68,6 +64,7 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
 	    info->offset = -info->offset;
 
 	if (i > 0 && ptag > info->tag) {
+	    /* Heuristic to determine whether this or previous tag was fubar. */
 	    if (ptag > RPMTAG_FIRSTFREE_TAG) {
 		i--;
 		info->tag = (rpmTag) ntohl(pe[i].tag);
@@ -108,4 +105,3 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
     }
     return -1;
 }
-/*@=sizeoftype@*/

@@ -243,7 +243,7 @@ assert(dig != NULL);
     default:
  	break;
     case RPM_STRING_ARRAY_TYPE:
- 	ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
+ 	ix = (he->c > 1 ? he->c - 1 : 0); /* XXX FIXME: assumes last pubkey */
  	dig->pub = _free(dig->pub);
  	dig->publen = 0;
  	{   rpmiob iob = rpmiobNew(0);
