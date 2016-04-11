@@ -522,34 +522,25 @@ void tagTypeValidate(HE_t he, unsigned int flags)
     if (flags & HEADERGET_SIGHEADER)
 	return;
 
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-    /* XXX Re-map RPM_I18NSTRING_TYPE -> RPM_STRING_TYPE */
-    /* XXX FIXME: move to headerVerifyInfo()? */
-    if (he->t == RPM_I18NSTRING_TYPE)
-	he->t = RPM_STRING_TYPE;
-#endif
-
     /* XXX Arbitrary tags are always STRING or STRING_ARRAY. */
     if (he->tag & 0x40000000) {
 	if (!(he->t == RPM_STRING_TYPE || he->t == RPM_STRING_ARRAY_TYPE)) {
 	    rpmTagType tagtype = RPM_STRING_TYPE;
-	    char tagn[16];
-	    
-	    (void) snprintf(tagn, sizeof(tagn), "0x%08x", he->tag);
 	    rpmlog(RPMLOG_WARNING,
-		_("tag %s(%u) type(0x%x) != expected type(0x%x), overriding type\n"),
-		tagn, (unsigned) he->tag, he->t, tagtype);
-	    he->t = tagtype;
-	    he->freeData = 0;	/* XXX better a memory leak than a segfault */
+		_("tag %s(%u) type(0x%x) != expected type(0x%x)\n"),
+		tagName(he->tag), (unsigned) he->tag, he->t, tagtype);
 	}
 	return;
     }
 
     switch (he->tag) {
-#ifdef	DYING			/* XXX retrofitted in headerVerifyInfo() */
+#if defined(SUPPORT_I18NSTRING_TYPE)
+    case RPMTAG_SUMMARY:
+    case RPMTAG_DESCRIPTION:
+    case RPMTAG_GROUP:
+#endif
     case RPMTAG_FILESTATES:	/* XXX either CHAR or UINT8 */
 	break;
-#endif
     case RPMTAG_PREINPROG:	/* XXX either STRING or STRING_ARRAY */
     case RPMTAG_POSTINPROG:	/* XXX either STRING or STRING_ARRAY */
     case RPMTAG_PREUNPROG:	/* XXX either STRING or STRING_ARRAY */
@@ -557,25 +548,18 @@ void tagTypeValidate(HE_t he, unsigned int flags)
     case RPMTAG_VERIFYSCRIPTPROG:/* XXX either STRING or STRING_ARRAY */
 	if (!(he->t == RPM_STRING_TYPE || he->t == RPM_STRING_ARRAY_TYPE)) {
 	    rpmTagType tagtype = RPM_STRING_TYPE;
-	    
 	    rpmlog(RPMLOG_WARNING,
-		_("tag %s(%u) type(0x%x) != expected type(0x%x), overriding type\n"),
+		_("tag %s(%u) type(0x%x) != expected type(0x%x)\n"),
 		tagName(he->tag), (unsigned) he->tag, he->t, tagtype);
-	    he->t = tagtype;
-	    he->freeData = 0;	/* XXX better a memory leak than a segfault */
 	}
 	break;
     default:
       {	rpmTagType tagtype = tagType(he->tag);
 	rpmTagType type = (tagtype & 0xffff);
-	if (he->t != type) {
+	if (type && he->t != type) {
 	    rpmlog(RPMLOG_WARNING,
-		_("tag %s(%u) type(0x%x) != expected type(0x%x), overriding type\n"),
+		_("tag %s(%u) type(0x%x) != expected type(0x%x)\n"),
 		tagName(he->tag), (unsigned) he->tag, he->t, tagtype);
-	    he->t = type;
-	    if (he->t == RPM_STRING_TYPE)
-		he->c = 1;
-	    he->freeData = 0;	/* XXX better a memory leak than a segfault */
 	}
       }	break;
     }
