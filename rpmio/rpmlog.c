@@ -132,45 +132,6 @@ int rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
 /*@unchecked@*/ /*@null@*/
 static FILE * _stdlog = NULL;
 
-static int rpmlogDefault(rpmlogRec rec)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    FILE *msgout = (_stdlog ? _stdlog : stderr);
-
-    switch (rec->pri) {
-    case RPMLOG_INFO:
-    case RPMLOG_NOTICE:
-	msgout = (_stdlog ? _stdlog : stdout);
-	break;
-    case RPMLOG_EMERG:
-    case RPMLOG_ALERT:
-    case RPMLOG_CRIT:
-    case RPMLOG_ERR:
-    case RPMLOG_WARNING:
-    case RPMLOG_DEBUG:
-    default:
-	break;
-    }
-
-    (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
-
-    if (rec->message)
-	(void) fputs(rec->message, msgout);
-    (void) fflush(msgout);
-
-    return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
-}
-
-FILE * rpmlogSetFile(FILE * fp)
-	/*@globals _stdlog @*/
-	/*@modifies _stdlog @*/
-{
-    FILE * ofp = _stdlog;
-    _stdlog = fp;
-    return ofp;
-}
-
 /*@-readonlytrans@*/	/* FIX: double indirection. */
 /*@observer@*/ /*@unchecked@*/
 static const char *rpmlogMsgPrefix[] = {
@@ -183,11 +144,127 @@ static const char *rpmlogMsgPrefix[] = {
     "",			/*!< RPMLOG_INFO */
     "D: ",		/*!< RPMLOG_DEBUG */
 };
+
+#define ANSI_COLOR_BLACK	"\x1b[30m"
+#define ANSI_COLOR_RED		"\x1b[31m"
+#define ANSI_COLOR_GREEN	"\x1b[32m"
+#define ANSI_COLOR_YELLOW	"\x1b[33m"
+#define ANSI_COLOR_BLUE		"\x1b[34m"
+#define ANSI_COLOR_MAGENTA	"\x1b[35m"
+#define ANSI_COLOR_CYAN		"\x1b[36m"
+#define ANSI_COLOR_WHITE	"\x1b[37m"
+
+#define ANSI_BRIGHT_BLACK	"\x1b[30;1m"
+#define ANSI_BRIGHT_RED		"\x1b[31;1m"
+#define ANSI_BRIGHT_GREEN	"\x1b[32;1m"
+#define ANSI_BRIGHT_YELLOW	"\x1b[33;1m"
+#define ANSI_BRIGHT_BLUE	"\x1b[34;1m"
+#define ANSI_BRIGHT_MAGENTA	"\x1b[35;1m"
+#define ANSI_BRIGHT_CYAN	"\x1b[36;1m"
+#define ANSI_BRIGHT_WHITE	"\x1b[37;1m"
+
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+static const char *rpmlogMsgPrefixColor[] = {
+    ANSI_BRIGHT_RED,	/*!< RPMLOG_EMERG */
+    ANSI_BRIGHT_RED,	/*!< RPMLOG_ALERT */
+    ANSI_BRIGHT_RED,	/*!< RPMLOG_CRIT */
+    ANSI_BRIGHT_RED,	/*!< RPMLOG_ERR */
+    ANSI_BRIGHT_MAGENTA,/*!< RPMLOG_WARNING */
+    "",			/*!< RPMLOG_NOTICE */
+    "",			/*!< RPMLOG_INFO */
+    ANSI_BRIGHT_BLUE,	/*!< RPMLOG_DEBUG */
+};
 /*@=readonlytrans@*/
 
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
 {
     return rpmlogMsgPrefix[pri&0x7];
+}
+
+static const char * rpmlogLevelColor(rpmlogLvl pri)
+{
+    return rpmlogMsgPrefixColor[pri&0x7];
+}
+
+static int rpmlogDefault(rpmlogRec rec)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    FILE *msgout = (_stdlog ? _stdlog : stderr);
+    const char * colorOn = isatty(fileno(msgout))
+	? rpmlogLevelColor(rec->pri)
+	: NULL ;
+
+    switch (rec->pri) {
+    case RPMLOG_INFO:
+    case RPMLOG_NOTICE:
+	msgout = (_stdlog ? _stdlog : stdout);
+	break;
+    case RPMLOG_EMERG:
+    case RPMLOG_ALERT:
+    case RPMLOG_CRIT:
+    case RPMLOG_ERR:
+    case RPMLOG_WARNING:
+    case RPMLOG_DEBUG:
+	if (colorOn && *colorOn)
+	    (void) fputs(rpmlogLevelColor(rec->pri), msgout);
+	break;
+    default:
+	break;
+    }
+
+    (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
+
+    switch (rec->pri) {
+    case RPMLOG_INFO:
+    case RPMLOG_NOTICE:
+	break;
+    case RPMLOG_EMERG:
+    case RPMLOG_ALERT:
+    case RPMLOG_CRIT:
+    case RPMLOG_ERR:
+    case RPMLOG_WARNING:
+	if (colorOn && *colorOn)
+	    (void) fputs(ANSI_COLOR_RESET, msgout);
+    case RPMLOG_DEBUG:
+    default:
+	break;
+    }
+
+    if (rec->message)
+	(void) fputs(rec->message, msgout);
+
+    switch (rec->pri) {
+    case RPMLOG_INFO:
+    case RPMLOG_NOTICE:
+	break;
+    case RPMLOG_EMERG:
+    case RPMLOG_ALERT:
+    case RPMLOG_CRIT:
+    case RPMLOG_ERR:
+    case RPMLOG_WARNING:
+	break;
+    case RPMLOG_DEBUG:
+	if (colorOn && *colorOn)
+	    (void) fputs(ANSI_COLOR_RESET, msgout);
+	break;
+    default:
+	break;
+    }
+
+    (void) fflush(msgout);
+
+    return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
+}
+
+FILE * rpmlogSetFile(FILE * fp)
+	/*@globals _stdlog @*/
+	/*@modifies _stdlog @*/
+{
+    FILE * ofp = _stdlog;
+    _stdlog = fp;
+    return ofp;
 }
 
 #if !defined(HAVE_VSNPRINTF)
