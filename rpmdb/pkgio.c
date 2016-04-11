@@ -35,33 +35,18 @@
 #include "signature.h"
 #include "debug.h"
 
-/*@access rpmts @*/
-/*@access rpmxar @*/
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-/*@access Header @*/            /* XXX compared with NULL */
-/*@access entryInfo @*/
-/*@access indexEntry @*/
-/*@access FD_t @*/		/* XXX stealing digests */
-/*@access FDSTAT_t @*/		/* XXX stealing digests */
-
 #ifdef __cplusplus
 GENfree(struct rpmlead *)
 GENfree(rpmuint8_t **)
 GENfree(rpmuint32_t *)
 #endif	/* __cplusplus */
 
-/*@unchecked@*/
 int _pkgio_debug = 0;
 
 /**
  */
-/*@-exportheader@*/
-/*@unused@*/ ssize_t timedRead(FD_t fd, /*@out@*/ void * bufptr, size_t length)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *bufptr, fileSystem @*/;
+ssize_t timedRead(FD_t fd, /*@out@*/ void * bufptr, size_t length);
 #define	timedRead	(ufdio->read)
-/*@=exportheader@*/
 
 /*===============================================*/
 /** \ingroup header
@@ -73,8 +58,6 @@ int _pkgio_debug = 0;
  */
 static
 rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, h, *msg, fileSystem, internalState @*/
 {
     const void * uh = NULL;
     size_t nb;
@@ -111,9 +94,7 @@ fprintf(stderr, "--> rpmWriteHeader(%p, %p, %p)\n", fd, h, msg);
 	}
     }
 
-    /*@-sizeoftype@*/
     nb = Fwrite(uh, sizeof(char), length, fd);
-    /*@=sizeoftype@*/
     if (nb != length || Ferror(fd)) {
 	if (msg)
 	    *msg = (nb > 0
@@ -136,16 +117,12 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 
     if (ts != NULL && (int)opx >= 0 && (int)opx < RPMTS_OP_MAX)
 	op = ts->ops + opx;
-/*@-usereleased -compdef @*/
     return op;
-/*@=usereleased =compdef @*/
 }
 
 pgpDigParams rpmtsPubkey(const rpmts ts)
 {
-/*@-onlytrans@*/
     return pgpGetPubkey(rpmtsDig(ts));
-/*@=onlytrans@*/
 }
 
 rpmdb rpmtsGetRdb(rpmts ts)
@@ -154,9 +131,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
     if (ts != NULL) {
 	rdb = ts->rdb;
     }
-/*@-compdef -refcounttrans -usereleased @*/
     return rdb;
-/*@=compdef =refcounttrans =usereleased @*/
 }
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
@@ -181,9 +156,7 @@ fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, _dig);
 assert(dig != NULL);
 assert(sigp != NULL);
 assert(pubp != NULL);
-/*@-sefparams@*/
 assert(rpmtsDig(ts) == dig);
-/*@=sefparams@*/
     if (ts->hkp == NULL)
 	ts->hkp = rpmhkpNew(NULL, 0);
     hkp = rpmhkpLink(ts->hkp);
@@ -254,9 +227,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
 
 	/* Retrieve the pubkey that matches the signature. */
 	he->tag = RPMTAG_PUBKEYS;
-/*@-nullstate@*/
 	mi = rpmmiInit(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
-/*@=nullstate@*/
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    if (!headerGet(h, he, 0))
 		continue;
@@ -433,24 +404,16 @@ leave:
 if (_rpmhkp_debug)
 fprintf(stderr, "<-- %s(%p,%p) res %d\n", __FUNCTION__, ts, _dig, res);
 
-/*@-nullstate@*/
     return res;
-/*@=nullstate@*/
 }
 
 pgpDig rpmtsDig(rpmts ts)
 {
-/*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
 	ts->dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
-/*@-refcounttrans@*/
 	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
-/*@=refcounttrans@*/
     }
-/*@=mods@*/
-/*@-compdef -retexpose -usereleased@*/
     return ts->dig;
-/*@=compdef =retexpose =usereleased@*/
 }
 
 void rpmtsCleanDig(rpmts ts)
@@ -461,10 +424,8 @@ void rpmtsCleanDig(rpmts ts)
 	(void) rpmswAdd(rpmtsOp(ts, opx), (rpmop)pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), (rpmop)pgpStatsAccumulator(ts->dig, opx));
-/*@-onlytrans@*/
 	(void) pgpDigFree(ts->dig);
 	ts->dig = NULL;		/* XXX make sure the ptr is __REALLY__ gone */
-/*@=onlytrans@*/
     }
 }
 
@@ -485,16 +446,12 @@ struct rpmlead {
     char name[66];
     unsigned short osnum;
     unsigned short signature_type; /*!< Signature type (RPMSIG_HEADERSIG) */
-/*@unused@*/
     char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
-/*@-type@*/
-/*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
     0xed, 0xab, 0xee, 0xdb, 0x00, 0x00, 0x00, 0x00
 };
-/*@=type@*/
 
 /* The lead needs to be 8 byte aligned */
 
@@ -506,8 +463,6 @@ static unsigned char lead_magic[] = {
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
 static rpmRC wrLead(FD_t fd, const void * ptr, /*@null@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/
 {
     struct rpmlead l = {};
 
@@ -546,10 +501,7 @@ fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);
  */
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		/*@null@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
-    rpmxar xar = fdGetXAR(fd);
     struct rpmlead ** leadp = (struct rpmlead **) ptr;
     struct rpmlead * l = (struct rpmlead *) xcalloc(1, sizeof(*l));
     char buf[BUFSIZ];
@@ -580,41 +532,46 @@ fprintf(stderr, "--> rdLead(%p, %p, %p)\n", fd, ptr, msg);
 	goto exit;
     }
 
-    /* Attach rpmxar handler to fd if this is a xar archive. */
-    if (xar == NULL) {
-	unsigned char * bh = (unsigned char *)l;
-	if (bh[0] == 'x' && bh[1] == 'a' && bh[2] == 'r' && bh[3] == '!') {
-	    const char * fn = fdGetOPath(fd);
+    /* Attach a XAR handler on magic string "xar!" */
+    {	rpmxar xar = fdGetXAR(fd);
+	/* Attach rpmxar handler to fd if this is a xar archive. */
+	if (xar == NULL) {
+	    unsigned char * bh = (unsigned char *)l;
+	    if (bh[0] == 'x' && bh[1] == 'a' && bh[2] == 'r' && bh[3] == '!') {
+		const char * fn = fdGetOPath(fd);
 assert(fn != NULL);
-	    xar = rpmxarNew(fn, "r");
-	    fdSetXAR(fd, xar);
-	    (void) rpmxarFree(xar, "rdLead");
+		xar = rpmxarNew(fn, "r");
+		fdSetXAR(fd, xar);
+		(void) rpmxarFree(xar, "rdLead");
+	    }
 	}
-    }
 
-    /* With XAR, read lead from a xar archive file called "Lead". */
-    xar = fdGetXAR(fd);
-    if (xar != NULL) {
-	unsigned char *b = NULL;
-	size_t nb = 0;
-	const char item[] = "Lead";
-	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("XAR file not found (or no XAR support)"));
-	    rc = rc_notfound;	/* XXX silently ignore */
-	    goto exit;
-	}
-	(void) rpmxarSwapBuf(xar, NULL, 0, &b, &nb);
-	if (nb != sizeof(*l)) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("lead size(%u): BAD, xar read(%u)"),
-		(unsigned)sizeof(*l), (unsigned)nb);
+	/* With XAR, read from a xar archive file called "Lead". */
+	xar = fdGetXAR(fd);
+	if (xar != NULL) {
+	    unsigned char *b = NULL;
+	    size_t nb = 0;
+	    const char item[] = "Lead";
+	    if ((xx = rpmxarNext(xar)) != 0
+	     || (xx = rpmxarPull(xar, item)) != 0)
+	    {
+		(void) snprintf(buf, sizeof(buf),
+			_("XAR file not found (or no XAR support)"));
+		rc = rc_notfound;	/* XXX silently ignore */
+		goto exit;
+	    }
+	    (void) rpmxarSwapBuf(xar, NULL, 0, &b, &nb);
+	    if (nb != sizeof(*l)) {
+		(void) snprintf(buf, sizeof(buf),
+			_("lead size(%u): BAD, xar read(%u)"),
+			(unsigned)sizeof(*l), (unsigned)nb);
+		b = _free(b);
+		rc = rc_fail;
+		goto exit;
+	    }
+	    memcpy(l, b, nb);
 	    b = _free(b);
-	    rc = rc_fail;
-	    goto exit;
 	}
-	memcpy(l, b, nb);
-	b = _free(b);
     }
 
     l->type = (unsigned short) ntohs(l->type);
@@ -623,9 +580,7 @@ assert(fn != NULL);
     l->signature_type = (unsigned short) ntohs(l->signature_type);
 
     if (memcmp(l->magic, lead_magic, sizeof(l->magic))) {
-/*@+charint@*/
 	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD, read %02x%02x%02x%02x"), l->magic[0], l->magic[1], l->magic[2], l->magic[3]);
-/*@=charint@*/
 	rc = rc_notfound;	/* XXX silently ignore bad magic */
 	goto exit;
     }
@@ -655,7 +610,7 @@ exit:
     if (rc == RPMRC_OK && leadp != NULL)
 	*leadp = l;
     else
-	/*@-dependenttrans@*/ l = _free(l); /*@=dependenttrans@*/
+	l = _free(l);
 	
     if (msg != NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';
@@ -675,8 +630,6 @@ exit:
  */
 static rpmRC wrSignature(FD_t fd, void * ptr,
 		/*@unused@*/ /*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
     Header sigh = (Header) ptr;
     static unsigned char zero[8]
@@ -713,8 +666,6 @@ fprintf(stderr, "--> wrSignature(%p, %p, %p)\n", fd, ptr, msg);
  */
 static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad,
 		size_t datalen, struct stat *st)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     size_t expected;
     size_t nl = rpmpkgSizeof("Lead", NULL);
@@ -728,10 +679,8 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad,
     int fdno = Fileno(fd);
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
-/*@-type@*/
 	st->st_size = 0;
 	st->st_size -= nl + siglen + pad + datalen;
-/*@=type@*/
     } else
 #endif
     if (Fstat(fd, st) < 0)
@@ -781,10 +730,7 @@ static char * entryInfoStr(entryInfo info)
  */
 static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		/*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *ptr, *msg, fileSystem, internalState @*/
 {
-rpmxar xar = fdGetXAR(fd);
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = (Header *) ptr;
     char buf[BUFSIZ];
@@ -815,14 +761,18 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
     if (sighp)
 	*sighp = NULL;
 
-    memset(block, 0, sizeof(block));
-    if (xar != NULL) {
-	const char item[] = "Signature";
-	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("XAR file not found (or no XAR support)"));
-	    rc = RPMRC_NOTFOUND;
-	    goto exit;
+    /* With XAR, read from a xar archive file called "Signature". */
+    {	rpmxar xar = fdGetXAR(fd);
+	if (xar != NULL) {
+	    const char item[] = "Signature";
+	    if ((xx = rpmxarNext(xar)) != 0
+	     || (xx = rpmxarPull(xar, item)) != 0)
+	    {
+		(void) snprintf(buf, sizeof(buf),
+			_("XAR file not found (or no XAR support)"));
+		rc = RPMRC_NOTFOUND;
+		goto exit;
+	    }
 	}
     }
 
@@ -832,6 +782,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	goto exit;
     }
 
+    memset(block, 0, sizeof(block));
     startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
@@ -846,9 +797,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 
 	if (memcmp(block, hmagic, nmagic)) {
 	    unsigned char * x = (unsigned char *)block;
-/*@+charint@*/
 	    (void) snprintf(buf, sizeof(buf), _("sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"), x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
-/*@=charint@*/
 	    goto exit;
 	}
     }
@@ -924,7 +873,6 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #1214082 */
     }
 
     /* Is there an immutable header region tag? */
-/*@-sizeoftype@*/
     if (entry->info.tag == RPMTAG_HEADERSIGNATURES)
     {
 	/* Is the region tag sane? */
@@ -935,7 +883,6 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #1214082 */
 		_("region tag: BAD, %s"), entryInfoStr(&entry->info));
 	    goto exit;
 	}
-/*@=sizeoftype@*/
 
 /*
  * XXX http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/MySQL-client-community-5.0.51a-0.rhel4.i386.rpm
@@ -950,7 +897,6 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 
 	/* Is there an immutable header region tag trailer? */
 	dataEnd = dataStart + entry->info.offset;
-/*@-sizeoftype@*/
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
 	if (info->tag == (rpmuint32_t) htonl(RPMTAG_HEADERIMAGE)) {
@@ -972,7 +918,6 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 		_("region trailer: BAD, %s"), entryInfoStr(&entry->info));
 	    goto exit;
 	}
-/*@=sizeoftype@*/
 	memset(info, 0, sizeof(*info));
 
 	/* Is the no. of tags in the region less than the total no. of tags? */
@@ -1116,9 +1061,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     rpmuint32_t * ei = (rpmuint32_t *) uh;
     rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);
     rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);
-/*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
-/*@=castexpose@*/
     rpmuint32_t ildl[2];
     size_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     const unsigned char * dataStart = (const unsigned char *) (pe + il);
@@ -1160,7 +1103,6 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
     }
 
     /* Is there an immutable header region tag? */
-/*@-sizeoftype@*/
     if (entry->info.tag != RPMTAG_HEADERIMMUTABLE) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
@@ -1174,7 +1116,6 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 		_("region tag: BAD, %s"), entryInfoStr(&entry->info));
 	goto exit;
     }
-/*@=sizeoftype@*/
 
     /* Is the offset within the data area? */
     if (entry->info.offset >= (int) dl) {
@@ -1185,7 +1126,6 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 
     /* Is there an immutable header region tag trailer? */
     regionEnd = dataStart + entry->info.offset;
-/*@-sizeoftype@*/
     (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
 
@@ -1199,7 +1139,6 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 		_("region trailer: BAD, %s"), entryInfoStr(&entry->info));
 	goto exit;
     }
-/*@=sizeoftype@*/
     memset(info, 0, sizeof(*info));
 
     /* Is the no. of tags in the region less than the total no. of tags? */
@@ -1358,9 +1297,7 @@ assert(dig != NULL);
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
     {
 	const void * osig = pgpGetSig(dig);
-/*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
 	osig = _free(osig);
-/*@=modobserver =observertrans =dependenttrans @*/
 	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
     }
 
@@ -1432,7 +1369,6 @@ fprintf(stderr, "<-- headerCheck #3: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
  */
 RPM_GNUC_PURE
 static size_t szHeader(/*@null@*/ const void * ptr)
-	/*@*/
 {
     rpmuint32_t p[4];
 assert(ptr != NULL);
@@ -1440,7 +1376,6 @@ assert(ptr != NULL);
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
 }
 
-/*@-globuse@*/
 /**
  * Check metadata header.
  * @param fd		file handle
@@ -1450,8 +1385,6 @@ assert(ptr != NULL);
  */
 static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
 		/*@unused@*/ /*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ptr, fileSystem, internalState @*/
 {
     rpmRC rc = RPMRC_OK;
     Header h;
@@ -1474,10 +1407,7 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
  */
 static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
 		/*@null@*/ const char ** msg)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fd, *hdrp, *msg, fileSystem, internalState @*/
 {
-rpmxar xar = fdGetXAR(fd);
     pgpDig dig = pgpDigLink(fdGetDig(fd));
     char buf[BUFSIZ];
     rpmuint32_t block[4];
@@ -1509,14 +1439,18 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     if (hdrp)
 	*hdrp = NULL;
 
-    memset(block, 0, sizeof(block));
-    if (xar != NULL) {
-	const char item[] = "Header";
-	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("XAR file not found (or no XAR support)"));
-	    rc = RPMRC_NOTFOUND;
-	    goto exit;
+    /* With XAR, read from a xar archive file called "Header". */
+    {	rpmxar xar = fdGetXAR(fd);
+	if (xar != NULL) {
+	    const char item[] = "Header";
+	    if ((xx = rpmxarNext(xar)) != 0
+	     || (xx = rpmxarPull(xar, item)) != 0)
+	    {
+		(void) snprintf(buf, sizeof(buf),
+			_("XAR file not found (or no XAR support)"));
+		rc = RPMRC_NOTFOUND;
+		goto exit;
+	    }
 	}
     }
 
@@ -1526,6 +1460,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	goto exit;
     }
 
+    memset(block, 0, sizeof(block));
     startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	/* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
@@ -1543,9 +1478,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     (void) headerGetMagic(NULL, &b, &nb);
     if (memcmp(block, b, nb)) {
 	unsigned char * x = (unsigned char *) block;
-/*@+charint@*/
 	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"), x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
-/*@=charint@*/
 	goto exit;
     }
 
@@ -1569,7 +1502,6 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	goto exit;
     }
 
-/*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     if (nb > (st->st_size - startoff - sizeof(block))) {
 	(void) snprintf(buf, sizeof(buf),
@@ -1577,7 +1509,6 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 		(unsigned) nb);
        goto exit;
     }
-/*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
     if (map) {
         static const int prot = PROT_READ | PROT_WRITE;
@@ -1643,14 +1574,12 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #124081 */
 	} else
 	    (void) headerSetOrigin(h, origin);
     }
-/*@-mods@*/
     /* Save file size in metadata header. */
     {	struct stat * st = headerGetStatbuf(h);
 	int saveno = errno;
 	(void) Fstat(fd, st);
 	errno = saveno;
     }
-/*@=mods@*/
     (void) headerSetStartOff(h, (rpmuint32_t)startoff);
     (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
     
@@ -1689,13 +1618,9 @@ fprintf(stderr, "<-- rpmReadHeader: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
  */
 static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		/*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, *ptr, *msg, fileSystem, internalState @*/
 {
     Header * hdrp = (Header *) ptr;
-/*@-compdef@*/
     return rpmReadHeader(fd, hdrp, msg);
-/*@=compdef@*/
 }
 
 /**
@@ -1707,13 +1632,10 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
  */
 static rpmRC wrHeader(FD_t fd, void * ptr,
 		/*@unused@*/ /*@null@*/ const char ** msg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
     Header h = (Header) ptr;
     return rpmWriteHeader(fd, h, msg);
 }
-/*@=globuse@*/
 
 /*===============================================*/
 
