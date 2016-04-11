@@ -311,7 +311,7 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	break;
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
-    case RPM_I18NSTRING_TYPE:
+    case RPM_I18NSTRING_TYPE:	/* XXX treat as raw string array. */
     case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
 	    while (count--) {
@@ -418,8 +418,9 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he->c * sizeof(*he->p.ui64p);
 	break;
 #if !defined(SUPPORT_I18NSTRING_TYPE)
-    case RPM_I18NSTRING_TYPE:
+    case RPM_I18NSTRING_TYPE:	/* XXX already done? */
 	he->t = RPM_STRING_TYPE;
+	he->c = 1;
 	/*@fallthrough@*/
 #endif
     case RPM_STRING_TYPE:
@@ -1350,6 +1351,7 @@ int headerIsEntry(Header h, rpmTag tag)
  */
 static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 {
+    rpmTagType type = entry->info.type;
     rpmTagCount count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
@@ -1397,7 +1399,8 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	break;
 #if !defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-	he->t = RPM_STRING_TYPE;
+	type = RPM_STRING_TYPE;
+	count = 1;
 	he->p.str = (char *) entry->data;
 	break;
 #endif
@@ -1426,21 +1429,27 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    memcpy(t, entry->data, entry->length);
 	    t[entry->length-1] = '\0';	/* XXX ensure NUL terminated */
 	}
-	te = t + entry->length;
+	te = t + entry->length;		/* XXX entry->length +padding */
 	for (i = 0; i < (unsigned) count; i++) {
 	    argv[i] = t;
 	    t = strchr(t, 0);
 	    t++;
 	}
-	if (t != te)			/* XXX ensure full copy */
+	if (t > te) {
+fprintf(stderr, "*** %s: STRING_ARRAY overrun\n", __FUNCTION__, rc, t, te);
 	    rc = 0;
+	} else
+	if ((te-t) >= 8) {		/* XXX entry->length +padding */
+fprintf(stderr, "*** %s: STRING_ARRAY underrun\n", __FUNCTION__, rc, t, te);
+	    rc = 0;
+	}
     }	break;
 
     default:
 	he->p.ptr = entry->data;
 	break;
     }
-    he->t = entry->info.type;
+    he->t = type;
     he->c = count;
     return rc;
 }
@@ -1613,7 +1622,6 @@ static int intGetEntry(Header h, HE_t he, unsigned int flags)
 	}
 	/*@fallthrough@*/
 #endif
-    case RPM_STRING_TYPE:
     default:
 	rc = copyEntry(entry, he, minMem);
 	break;
@@ -1636,9 +1644,7 @@ static int copyData(char * t, const HE_t he, size_t nb)
     int rc = 0;		/* assume success */
 
     switch (he->t) {
-#if defined(SUPPORT_I18NSTRING_TYPE)	/* XXX used while reloading? */
-    case RPM_I18NSTRING_TYPE:
-#endif
+    case RPM_I18NSTRING_TYPE:		/* XXX used while reloading? */
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** av = he->p.argv;
 	rpmTagCount cnt = he->c;
