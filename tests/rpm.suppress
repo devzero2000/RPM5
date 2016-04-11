@@ -1,5 +1,6 @@
 # --- glibc
 leak:__GI___strdup
+leak:__GI___strndup
 
 # --- popt
 leak:expandNextArg
