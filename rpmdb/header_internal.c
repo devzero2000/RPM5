@@ -46,8 +46,14 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
 	info->count = (rpmuint32_t) ntohl(pe[i].count);
 
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
-	if (info->tag == 1029 && info->type == 1) {
+	if (info->tag == 1029 && info->type == 1)
 	    info->type = RPM_UINT8_TYPE;
+
+	/* XXX Ensure that pubkey type is sane, fail early if not.. */
+	if (info->tag == RPMTAG_PUBKEYS
+	 && info->type != RPM_STRING_ARRAY_TYPE)
+	{
+	    return (int)i;
 	}
 
 #ifdef	NOTYET	/* XXX more todo here */
