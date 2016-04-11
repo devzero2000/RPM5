@@ -261,15 +261,12 @@ assert(he->p.ptr != NULL);
 	    break;
 	}
 	if (!headerIsEntry(h, he->tag)) {
-#ifdef	DYING
 	    if (hdrchkType(he->t))
 		continue;
 	    if (hdrchkData(he->c))
 		continue;
-#endif
 	    switch(he->t) {
 	    default:
-assert(0);
 		rpmlog(RPMLOG_ERR,
 		    _("%s: skipping tag: tag(%u) t(%u) data %p[%u]\n"),
 			__FUNCTION__, xx, he->tag, he->t, he->p.ptr, he->c);
@@ -279,23 +276,19 @@ assert(0);
 	    case RPM_UINT16_TYPE:
 	    case RPM_UINT32_TYPE:
 	    case RPM_UINT64_TYPE:
-assert(he->c == 1);
 		if (he->c != 1)
 		    continue;
 		break;
 	    case RPM_STRING_TYPE:
-assert(he->c == 1);
 		if (he->c != 1)
 		    continue;
 		break;
 	    case RPM_BIN_TYPE:
-assert(he->c < 16*1024);
 		if (he->c >= 16*1024)
 		    continue;
 		break;
 	    case RPM_I18NSTRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
-assert(0);
 		continue;
 		break;
 	    }
