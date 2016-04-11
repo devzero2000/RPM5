@@ -335,9 +335,7 @@ assert(fd != NULL);
     fd->contentType = _free(fd->contentType);
     fd->contentDisposition = _free(fd->contentDisposition);
 /*@-onlytrans@*/
-#ifdef WITH_XAR
     fd->xar = rpmxarFree(fd->xar, "fdFini");
-#endif
 #ifdef WITH_NEON
 #ifndef	NOTYET
 if (fd->req != NULL && fd->req != (void *)-1)
