@@ -926,7 +926,7 @@ assert(0);
     {	size_t slen = 0;
 	void * uh = headerUnload(sigh, &slen);
 	static const size_t align = 1024;
-	size_t nb = align - 96 - 16 - 16;
+	size_t nb = align - 96 - 16 - 8;
 	rpmuint8_t * b;
 
 	uh = _free(uh);
