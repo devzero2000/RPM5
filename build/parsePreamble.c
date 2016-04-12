@@ -30,7 +30,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_DISTEPOCH,
     RPMTAG_LICENSE,
     RPMTAG_GROUP,		/* XXX permissive. */
-#if !defined(SUPPORT_I18NSTRING_TYPE)	/* XXX RPM_VENDOR_PLD */
+#if !defined(RPM_VENDOR_PLD)
     RPMTAG_SUMMARY,		/* XXX permissive. */
     RPMTAG_DESCRIPTION,		/* XXX permissive. */
 #endif
